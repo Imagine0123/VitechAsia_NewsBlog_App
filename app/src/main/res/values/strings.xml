@@ -1,3 +1,49 @@
 <resources>
-    <string name="app_name">Prototype_Blog_v1</string>
+    <!-- App Name -->
+    <string name="app_name">Vitech Asia Blog</string>
+    <string name="vitechText">Vitech Asia</string>
+    
+    <!-- Common -->
+    <string name="search_button">Search</string>
+    <string name="search_hint">Search articles...</string>
+    
+    <!-- Navigation -->
+    <string name="menu_home">Home</string>
+    <string name="menu_latest">Latest</string>
+    <string name="menu_popular">Popular</string>
+    <string name="menu_bookmark">Bookmarks</string>
+    <string name="menu_profile">Profile</string>
+    
+    <!-- Article Detail -->
+    <string name="article_image">Article Image</string>
+    <string name="author_image">Author Image</string>
+    <string name="read_more">Read More</string>
+    <string name="likes">%1$d Likes</string>
+    <string name="views">%1$d Views</string>
+    <string name="comments">%1$d Comments</string>
+    <string name="share_article">Share Article</string>
+    <string name="bookmark_article">Bookmark Article</string>
+    <string name="like_article">Like Article</string>
+    <string name="comment_hint">Add a comment...</string>
+    <string name="post_comment">Post</string>
+    <string name="no_comments">No comments yet. Be the first to comment!</string>
+    <string name="error_loading_article">Error loading article. Please try again.</string>
+    
+    <!-- Fragment Titles -->
+    <string name="latest_articles">Latest Articles</string>
+    <string name="popular_articles">Popular Articles</string>
+    <string name="saved_articles">Bookmarked Articles</string>
+    
+    <!-- Profile -->
+    <string name="profile_picture">Profile Picture</string>
+    <string name="guest_user">Guest User</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    
+    <!-- Messages -->
+    <string name="no_articles">No articles found</string>
+    <string name="no_bookmarks">No bookmarks yet</string>
+    <string name="loading">Loading...</string>
+    <string name="error_loading">Error loading content</string>
+    <string name="searching_for">Searching for: %s</string>
 </resources>

@@ -32,11 +32,20 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    
+    // CardView
+    implementation("androidx.cardview:cardview:1.0.0")
+    
+    // Fragment KTX for viewModels()
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

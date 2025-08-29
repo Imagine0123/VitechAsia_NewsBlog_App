@@ -32,23 +32,23 @@ public class LatestFragment extends Fragment {
                            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_latest, container, false);
         
-        // Initialize RecyclerView
+        //Initialize RecyclerView
         recyclerView = view.findViewById(R.id.recycler_view_articles);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
-        // Initialize article list and adapter
+        //Initialize article list and adapter
         articleList = new ArrayList<>();
         articleAdapter = new ArticleAdapter(articleList, this::onArticleClick);
         recyclerView.setAdapter(articleAdapter);
         
-        // Load articles (you'll replace this with your actual data loading)
+        //Load articles
         loadArticles();
         
         return view;
     }
     
     private void onArticleClick(Article article) {
-        // Open ArticleDetailFragment when an article is clicked
+        //Open ArticleDetailFragment when an article is clicked
         ArticleDetailFragment fragment = ArticleDetailFragment.newInstance(article);
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment)
@@ -57,8 +57,8 @@ public class LatestFragment extends Fragment {
     }
     
     private void loadArticles() {
-        // TODO: Replace with your actual data loading logic
-        // This is just sample data
+        //TODO: Replace with actual data loading logic
+        //This is just sample data
         List<Article> sampleArticles = new ArrayList<>();
         sampleArticles.add(new Article(
                 "1",

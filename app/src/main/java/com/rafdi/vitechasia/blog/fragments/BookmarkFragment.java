@@ -27,7 +27,7 @@ public class BookmarkFragment extends Fragment {
     private TextView emptyView;
     
     public BookmarkFragment() {
-        // Required empty public constructor
+        //Required empty public constructor
     }
 
     @Override
@@ -35,17 +35,17 @@ public class BookmarkFragment extends Fragment {
                            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bookmark, container, false);
         
-        // Initialize views
+        //Initialize views and recyclerView
         recyclerView = view.findViewById(R.id.recycler_view_articles);
         emptyView = view.findViewById(R.id.empty_view);
         
-        // Setup RecyclerView
+        //Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         bookmarkedArticles = new ArrayList<>();
         articleAdapter = new ArticleAdapter(bookmarkedArticles, this::onArticleClick);
         recyclerView.setAdapter(articleAdapter);
         
-        // Load bookmarked articles
+        //Load bookmarked articles
         loadBookmarkedArticles();
         
         return view;
@@ -61,8 +61,8 @@ public class BookmarkFragment extends Fragment {
     }
     
     private void loadBookmarkedArticles() {
-        // TODO: Replace with your actual data loading logic for bookmarked articles
-        // This is just sample data
+        //TODO: Replace with actual data loading logic for bookmarked articles from user
+        //This is just sample data
         List<Article> sampleBookmarks = new ArrayList<>();
         sampleBookmarks.add(new Article(
                 "3",

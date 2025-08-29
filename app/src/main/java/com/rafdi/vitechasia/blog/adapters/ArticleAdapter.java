@@ -41,19 +41,19 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         Article article = articleList.get(position);
         
-        // Set article data to views
+        //Load article data to views
         holder.articleTitle.setText(article.getTitle());
         holder.articleCategory.setText(article.getCategory());
         holder.articleAuthor.setText(article.getAuthorName());
         holder.articleDate.setText(article.getFormattedDate());
         
-        // Load article image using Glide
+        //Load article image using Glide
         Glide.with(holder.itemView.getContext())
                 .load(article.getImageUrl())
                 .placeholder(R.drawable.ic_placeholder_image)
                 .into(holder.articleImage);
         
-        // Set click listener
+        //Set click listener
         holder.itemView.setOnClickListener(v -> listener.onArticleClick(article));
     }
 

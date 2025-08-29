@@ -20,7 +20,6 @@ public class Article implements Parcelable {
     private int viewCount;
     private int likeCount;
 
-    // Empty constructor required for Firestore
     public Article() {
     }
 

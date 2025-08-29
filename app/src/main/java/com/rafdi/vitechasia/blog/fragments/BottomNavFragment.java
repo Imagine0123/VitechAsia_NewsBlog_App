@@ -29,10 +29,10 @@ public class BottomNavFragment extends Fragment implements BottomNavigationView.
         bottomNavView = view.findViewById(R.id.bottom_navigation);
         bottomNavView.setOnItemSelectedListener(this);
         
-        // Set the default selected item
+        //Default selected item
         bottomNavView.setSelectedItemId(R.id.navigation_home);
         
-        // Load the home fragment initially
+        //Initial load home fragment
         if (getActivity() != null) {
             ((HomePage) getActivity()).loadHomeFragment();
         }

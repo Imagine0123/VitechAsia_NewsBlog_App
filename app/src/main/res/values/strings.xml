@@ -37,6 +37,7 @@
     <!-- Profile -->
     <string name="profile_picture">Profile Picture</string>
     <string name="guest_user">Guest User</string>
+    <string name="guest_email_hint">Sign in to view your profile</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
     

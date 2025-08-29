@@ -32,7 +32,6 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         
-        // Set up edge-to-edge display
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -40,7 +39,7 @@ public class HomePage extends AppCompatActivity {
             return insets;
         });
 
-        // Set up Vitech text styling
+        //Text Styling
         TextView vitechText = findViewById(R.id.vitechText);
         EditText searchText = findViewById(R.id.searchText);
         ImageButton searchButton = findViewById(R.id.searchButton);
@@ -69,18 +68,17 @@ public class HomePage extends AppCompatActivity {
 
         vitechText.setText(spannable);
         
-        // Set click listener for vitechText to load home fragment and update bottom nav
         vitechText.setOnClickListener(v -> {
             loadHomeFragment();
             updateBottomNavSelection(R.id.navigation_home);
         });
         
-        // Add Bottom Navigation Fragment
+        //Bottom navigation fragment
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bottom_nav_container, new BottomNavFragment())
                 .commit();
         
-        // Load home fragment by default
+        //Default load home
         loadHomeFragment();
     }
 
@@ -139,11 +137,7 @@ public class HomePage extends AppCompatActivity {
             }
         });
     }
-    
-    /**
-     * Updates the selected item in the bottom navigation
-     * @param itemId The ID of the menu item to select
-     */
+
     public void updateBottomNavSelection(int itemId) {
         BottomNavigationView bottomNavView = findViewById(R.id.bottom_navigation);
         if (bottomNavView != null) {

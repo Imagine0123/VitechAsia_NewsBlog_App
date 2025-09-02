@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="?attr/colorSurface"
     tools:context=".fragments.BookmarkFragment">
 
     <LinearLayout
@@ -18,7 +19,9 @@
             android:layout_height="wrap_content"
             android:text="@string/saved_articles"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_articles"
@@ -27,7 +30,9 @@
             android:layout_marginTop="16dp"
             android:clipToPadding="false"
             android:paddingBottom="16dp"
+            android:overScrollMode="never"
             android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_article" />
             
         <TextView
@@ -37,7 +42,10 @@
             android:gravity="center"
             android:text="@string/no_bookmarks"
             android:textSize="16sp"
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:visibility="visible"
+            android:padding="32dp"
+            android:textAlignment="center"
             tools:text="No bookmarked articles yet" />
         
     </LinearLayout>

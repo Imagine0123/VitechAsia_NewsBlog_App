@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="?attr/colorSurface"
     tools:context=".fragments.ProfileFragment">
 
     <LinearLayout
@@ -21,7 +22,8 @@
             android:src="@drawable/ic_profile_placeholder"
             android:contentDescription="@string/profile_picture"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp"
+            android:tint="?attr/colorOnSurfaceVariant"/>
 
         <TextView
             android:id="@+id/profile_name"
@@ -30,7 +32,9 @@
             android:layout_gravity="center"
             android:text="@string/guest_user"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"/>
 
         <TextView
             android:id="@+id/profile_email"
@@ -38,15 +42,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="user@example.com"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:layout_marginBottom="24dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
+            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/sign_in"
             android:visibility="gone"
+            app:strokeColor="?attr/colorOutline"
             android:layout_marginTop="16dp"/>
 
         <Button

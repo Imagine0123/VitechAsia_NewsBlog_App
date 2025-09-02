@@ -11,31 +11,49 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rafdi.vitechasia.blog.fragments.BottomNavFragment;
 import com.rafdi.vitechasia.blog.fragments.HomeFragment;
 import com.rafdi.vitechasia.blog.fragments.LatestFragment;
 import com.rafdi.vitechasia.blog.fragments.PopularFragment;
 import com.rafdi.vitechasia.blog.fragments.BookmarkFragment;
 import com.rafdi.vitechasia.blog.fragments.ProfileFragment;
+import com.rafdi.vitechasia.blog.utils.ThemeManager;
+import com.rafdi.vitechasia.blog.utils.ThemeManager.ThemeMode;
+
 
 public class HomePage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply theme before setting content view
+        ThemeManager.applyTheme(ThemeManager.getCurrentThemeMode(this));
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         
+        // Enable edge-to-edge display
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            
+            // Update status bar icons color based on theme
+            boolean isDark = ThemeManager.isDarkTheme(this);
+            WindowInsetsControllerCompat windowInsetsController = ViewCompat.getWindowInsetsController(getWindow().getDecorView());
+            if (windowInsetsController != null) {
+                windowInsetsController.setAppearanceLightStatusBars(!isDark);
+            }
+            
             return insets;
         });
 
@@ -48,8 +66,9 @@ public class HomePage extends AppCompatActivity {
 
         String fullText = vitechText.getText().toString();
         SpannableString spannable = new SpannableString(fullText);
-        int colorVitech = Color.BLACK;
-        int colorAsia = Color.parseColor("#E94B64");
+        // Use theme-aware colors
+        int colorVitech = ThemeManager.isDarkTheme(this) ? Color.WHITE : Color.BLACK;
+        int colorAsia = getColor(R.color.colorAccent);
         String vitechPart = "Vitech";
 
         spannable.setSpan(

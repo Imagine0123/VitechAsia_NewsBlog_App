@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="?attr/colorSurface"
     tools:context=".fragments.PopularFragment">
 
     <LinearLayout
@@ -18,7 +19,9 @@
             android:layout_height="wrap_content"
             android:text="@string/popular_articles"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_articles"
@@ -27,6 +30,8 @@
             android:layout_marginTop="16dp"
             android:clipToPadding="false"
             android:paddingBottom="16dp"
+            android:overScrollMode="never"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/item_article" />
         
     </LinearLayout>

@@ -33,18 +33,24 @@ android {
 
 dependencies {
     implementation(libs.appcompat)
-    implementation(libs.material)
+    implementation("com.google.android.material:material:1.11.0")
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
     
-    // CardView
-    implementation("androidx.cardview:cardview:1.0.0")
+    // Material 3
+    implementation("androidx.compose.material3:material3:1.2.0")
+    
+    // For backward compatibility with Material 3 components
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.0")
     
     // Fragment KTX for viewModels()
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    
+    // AndroidX Preference Library
+    implementation("androidx.preference:preference-ktx:1.2.1")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

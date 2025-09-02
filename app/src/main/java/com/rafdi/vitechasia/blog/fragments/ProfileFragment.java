@@ -13,9 +13,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
+
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.User;
+import com.rafdi.vitechasia.blog.utils.SessionManager;
 
 public class ProfileFragment extends Fragment {
     
@@ -24,11 +27,10 @@ public class ProfileFragment extends Fragment {
     private Button loginButton, logoutButton;
     private ProgressBar progressBar;
     
-    // For demo purposes - replace with actual user authentication
-    private boolean isLoggedIn = false;
+    private SessionManager sessionManager;
 
     public ProfileFragment() {
-        // Required empty public constructor
+        //Required empty public constructor
     }
 
     @Override
@@ -36,7 +38,7 @@ public class ProfileFragment extends Fragment {
                            Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         
-        // Initialize views
+        //Initialize views
         profileImage = view.findViewById(R.id.profile_image);
         profileName = view.findViewById(R.id.profile_name);
         profileEmail = view.findViewById(R.id.profile_email);
@@ -44,11 +46,16 @@ public class ProfileFragment extends Fragment {
         logoutButton = view.findViewById(R.id.btn_logout);
         progressBar = view.findViewById(R.id.progress_bar);
         
-        // Set up click listeners
+        //Initialize Session Manager
+        if (getContext() != null) {
+            sessionManager = new SessionManager(getContext());
+        }
+        
+        //Set up click listeners
         loginButton.setOnClickListener(v -> handleLogin());
         logoutButton.setOnClickListener(v -> handleLogout());
         
-        // Load profile data
+        //Load profile data
         loadProfileData();
         
         return view;
@@ -57,39 +64,36 @@ public class ProfileFragment extends Fragment {
     private void loadProfileData() {
         showLoading(true);
         
-        // Simulate network/database delay
+        //Simulate network/database delay
         profileImage.postDelayed(() -> {
-            //TODO: Replace with actual user data loading logic
-            if (isLoggedIn) {
-                // Sample user data - replace with actual user data
-                User currentUser = new User(
-                    "1",
-                    "John Doe",
-                    "john.doe@example.com",
-                    "https://example.com/profile.jpg",
-                    "Android Developer | Tech Enthusiast | Coffee Lover"
-                );
-                displayUserProfile(currentUser);
+            if (sessionManager != null && sessionManager.isLoggedIn()) {
+                //Load user from session
+                User currentUser = sessionManager.getUser();
+                if (currentUser != null) {
+                    displayUserProfile(currentUser);
+                } else {
+                    showGuestView();
+                }
             } else {
                 showGuestView();
             }
             showLoading(false);
-        }, 1000);
+        }, 500); //Reduced delay for better UX
     }
     
     private void displayUserProfile(User user) {
-        // Update UI with user data
+        //Load user data
         profileName.setText(user.getName());
         profileEmail.setText(user.getEmail());
         
-        // Load profile image using Glide
+        //Load profile image
         Glide.with(requireContext())
                 .load(user.getPhotoUrl())
                 .placeholder(R.drawable.ic_profile_placeholder)
                 .circleCrop()
                 .into(profileImage);
         
-        // Update UI state
+        //Update UI state for logged-in user to allow logging out
         loginButton.setVisibility(View.GONE);
         logoutButton.setVisibility(View.VISIBLE);
     }
@@ -103,17 +107,30 @@ public class ProfileFragment extends Fragment {
     }
     
     private void handleLogin() {
-        //TODO: Implement login logic
-        isLoggedIn = true;
-        loadProfileData();
-        Toast.makeText(getContext(), "Login clicked", Toast.LENGTH_SHORT).show();
+        //Login simulation
+        if (getContext() != null) {
+            User sampleUser = new User(
+                "1",
+                "John Doe",
+                "john.doe@example.com",
+                "https://example.com/profile.jpg",
+                "Android Developer | Tech Enthusiast | Coffee Lover"
+            );
+            
+            if (sessionManager != null) {
+                sessionManager.createLoginSession(sampleUser);
+                loadProfileData();
+                Toast.makeText(getContext(), "Successfully logged in", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
     
     private void handleLogout() {
-        //TODO: Implement logout logic
-        isLoggedIn = false;
-        showGuestView();
-        Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+        if (sessionManager != null) {
+            sessionManager.logoutUser();
+            showGuestView();
+            Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void showLoading(boolean isLoading) {

@@ -11,10 +11,8 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
@@ -28,7 +26,6 @@ import com.rafdi.vitechasia.blog.fragments.PopularFragment;
 import com.rafdi.vitechasia.blog.fragments.BookmarkFragment;
 import com.rafdi.vitechasia.blog.fragments.ProfileFragment;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
-import com.rafdi.vitechasia.blog.utils.ThemeManager.ThemeMode;
 
 
 public class HomePage extends AppCompatActivity {
@@ -66,7 +63,6 @@ public class HomePage extends AppCompatActivity {
 
         String fullText = vitechText.getText().toString();
         SpannableString spannable = new SpannableString(fullText);
-        // Use theme-aware colors
         int colorVitech = ThemeManager.isDarkTheme(this) ? Color.WHITE : Color.BLACK;
         int colorAsia = getColor(R.color.colorAccent);
         String vitechPart = "Vitech";
@@ -102,9 +98,9 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void loadHomeFragment() {
-        // Only replace if the current fragment is not already HomeFragment
+        //Only replace if the current fragment is not already HomeFragment
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (currentFragment == null || !(currentFragment instanceof HomeFragment)) {
+        if (!(currentFragment instanceof HomeFragment)) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment())
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

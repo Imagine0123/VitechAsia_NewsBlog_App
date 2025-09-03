@@ -5,21 +5,19 @@ public class User {
     private String name;
     private String email;
     private String photoUrl;
-    private String bio;
 
     // Empty constructor required for Firestore
     public User() {
     }
 
-    public User(String id, String name, String email, String photoUrl, String bio) {
+    public User(String id, String name, String email, String photoUrl) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.photoUrl = photoUrl;
-        this.bio = bio;
     }
 
-    // Getters and Setters
+    //Getters and Setters
     public String getId() {
         return id;
     }
@@ -50,13 +48,5 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
     }
 }

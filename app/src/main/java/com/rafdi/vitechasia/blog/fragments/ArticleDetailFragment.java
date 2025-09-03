@@ -56,7 +56,7 @@ public class ArticleDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        // Initialize views
+        //Initialize views
         articleImage = view.findViewById(R.id.articleImage);
         articleCategory = view.findViewById(R.id.articleCategory);
         articleTitle = view.findViewById(R.id.articleTitle);
@@ -65,9 +65,9 @@ public class ArticleDetailFragment extends Fragment {
         articleDate = view.findViewById(R.id.articleDate);
         articleContent = view.findViewById(R.id.articleContent);
         
-        // Populate views with article data
+        //Populate views with article data
         if (article != null) {
-            // Load article image using Glide or your preferred image loading library
+            //Load article image using Glide
             Glide.with(requireContext())
                 .load(article.getImageUrl())
                 .placeholder(R.drawable.ic_placeholder_image)
@@ -76,7 +76,7 @@ public class ArticleDetailFragment extends Fragment {
             articleCategory.setText(article.getCategory());
             articleTitle.setText(article.getTitle());
             
-            // Load author image
+            //Load author image
             Glide.with(requireContext())
                 .load(article.getAuthorImageUrl())
                 .placeholder(R.drawable.ic_profile_placeholder)

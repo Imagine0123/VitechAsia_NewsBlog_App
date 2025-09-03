@@ -54,7 +54,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/articleCategory"
-            tools:text="Lamp construction: Plant for any anything that" />
+            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris." />
 
         <LinearLayout
             android:id="@+id/authorInfoLayout"

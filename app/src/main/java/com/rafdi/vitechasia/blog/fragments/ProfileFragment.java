@@ -10,10 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import android.content.Context;
 
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
@@ -23,7 +20,7 @@ import com.rafdi.vitechasia.blog.utils.SessionManager;
 public class ProfileFragment extends Fragment {
     
     private ImageView profileImage;
-    private TextView profileName, profileEmail, profileBio;
+    private TextView profileName, profileEmail;
     private Button loginButton, logoutButton;
     private ProgressBar progressBar;
     
@@ -113,8 +110,7 @@ public class ProfileFragment extends Fragment {
                 "1",
                 "John Doe",
                 "john.doe@example.com",
-                "https://example.com/profile.jpg",
-                "Android Developer | Tech Enthusiast | Coffee Lover"
+                "https://example.com/profile.jpg"
             );
             
             if (sessionManager != null) {

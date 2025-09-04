@@ -30,7 +30,7 @@ public class SessionManager {
         editor.apply();
     }
     
-    public User getUser() {
+    public User getUserDetails() {
         if (!isLoggedIn()) {
             return null;
         }

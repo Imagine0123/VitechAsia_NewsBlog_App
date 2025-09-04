@@ -47,7 +47,28 @@
     <string name="share_article">Share Article</string>
     <string name="bookmark_article">Bookmark Article</string>
     <string name="like_article">Like Article</string>
-    <string name="comment_hint">Add a comment...</string>
+    <string name="comment_hint">Add a comment…</string>
+    
+    <!-- Login Screen -->
+    <string name="login_title">Welcome Back</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login_error">Invalid email or password</string>
+    
+    <!-- Signup Screen -->
+    <string name="create_account">Create Account</string>
+    <string name="full_name">Full Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="signup_error">Error creating account</string>
+    <string name="password_mismatch">Passwords don\'t match</string>
+    <string name="invalid_email">Please enter a valid email</string>
+    <string name="invalid_password">Password must be at least 6 characters</string>
+    <string name="invalid_name">Please enter your name</string>
+    
     <string name="post_comment">Post</string>
     <string name="no_comments">No comments yet. Be the first to comment!</string>
     <string name="error_loading_article">Error loading article. Please try again.</string>

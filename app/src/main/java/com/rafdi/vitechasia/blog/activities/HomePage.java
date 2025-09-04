@@ -1,5 +1,6 @@
-package com.rafdi.vitechasia.blog;
+package com.rafdi.vitechasia.blog.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -19,19 +20,33 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.fragments.BottomNavFragment;
 import com.rafdi.vitechasia.blog.fragments.HomeFragment;
 import com.rafdi.vitechasia.blog.fragments.LatestFragment;
 import com.rafdi.vitechasia.blog.fragments.PopularFragment;
 import com.rafdi.vitechasia.blog.fragments.BookmarkFragment;
 import com.rafdi.vitechasia.blog.fragments.ProfileFragment;
+import com.rafdi.vitechasia.blog.utils.SessionManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
 
 
 public class HomePage extends AppCompatActivity {
 
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize session manager
+        sessionManager = new SessionManager(this);
+        
+        // Check if user is logged in, if not redirect to LoginActivity
+        if (!sessionManager.isLoggedIn()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+        
         // Apply theme before setting content view
         ThemeManager.applyTheme(ThemeManager.getCurrentThemeMode(this));
         

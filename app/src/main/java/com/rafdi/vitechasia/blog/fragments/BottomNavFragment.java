@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rafdi.vitechasia.blog.R;
-import com.rafdi.vitechasia.blog.HomePage;
+import com.rafdi.vitechasia.blog.activities.HomePage;
 
 public class BottomNavFragment extends Fragment implements BottomNavigationView.OnItemSelectedListener {
 

@@ -21,6 +21,7 @@ public class ArticleDetailFragment extends Fragment {
     
     private ImageView articleImage;
     private TextView articleCategory;
+    private TextView articleSubcategory;
     private TextView articleTitle;
     private ImageView authorImage;
     private TextView articleAuthor;
@@ -59,6 +60,7 @@ public class ArticleDetailFragment extends Fragment {
         //Initialize views
         articleImage = view.findViewById(R.id.articleImage);
         articleCategory = view.findViewById(R.id.articleCategory);
+        articleSubcategory = view.findViewById(R.id.articleSubcategory);
         articleTitle = view.findViewById(R.id.articleTitle);
         authorImage = view.findViewById(R.id.authorImage);
         articleAuthor = view.findViewById(R.id.articleAuthor);
@@ -73,7 +75,16 @@ public class ArticleDetailFragment extends Fragment {
                 .placeholder(R.drawable.ic_placeholder_image)
                 .into(articleImage);
             
+            // Set category and subcategory
             articleCategory.setText(article.getCategory());
+            String subcategory = article.getSubcategoryDisplayName();
+            if (subcategory != null && !subcategory.isEmpty()) {
+                articleSubcategory.setText(subcategory);
+                articleSubcategory.setVisibility(View.VISIBLE);
+            } else {
+                articleSubcategory.setVisibility(View.GONE);
+            }
+            
             articleTitle.setText(article.getTitle());
             
             //Load author image

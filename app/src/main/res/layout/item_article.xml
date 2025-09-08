@@ -25,21 +25,42 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_placeholder_image" />
 
-        <TextView
-            android:id="@+id/article_category"
+        <LinearLayout
+            android:id="@+id/category_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/category_background"
-            android:paddingStart="8dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="2dp"
-            android:textColor="@color/white"
-            android:textSize="10sp"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/article_image"
-            tools:text="Technology" />
+            app:layout_constraintTop_toBottomOf="@id/article_image">
+
+            <TextView
+                android:id="@+id/article_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/category_background"
+                android:paddingStart="8dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                tools:text="Technology" />
+
+            <TextView
+                android:id="@+id/article_subcategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/subcategory_background"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                tools:text="Smartphones" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/article_title"
@@ -53,7 +74,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/article_category"
+            app:layout_constraintTop_toBottomOf="@id/category_container"
             tools:text="Lamp construction: Plant for any anything that" />
 
         <LinearLayout

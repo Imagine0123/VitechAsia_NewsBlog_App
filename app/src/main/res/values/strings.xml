@@ -49,6 +49,78 @@
     <string name="like_article">Like Article</string>
     <string name="comment_hint">Add a comment…</string>
     
+    <!-- Categories -->
+    <string name="category_sports">Sports</string>
+    <string name="category_tech">Technology</string>
+    <string name="category_news">News</string>
+    
+    <!-- Sports Subcategories -->
+    <string name="subcategory_football">Football</string>
+    <string name="subcategory_basketball">Basketball</string>
+    <string name="subcategory_tennis">Tennis</string>
+    
+    <!-- Tech Subcategories -->
+    <string name="subcategory_smartphones">Smartphones</string>
+    <string name="subcategory_laptops">Laptops</string>
+    <string name="subcategory_gadgets">Gadgets</string>
+    
+    <!-- News Subcategories -->
+    <string name="subcategory_world">World</string>
+    <string name="subcategory_politics">Politics</string>
+    <string name="subcategory_business">Business</string>
+    
+    <!-- Category Arrays -->
+    <string-array name="categories">
+        <item>@string/category_sports</item>
+        <item>@string/category_tech</item>
+        <item>@string/category_news</item>
+    </string-array>
+    
+    <string-array name="category_ids">
+        <item>sports</item>
+        <item>tech</item>
+        <item>news</item>
+    </string-array>
+    
+    <!-- Sports Subcategories Array -->
+    <string-array name="subcategories_sports">
+        <item>@string/subcategory_football</item>
+        <item>@string/subcategory_basketball</item>
+        <item>@string/subcategory_tennis</item>
+    </string-array>
+    
+    <string-array name="subcategory_ids_sports">
+        <item>football</item>
+        <item>basketball</item>
+        <item>tennis</item>
+    </string-array>
+    
+    <!-- Tech Subcategories Array -->
+    <string-array name="subcategories_tech">
+        <item>@string/subcategory_smartphones</item>
+        <item>@string/subcategory_laptops</item>
+        <item>@string/subcategory_gadgets</item>
+    </string-array>
+    
+    <string-array name="subcategory_ids_tech">
+        <item>smartphones</item>
+        <item>laptops</item>
+        <item>gadgets</item>
+    </string-array>
+    
+    <!-- News Subcategories Array -->
+    <string-array name="subcategories_news">
+        <item>@string/subcategory_world</item>
+        <item>@string/subcategory_politics</item>
+        <item>@string/subcategory_business</item>
+    </string-array>
+    
+    <string-array name="subcategory_ids_news">
+        <item>world</item>
+        <item>politics</item>
+        <item>business</item>
+    </string-array>
+    
     <!-- Login Screen -->
     <string name="login_title">Welcome Back</string>
     <string name="email">Email</string>

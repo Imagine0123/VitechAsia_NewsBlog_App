@@ -121,6 +121,12 @@
         <item>business</item>
     </string-array>
     
+    <!-- Home Screen -->
+    <string name="latest_articles">Latest Articles</string>
+    <string name="popular_articles">Popular Articles</string>
+    <string name="categories">Categories</string>
+    <string name="view_all">View All</string>
+
     <!-- Login Screen -->
     <string name="login_title">Welcome Back</string>
     <string name="email">Email</string>
@@ -145,11 +151,6 @@
     <string name="no_comments">No comments yet. Be the first to comment!</string>
     <string name="error_loading_article">Error loading article. Please try again.</string>
     
-    <!-- Fragment Titles -->
-    <string name="latest_articles">Latest Articles</string>
-    <string name="popular_articles">Popular Articles</string>
-    <string name="saved_articles">Bookmarked Articles</string>
-    
     <!-- Profile -->
     <string name="profile_picture">Profile Picture</string>
     <string name="guest_user">Guest User</string>
@@ -164,4 +165,7 @@
     <string name="error_loading">Error loading content</string>
     <string name="searching_for">Searching for: %s</string>
     <string name="welcome_message">Welcome to Vitech Asia</string>
+
+    <!-- Bookmark Fragment -->
+    <string name="saved_articles">Saved Articles</string>
 </resources>

@@ -41,4 +41,12 @@
     <color name="on_secondary_container">#1D192B</color>
     <color name="error_container">#F9DEDC</color>
     <color name="on_error_container">#410E0B</color>
+
+    <!-- Category Colors -->
+    <color name="sports_category_color">#4CAF50</color>
+    <color name="tech_category_color">#2196F3</color>
+    <color name="news_category_color">#F44336</color>
+
+    <!-- Utility Colors -->
+    <color name="white_20">#33FFFFFF</color>
 </resources>

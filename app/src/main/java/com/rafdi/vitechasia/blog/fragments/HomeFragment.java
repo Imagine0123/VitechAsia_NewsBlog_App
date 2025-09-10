@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleHorizontalAdapter;
+import com.rafdi.vitechasia.blog.fragments.ArticleDetailFragment;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.CategoryManager;
 
@@ -189,9 +190,15 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     
     @Override
     public void onArticleClick(Article article) {
-        // Handle article click
-        // TODO: Navigate to article detail screen
-        Toast.makeText(requireContext(), "Article clicked: " + article.getTitle(), Toast.LENGTH_SHORT).show();
+        // Create a new instance of ArticleDetailFragment with the clicked article
+        ArticleDetailFragment articleDetailFragment = ArticleDetailFragment.newInstance(article);
+        
+        // Get the FragmentManager and start a transaction
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, articleDetailFragment) // Use your container view id
+                .addToBackStack(null) // Add to back stack so user can navigate back
+                .commit();
     }
     
     // Sample data loading (replace with your actual data loading logic)

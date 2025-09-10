@@ -15,7 +15,7 @@ import com.rafdi.vitechasia.blog.models.Article;
 
 import java.util.List;
 
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder> {
+public class ArticleVerticalAdapter extends RecyclerView.Adapter<ArticleVerticalAdapter.ArticleViewHolder> {
 
     private final List<Article> articleList;
     private final OnArticleClickListener listener;
@@ -24,7 +24,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         void onArticleClick(Article article);
     }
 
-    public ArticleAdapter(List<Article> articleList, OnArticleClickListener listener) {
+    public ArticleVerticalAdapter(List<Article> articleList, OnArticleClickListener listener) {
         this.articleList = articleList;
         this.listener = listener;
     }
@@ -41,20 +41,30 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         Article article = articleList.get(position);
         
-        //Load article data to views
+        // Load article data to views
         holder.articleTitle.setText(article.getTitle());
         holder.articleCategory.setText(article.getCategory());
+        holder.articleSubcategory.setText(article.getSubcategoryId());
         holder.articleAuthor.setText(article.getAuthorName());
         holder.articleDate.setText(article.getFormattedDate());
         
-        //Load article image using Glide
-        Glide.with(holder.itemView.getContext())
-                .load(article.getImageUrl())
-                .placeholder(R.drawable.ic_placeholder_image)
-                .into(holder.articleImage);
-        
-        //Set click listener
-        holder.itemView.setOnClickListener(v -> listener.onArticleClick(article));
+        // Load article image using Glide
+        if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                    .load(article.getImageUrl())
+                    .placeholder(R.drawable.ic_placeholder_image)
+                    .error(R.drawable.ic_placeholder_image)
+                    .into(holder.articleImage);
+        } else {
+            holder.articleImage.setImageResource(R.drawable.ic_placeholder_image);
+        }
+
+        // Set click listener
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onArticleClick(article);
+            }
+        });
     }
 
     @Override
@@ -62,18 +72,20 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ArticleV
         return articleList.size();
     }
 
-    static class ArticleViewHolder extends RecyclerView.ViewHolder {
-        ImageView articleImage;
-        TextView articleTitle;
-        TextView articleCategory;
-        TextView articleAuthor;
-        TextView articleDate;
+    public static class ArticleViewHolder extends RecyclerView.ViewHolder {
+        final ImageView articleImage;
+        final TextView articleTitle;
+        final TextView articleCategory;
+        final TextView articleSubcategory;
+        final TextView articleAuthor;
+        final TextView articleDate;
 
-        ArticleViewHolder(@NonNull View itemView) {
+        public ArticleViewHolder(@NonNull View itemView) {
             super(itemView);
             articleImage = itemView.findViewById(R.id.article_image);
             articleTitle = itemView.findViewById(R.id.article_title);
             articleCategory = itemView.findViewById(R.id.article_category);
+            articleSubcategory = itemView.findViewById(R.id.article_subcategory);
             articleAuthor = itemView.findViewById(R.id.article_author);
             articleDate = itemView.findViewById(R.id.article_date);
         }

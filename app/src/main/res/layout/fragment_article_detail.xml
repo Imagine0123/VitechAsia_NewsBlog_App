@@ -41,7 +41,7 @@
                 android:paddingTop="4dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
                 tools:text="Technology" />
@@ -51,36 +51,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:background="@drawable/subcategory_background"
-                android:paddingStart="10dp"
+                android:background="@drawable/category_background"
+                android:paddingStart="12dp"
                 android:paddingTop="4dp"
-                android:paddingEnd="10dp"
+                android:paddingEnd="12dp"
                 android:paddingBottom="4dp"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="14sp"
                 android:fontFamily="sans-serif-medium"
-                tools:text="Smartphones" />
+                tools:text="AI" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/articleTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
+            android:textAppearance="?attr/textAppearanceHeadlineMedium"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="24sp"
             android:textStyle="bold"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/categoryContainer"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris." />
+            tools:text="Sample Article Title" />
 
         <LinearLayout
-            android:id="@+id/authorInfoLayout"
+            android:id="@+id/authorContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/articleTitle">
@@ -90,9 +90,12 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@string/author_image"
-                android:src="@drawable/ic_profile_placeholder"
                 android:scaleType="centerCrop"
-                android:background="@drawable/circle_background" />
+                android:src="@drawable/ic_profile_placeholder"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="?attr/colorOnSurface" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -104,18 +107,17 @@
                     android:id="@+id/articleAuthor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
                     android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    tools:text="Riski hia" />
+                    tools:text="John Doe" />
 
                 <TextView
                     android:id="@+id/articleDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:textSize="12sp"
-                    tools:text="Sep 12, 2025" />
+                    tools:text="May 15, 2023" />
             </LinearLayout>
         </LinearLayout>
 
@@ -124,11 +126,10 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="?attr/colorOutline"
+            android:background="?attr/colorSurfaceVariant"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/authorInfoLayout" />
+            app:layout_constraintTop_toBottomOf="@id/authorContainer" />
 
         <TextView
             android:id="@+id/articleContent"
@@ -136,12 +137,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:lineSpacingExtra="4dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider"
-            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio." />
+            tools:text="This is a sample article content. It will be replaced with the actual article content when loaded." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

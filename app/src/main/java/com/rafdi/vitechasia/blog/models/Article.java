@@ -65,7 +65,9 @@ public class Article implements Parcelable {
         authorImageUrl = in.readString();
         viewCount = in.readInt();
         likeCount = in.readInt();
-        publishDate = new Date(in.readLong());
+        // Handle potential null date
+        long dateMillis = in.readLong();
+        publishDate = dateMillis == -1 ? null : new Date(dateMillis);
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -224,6 +226,7 @@ public class Article implements Parcelable {
         dest.writeString(authorImageUrl);
         dest.writeInt(viewCount);
         dest.writeInt(likeCount);
-        dest.writeLong(publishDate != null ? publishDate.getTime() : 0);
+        // Write -1 if publishDate is null, otherwise write the timestamp
+        dest.writeLong(publishDate != null ? publishDate.getTime() : -1);
     }
 }

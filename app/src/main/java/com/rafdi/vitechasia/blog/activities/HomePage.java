@@ -18,62 +18,80 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rafdi.vitechasia.blog.R;
+import com.rafdi.vitechasia.blog.fragments.ArticleDetailFragment;
 import com.rafdi.vitechasia.blog.fragments.BottomNavFragment;
+import com.rafdi.vitechasia.blog.fragments.BookmarkFragment;
 import com.rafdi.vitechasia.blog.fragments.HomeFragment;
 import com.rafdi.vitechasia.blog.fragments.LatestFragment;
 import com.rafdi.vitechasia.blog.fragments.PopularFragment;
-import com.rafdi.vitechasia.blog.fragments.BookmarkFragment;
 import com.rafdi.vitechasia.blog.fragments.ProfileFragment;
+import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
 
+import android.util.Log;
 
 public class HomePage extends AppCompatActivity {
 
+    private static final String TAG = "HomePage";
     private SessionManager sessionManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Article currentArticle; // To store the current article when in ArticleDetailFragment
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Initialize session manager
         sessionManager = new SessionManager(this);
-        
+
         // Check if user is logged in, if not redirect to LoginActivity
         if (!sessionManager.isLoggedIn()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
-        
+
         // Apply theme before setting content view
         ThemeManager.applyTheme(ThemeManager.getCurrentThemeMode(this));
-        
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
-        
+
         // Enable edge-to-edge display
         EdgeToEdge.enable(this);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            
+
             // Update status bar icons color based on theme
             boolean isDark = ThemeManager.isDarkTheme(this);
             WindowInsetsControllerCompat windowInsetsController = ViewCompat.getWindowInsetsController(getWindow().getDecorView());
             if (windowInsetsController != null) {
                 windowInsetsController.setAppearanceLightStatusBars(!isDark);
             }
-            
+
             return insets;
         });
+
+        // Initialize SwipeRefreshLayout
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this::reloadCurrentFragment);
+
+        // Set colors for the refresh indicator
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.primary,
+                R.color.colorAccent,
+                R.color.primary_variant
+        );
 
         //Text Styling
         TextView vitechText = findViewById(R.id.vitechText);
         EditText searchText = findViewById(R.id.searchText);
         ImageButton searchButton = findViewById(R.id.searchButton);
-        
+
         setupSearch();
 
         String fullText = vitechText.getText().toString();
@@ -97,23 +115,23 @@ public class HomePage extends AppCompatActivity {
         );
 
         vitechText.setText(spannable);
-        
+
         vitechText.setOnClickListener(v -> {
             loadHomeFragment();
             updateBottomNavSelection(R.id.navigation_home);
         });
-        
+
         //Bottom navigation fragment
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.bottom_nav_container, new BottomNavFragment())
                 .commit();
-        
+
         //Default load home
         loadHomeFragment();
     }
 
     public void loadHomeFragment() {
-        //Only replace if the current fragment is not already HomeFragment
+        this.currentArticle = null;
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (!(currentFragment instanceof HomeFragment)) {
             getSupportFragmentManager().beginTransaction()
@@ -124,6 +142,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void loadLatestFragment() {
+        this.currentArticle = null;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new LatestFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -131,6 +150,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void loadPopularFragment() {
+        this.currentArticle = null;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new PopularFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -138,6 +158,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void loadBookmarkFragment() {
+        this.currentArticle = null;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new BookmarkFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -145,25 +166,85 @@ public class HomePage extends AppCompatActivity {
     }
 
     public void loadProfileFragment() {
+        this.currentArticle = null;
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new ProfileFragment())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
     }
-    
+
+    public void loadArticleDetailFragment(Article article) {
+        if (article == null) return;
+
+        try {
+            this.currentArticle = article;
+
+            // Create new instance with the article
+            ArticleDetailFragment fragment = ArticleDetailFragment.newInstance(article);
+
+            // Perform the fragment transaction
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(null)
+                    .commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void reloadCurrentFragment() {
+        if (swipeRefreshLayout == null) return;
+
+        try {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+            if (currentFragment != null) {
+                if (currentFragment instanceof ArticleDetailFragment) {
+                    Article currentArticle = ((ArticleDetailFragment) currentFragment).getCurrentArticle();
+                    if (currentArticle != null) {
+                        // Reload the article detail fragment
+                        loadArticleDetailFragment(currentArticle);
+                    }
+                } else if (currentFragment instanceof HomeFragment) {
+                    loadHomeFragment();
+                } else if (currentFragment instanceof LatestFragment) {
+                    loadLatestFragment();
+                } else if (currentFragment instanceof PopularFragment) {
+                    loadPopularFragment();
+                } else if (currentFragment instanceof BookmarkFragment) {
+                    loadBookmarkFragment();
+                } else if (currentFragment instanceof ProfileFragment) {
+                    loadProfileFragment();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Always stop the refresh indicator
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.postDelayed(() -> {
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        }
+    }
+
     private void setupSearch() {
         EditText searchText = findViewById(R.id.searchText);
         ImageButton searchButton = findViewById(R.id.searchButton);
-        
+
         searchText.setHint(R.string.search_hint);
-        
+
         searchButton.setOnClickListener(v -> {
             String query = searchText.getText().toString().trim();
             if (!query.isEmpty()) {
                 // TODO: Implement search functionality
-                android.widget.Toast.makeText(this, 
-                    getString(R.string.searching_for, query), 
-                    android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this,
+                        getString(R.string.searching_for, query),
+                        android.widget.Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -174,4 +255,15 @@ public class HomePage extends AppCompatActivity {
             bottomNavView.setSelectedItemId(itemId);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        // Clean up any pending callbacks to prevent memory leaks
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+            swipeRefreshLayout.destroyDrawingCache();
+            swipeRefreshLayout.clearAnimation();
+        }
+        super.onDestroy();
     }
+}

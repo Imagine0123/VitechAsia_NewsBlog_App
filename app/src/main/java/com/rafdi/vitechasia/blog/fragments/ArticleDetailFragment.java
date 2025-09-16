@@ -10,12 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
 
-public class ArticleDetailFragment extends Fragment {
+public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     
     private static final String ARG_ARTICLE = "article";
     
@@ -27,6 +28,7 @@ public class ArticleDetailFragment extends Fragment {
     private TextView articleAuthor;
     private TextView articleDate;
     private TextView articleContent;
+    private SwipeRefreshLayout swipeRefreshLayout;
     
     private Article article;
     
@@ -41,9 +43,6 @@ public class ArticleDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            article = getArguments().getParcelable(ARG_ARTICLE);
-        }
     }
     
     @Nullable
@@ -57,26 +56,73 @@ public class ArticleDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         
-        //Initialize views
-        articleImage = view.findViewById(R.id.articleImage);
-        articleCategory = view.findViewById(R.id.articleCategory);
-        articleSubcategory = view.findViewById(R.id.articleSubcategory);
-        articleTitle = view.findViewById(R.id.articleTitle);
-        authorImage = view.findViewById(R.id.authorImage);
-        articleAuthor = view.findViewById(R.id.articleAuthor);
-        articleDate = view.findViewById(R.id.articleDate);
-        articleContent = view.findViewById(R.id.articleContent);
-        
-        //Populate views with article data
-        if (article != null) {
-            //Load article image using Glide
-            Glide.with(requireContext())
-                .load(article.getImageUrl())
-                .placeholder(R.drawable.ic_placeholder_image)
-                .into(articleImage);
+        try {
+            // Initialize views
+            articleImage = view.findViewById(R.id.articleImage);
+            articleCategory = view.findViewById(R.id.articleCategory);
+            articleSubcategory = view.findViewById(R.id.articleSubcategory);
+            articleTitle = view.findViewById(R.id.articleTitle);
+            authorImage = view.findViewById(R.id.authorImage);
+            articleAuthor = view.findViewById(R.id.articleAuthor);
+            articleDate = view.findViewById(R.id.articleDate);
+            articleContent = view.findViewById(R.id.articleContent);
             
-            // Set category and subcategory
-            articleCategory.setText(article.getCategory());
+            // Set up swipe to refresh
+            swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setOnRefreshListener(this);
+            }
+            
+            // Get article from arguments
+            if (getArguments() != null) {
+                article = getArguments().getParcelable(ARG_ARTICLE);
+                if (article != null) {
+                    updateUI();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle error state if needed
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
+        }
+    }
+    
+    // Simple method to get current article
+    public Article getCurrentArticle() {
+        return article;
+    }
+    
+    // Safe method to update UI with null checks
+    private void updateUI() {
+        if (getView() == null || article == null) return;
+        
+        try {
+            // Set title
+            if (article.getTitle() != null) {
+                articleTitle.setText(article.getTitle());
+            }
+            
+            // Set content
+            if (article.getContent() != null) {
+                articleContent.setText(article.getContent());
+            }
+            
+            // Set author name
+            if (article.getAuthorName() != null) {
+                articleAuthor.setText(article.getAuthorName());
+            }
+            
+            // Set category
+            if (article.getCategory() != null) {
+                articleCategory.setText(article.getCategory());
+                articleCategory.setVisibility(View.VISIBLE);
+            } else {
+                articleCategory.setVisibility(View.GONE);
+            }
+            
+            // Set subcategory if available
             String subcategory = article.getSubcategoryDisplayName();
             if (subcategory != null && !subcategory.isEmpty()) {
                 articleSubcategory.setText(subcategory);
@@ -85,18 +131,48 @@ public class ArticleDetailFragment extends Fragment {
                 articleSubcategory.setVisibility(View.GONE);
             }
             
-            articleTitle.setText(article.getTitle());
+            // Set date
+            if (article.getPublishDate() != null) {
+                articleDate.setText(article.getFormattedDate());
+            }
             
-            //Load author image
-            Glide.with(requireContext())
-                .load(article.getAuthorImageUrl())
-                .placeholder(R.drawable.ic_profile_placeholder)
-                .circleCrop()
-                .into(authorImage);
+            // Load article image
+            if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
+                Glide.with(requireContext())
+                    .load(article.getImageUrl())
+                    .placeholder(R.drawable.ic_placeholder_image)
+                    .error(R.drawable.ic_placeholder_image)
+                    .into(articleImage);
+            }
             
-            articleAuthor.setText(article.getAuthorName());
-            articleDate.setText(article.getFormattedDate());
-            articleContent.setText(article.getContent());
+            // Load author image
+            if (article.getAuthorImageUrl() != null && !article.getAuthorImageUrl().isEmpty()) {
+                Glide.with(requireContext())
+                    .load(article.getAuthorImageUrl())
+                    .placeholder(R.drawable.ic_profile_placeholder)
+                    .error(R.drawable.ic_profile_placeholder)
+                    .circleCrop()
+                    .into(authorImage);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // Add a method to refresh the article data
+    public void refreshArticle(Article updatedArticle) {
+        if (updatedArticle != null && getView() != null) {
+            this.article = updatedArticle;
+            updateUI();
+        }
+    }
+    
+    @Override
+    public void onRefresh() {
+        // Implement pull-to-refresh if needed
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 }

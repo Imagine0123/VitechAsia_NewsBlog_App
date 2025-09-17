@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,9 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleHorizontalAdapter;
-import com.rafdi.vitechasia.blog.fragments.ArticleDetailFragment;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.CategoryManager;
+import com.rafdi.vitechasia.blog.models.Category;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,33 +23,33 @@ import java.util.List;
 import java.util.UUID;
 
 public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.OnArticleClickListener {
-    
+
     // RecyclerViews
     private RecyclerView latestArticlesRecyclerView;
     private RecyclerView popularArticlesRecyclerView;
     private RecyclerView sportsArticlesRecyclerView;
     private RecyclerView techArticlesRecyclerView;
     private RecyclerView newsArticlesRecyclerView;
-    
+
     // Adapters
     private ArticleHorizontalAdapter latestArticlesAdapter;
     private ArticleHorizontalAdapter popularArticlesAdapter;
     private ArticleHorizontalAdapter sportsArticlesAdapter;
     private ArticleHorizontalAdapter techArticlesAdapter;
     private ArticleHorizontalAdapter newsArticlesAdapter;
-    
+
     // View All Buttons
     private MaterialButton viewAllSportsButton;
     private MaterialButton viewAllTechButton;
     private MaterialButton viewAllNewsButton;
-    
+
     // Sample data (replace with your actual data source)
     private List<Article> allArticles = new ArrayList<>();
-    
+
     public HomeFragment() {
         // Required empty public constructor
     }
-    
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,25 +59,25 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         sportsArticlesAdapter = new ArticleHorizontalAdapter(this);
         techArticlesAdapter = new ArticleHorizontalAdapter(this);
         newsArticlesAdapter = new ArticleHorizontalAdapter(this);
-        
+
         // Load sample data (replace with your actual data loading logic)
         loadSampleData();
     }
-    
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        
+
         // Initialize views
         initializeViews(view);
         setupRecyclerViews();
         setupClickListeners();
-        
+
         return view;
     }
-    
+
     private void initializeViews(View view) {
         // Initialize RecyclerViews
         latestArticlesRecyclerView = view.findViewById(R.id.latestArticlesRecyclerView);
@@ -87,54 +85,60 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         sportsArticlesRecyclerView = view.findViewById(R.id.sportsArticlesRecyclerView);
         techArticlesRecyclerView = view.findViewById(R.id.techArticlesRecyclerView);
         newsArticlesRecyclerView = view.findViewById(R.id.newsArticlesRecyclerView);
-        
+
         // Initialize View All buttons
         viewAllSportsButton = view.findViewById(R.id.viewAllSportsButton);
         viewAllTechButton = view.findViewById(R.id.viewAllTechButton);
         viewAllNewsButton = view.findViewById(R.id.viewAllNewsButton);
     }
-    
+
     private void setupRecyclerViews() {
         // Latest Articles
         latestArticlesRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         latestArticlesRecyclerView.setAdapter(latestArticlesAdapter);
-        
+
         // Popular Articles
         popularArticlesRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         popularArticlesRecyclerView.setAdapter(popularArticlesAdapter);
-        
+
         // Sports Articles
         sportsArticlesRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         sportsArticlesRecyclerView.setAdapter(sportsArticlesAdapter);
-        
+
         // Tech Articles
         techArticlesRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         techArticlesRecyclerView.setAdapter(techArticlesAdapter);
-        
+
         // News Articles
         newsArticlesRecyclerView.setLayoutManager(
                 new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         newsArticlesRecyclerView.setAdapter(newsArticlesAdapter);
-        
+
         // Set data to adapters
         updateAdapters();
     }
-    
+
     private void setupClickListeners() {
         // View All buttons click listeners
         viewAllSportsButton.setOnClickListener(v -> showCategoryArticles("sports"));
         viewAllTechButton.setOnClickListener(v -> showCategoryArticles("tech"));
         viewAllNewsButton.setOnClickListener(v -> showCategoryArticles("news"));
     }
-    
-    private void showCategoryArticles(String category) {
-        // Implement navigation to category screen or show all articles for the category
-        Toast.makeText(requireContext(), "Viewing all " + category + " articles", Toast.LENGTH_SHORT).show();
-        // TODO: Implement navigation to category screen
+
+    private void showCategoryArticles(String categoryId) {
+        // Navigate to the CategoryFragment with the selected category ID
+        if (getActivity() != null) {
+            CategoryFragment fragment = CategoryFragment.newInstance(categoryId);
+            getActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
     
     private void updateAdapters() {
@@ -201,75 +205,106 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
                 .commit();
     }
     
+    // Add this method to handle subcategory clicks
+    public void onSubcategoryClick(String categoryName, String subcategoryName) {
+        if (getActivity() != null) {
+            SubcategoryFragment fragment = SubcategoryFragment.newInstance(categoryName, subcategoryName);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
     // Sample data loading (replace with your actual data loading logic)
     private void loadSampleData() {
-        // This is just sample data - replace with your actual data loading logic
+        // Clear existing data
+        allArticles.clear();
+        
+        // Sample categories with subcategories
+        List<Category> categories = new ArrayList<>();
+        
+        // Sports Category
+        Category sports = new Category("sports", "Sports", new ArrayList<>());
+        sports.addSubcategory("Football");
+        sports.addSubcategory("Basketball");
+        sports.addSubcategory("Tennis");
+        categories.add(sports);
+        
+        // Add sample sports articles
         allArticles.add(createSampleArticle(
-                "Latest Tech News: AI Breakthrough",
-                "John Doe",
-                "https://example.com/tech-ai-breakthrough.jpg",
-                "A major breakthrough in AI technology has been announced...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 2, // 2 hours ago
-                150,
-                "tech",
-                "ai"
+            "Football: Team Wins Championship",
+            "Sports Reporter",
+            "https://picsum.photos/400/300?random=1",
+            "The home team has won the championship in a thrilling match...",
+            System.currentTimeMillis() - 1000 * 60 * 60 * 5, // 5 hours ago
+            250,
+            "sports",
+            "Football"
+        ));
+        
+        // Technology Category
+        Category tech = new Category("tech", "Technology", new ArrayList<>());
+        tech.addSubcategory("Programming");
+        tech.addSubcategory("Gadgets");
+        tech.addSubcategory("AI");
+        categories.add(tech);
+        
+        // Add sample tech articles
+        allArticles.add(createSampleArticle(
+            "New Programming Language Released",
+            "Tech Expert",
+            "https://picsum.photos/400/300?random=2",
+            "A new programming language has been released with innovative features...",
+            System.currentTimeMillis() - 1000 * 60 * 60 * 2, // 2 hours ago
+            180,
+            "tech",
+            "Programming"
         ));
         
         allArticles.add(createSampleArticle(
-                "Football: Team Wins Championship",
-                "Jane Smith",
-                "https://example.com/football-championship.jpg",
-                "The home team has won the championship in a thrilling match...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 5, // 5 hours ago
-                250,
-                "sports",
-                "football"
+            "Latest Smartphone Review",
+            "Gadget Guru",
+            "https://picsum.photos/400/300?random=3",
+            "The latest smartphone offers amazing features and performance...",
+            System.currentTimeMillis() - 1000 * 60 * 60 * 8, // 8 hours ago
+            320,
+            "tech",
+            "Gadgets"
         ));
         
         allArticles.add(createSampleArticle(
-                "Breaking: Major Political Development",
-                "News Desk",
-                "https://example.com/political-news.jpg",
-                "A significant political development has been reported...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 10, // 10 hours ago
-                300,
-                "news",
-                "politics"
+            "AI Breakthrough in Healthcare",
+            "AI Researcher",
+            "https://picsum.photos/400/300?random=4",
+            "New AI technology is revolutionizing healthcare diagnostics...",
+            System.currentTimeMillis() - 1000 * 60 * 60 * 12, // 12 hours ago
+            450,
+            "tech",
+            "AI"
         ));
         
-        // Add more sample articles...
+        // News Category
+        Category news = new Category("news", "News", new ArrayList<>());
+        news.addSubcategory("World");
+        news.addSubcategory("Politics");
+        news.addSubcategory("Business");
+        categories.add(news);
+        
+        // Add sample news articles
         allArticles.add(createSampleArticle(
-                "New Smartphone Launch",
-                "Tech Reporter",
-                "https://example.com/new-smartphone.jpg",
-                "The latest smartphone model has been launched with amazing features...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 24, // 1 day ago
-                180,
-                "tech",
-                "gadgets"
+            "Global Summit Begins",
+            "News Desk",
+            "https://picsum.photos/400/300?random=5",
+            "World leaders gather for the annual global summit...",
+            System.currentTimeMillis() - 1000 * 60 * 60 * 3, // 3 hours ago
+            190,
+            "news",
+            "World"
         ));
         
-        allArticles.add(createSampleArticle(
-                "Basketball Tournament Results",
-                "Sports Analyst",
-                "https://example.com/basketball-tournament.jpg",
-                "The national basketball tournament concluded with surprising results...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 36, // 1.5 days ago
-                120,
-                "sports",
-                "basketball"
-        ));
-        
-        allArticles.add(createSampleArticle(
-                "Global Economic Update",
-                "Finance Expert",
-                "https://example.com/economy-update.jpg",
-                "The latest updates on the global economy and market trends...",
-                System.currentTimeMillis() - 1000 * 60 * 60 * 48, // 2 days ago
-                90,
-                "news",
-                "economy"
-        ));
+        // Update adapters with the new data
+        updateAdapters();
     }
     
     // Helper method to create sample articles with proper constructor

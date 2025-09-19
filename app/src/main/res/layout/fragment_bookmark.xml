@@ -42,7 +42,7 @@
                     android:overScrollMode="never"
                     android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/item_article" />
+                    tools:listitem="@layout/item_article_vertical" />
 
                 <Button
                     android:id="@+id/btn_load_more"

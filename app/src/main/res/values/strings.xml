@@ -53,77 +53,157 @@
     <string name="category_sports">Sports</string>
     <string name="category_tech">Technology</string>
     <string name="category_news">News</string>
+    <string name="category_health">Health</string>
+    <string name="category_lifestyle">Lifestyle</string>
+    <string name="category_business">Business</string>
     <string name="category">Category</string>
     <string name="subcategory">Subcategory</string>
     <string name="subcategory_labels">Technology</string>
-    
+
     <!-- Sports Subcategories -->
     <string name="subcategory_football">Football</string>
     <string name="subcategory_basketball">Basketball</string>
     <string name="subcategory_tennis">Tennis</string>
-    
+
     <!-- Tech Subcategories -->
     <string name="subcategory_smartphones">Smartphones</string>
     <string name="subcategory_laptops">Laptops</string>
     <string name="subcategory_gadgets">Gadgets</string>
-    
+    <string name="subcategory_android">Android</string>
+    <string name="subcategory_ios">iOS</string>
+    <string name="subcategory_web">Web Development</string>
+    <string name="subcategory_ai">Artificial Intelligence</string>
+
     <!-- News Subcategories -->
     <string name="subcategory_world">World</string>
     <string name="subcategory_politics">Politics</string>
     <string name="subcategory_business">Business</string>
-    
+    <string name="subcategory_technology">Technology</string>
+    <string name="subcategory_economy">Economy</string>
+
+    <!-- Health Subcategories -->
+    <string name="subcategory_sustainability">Sustainability</string>
+    <string name="subcategory_finance">Finance</string>
+    <string name="subcategory_fitness">Fitness</string>
+    <string name="subcategory_nutrition">Nutrition</string>
+    <string name="subcategory_mental_health">Mental Health</string>
+
+    <!-- Lifestyle Subcategories -->
+    <string name="subcategory_travel">Travel</string>
+    <string name="subcategory_food">Food</string>
+    <string name="subcategory_fashion">Fashion</string>
+
     <!-- Category Arrays -->
     <string-array name="categories">
         <item>@string/category_sports</item>
         <item>@string/category_tech</item>
         <item>@string/category_news</item>
+        <item>@string/category_health</item>
+        <item>@string/category_lifestyle</item>
+        <item>@string/category_business</item>
     </string-array>
-    
+
     <string-array name="category_ids">
         <item>sports</item>
         <item>tech</item>
         <item>news</item>
+        <item>health</item>
+        <item>lifestyle</item>
+        <item>business</item>
     </string-array>
-    
+
     <!-- Sports Subcategories Array -->
     <string-array name="subcategories_sports">
         <item>@string/subcategory_football</item>
         <item>@string/subcategory_basketball</item>
         <item>@string/subcategory_tennis</item>
     </string-array>
-    
+
     <string-array name="subcategory_ids_sports">
         <item>football</item>
         <item>basketball</item>
         <item>tennis</item>
     </string-array>
-    
+
     <!-- Tech Subcategories Array -->
     <string-array name="subcategories_tech">
         <item>@string/subcategory_smartphones</item>
         <item>@string/subcategory_laptops</item>
         <item>@string/subcategory_gadgets</item>
+        <item>@string/subcategory_android</item>
+        <item>@string/subcategory_ios</item>
+        <item>@string/subcategory_web</item>
+        <item>@string/subcategory_ai</item>
     </string-array>
-    
+
     <string-array name="subcategory_ids_tech">
         <item>smartphones</item>
         <item>laptops</item>
         <item>gadgets</item>
+        <item>android</item>
+        <item>ios</item>
+        <item>web</item>
+        <item>ai</item>
     </string-array>
-    
+
     <!-- News Subcategories Array -->
     <string-array name="subcategories_news">
         <item>@string/subcategory_world</item>
         <item>@string/subcategory_politics</item>
         <item>@string/subcategory_business</item>
+        <item>@string/subcategory_technology</item>
+        <item>@string/subcategory_economy</item>
     </string-array>
-    
+
     <string-array name="subcategory_ids_news">
         <item>world</item>
         <item>politics</item>
         <item>business</item>
+        <item>technology</item>
+        <item>economy</item>
     </string-array>
-    
+
+    <!-- Health Subcategories Array -->
+    <string-array name="subcategories_health">
+        <item>@string/subcategory_sustainability</item>
+        <item>@string/subcategory_finance</item>
+        <item>@string/subcategory_fitness</item>
+        <item>@string/subcategory_nutrition</item>
+        <item>@string/subcategory_mental_health</item>
+    </string-array>
+
+    <string-array name="subcategory_ids_health">
+        <item>sustainability</item>
+        <item>finance</item>
+        <item>fitness</item>
+        <item>nutrition</item>
+        <item>mental_health</item>
+    </string-array>
+
+    <!-- Lifestyle Subcategories Array -->
+    <string-array name="subcategories_lifestyle">
+        <item>@string/subcategory_travel</item>
+        <item>@string/subcategory_food</item>
+        <item>@string/subcategory_fashion</item>
+    </string-array>
+
+    <string-array name="subcategory_ids_lifestyle">
+        <item>travel</item>
+        <item>food</item>
+        <item>fashion</item>
+    </string-array>
+
+    <!-- Category Fragment -->
+    <string name="category_articles">%1$s Articles</string>
+    <string name="no_articles_found">No articles found in this category</string>
+    <string name="error_loading_category">Error loading category</string>
+
+    <!-- Subcategory Fragment -->
+    <string name="subcategory_articles">%1$s Articles</string>
+    <string name="no_subcategory_articles">No articles found in this subcategory</string>
+    <string name="error_loading_subcategory">Error loading subcategory</string>
+    <string name="article_count">%1$d articles</string>
+
     <!-- Home Screen -->
     <string name="latest_articles">Latest Articles</string>
     <string name="popular_articles">Popular Articles</string>
@@ -139,7 +219,7 @@
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="sign_up">Sign Up</string>
     <string name="login_error">Invalid email or password</string>
-    
+
     <!-- Signup Screen -->
     <string name="create_account">Create Account</string>
     <string name="full_name">Full Name</string>
@@ -150,23 +230,25 @@
     <string name="invalid_email">Please enter a valid email</string>
     <string name="invalid_password">Password must be at least 6 characters</string>
     <string name="invalid_name">Please enter your name</string>
-    
+
     <string name="post_comment">Post</string>
     <string name="no_comments">No comments yet. Be the first to comment!</string>
     <string name="error_loading_article">Error loading article. Please try again.</string>
-    
+
     <!-- Profile -->
     <string name="profile_picture">Profile Picture</string>
     <string name="guest_user">Guest User</string>
     <string name="guest_email_hint">Sign in to view your profile</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
-    
+
     <!-- Messages -->
     <string name="no_articles">No articles found</string>
     <string name="no_bookmarks">No bookmarks yet</string>
+    <string name="no_articles_found_category">No articles found in this category</string>
     <string name="loading">Loading...</string>
     <string name="error_loading">Error loading content</string>
+    <string name="try_again">Try Again</string>
     <string name="searching_for">Searching for: %s</string>
     <string name="welcome_message">Welcome to Vitech Asia</string>
     <string name="articles_in_subcategory">Articles in %s - %s</string>

@@ -33,7 +33,7 @@ public class ArticleVerticalAdapter extends RecyclerView.Adapter<ArticleVertical
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_article, parent, false);
+                .inflate(R.layout.item_article_vertical, parent, false);
         return new ArticleViewHolder(view);
     }
 
@@ -41,24 +41,36 @@ public class ArticleVerticalAdapter extends RecyclerView.Adapter<ArticleVertical
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         Article article = articleList.get(position);
         
-        // Load article data to views
+        // Set article data to views
         holder.articleTitle.setText(article.getTitle());
-        holder.articleCategory.setText(article.getCategory());
-        holder.articleSubcategory.setText(article.getSubcategoryId());
+        
+        // Format category and subcategory for display
+        String category = article.getCategoryId() != null ? 
+                         article.getCategoryId().substring(0, 1).toUpperCase() + 
+                         article.getCategoryId().substring(1) : "";
+        
+        String subcategory = article.getSubcategoryId() != null ? 
+                            article.getSubcategoryId().substring(0, 1).toUpperCase() + 
+                            article.getSubcategoryId().substring(1) : "";
+        
+        holder.articleCategory.setText(category);
+        holder.articleSubcategory.setText(subcategory);
+        
+        // Set author and formatted date
         holder.articleAuthor.setText(article.getAuthorName());
         holder.articleDate.setText(article.getFormattedDate());
         
-        // Load article image using Glide
+        // Load image using Glide
         if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(article.getImageUrl())
-                    .placeholder(R.drawable.ic_placeholder_image)
-                    .error(R.drawable.ic_placeholder_image)
-                    .into(holder.articleImage);
+                 .load(article.getImageUrl())
+                 .placeholder(R.drawable.placeholder_image)
+                 .error(R.drawable.error_image)
+                 .into(holder.articleImage);
         } else {
-            holder.articleImage.setImageResource(R.drawable.ic_placeholder_image);
+            holder.articleImage.setImageResource(R.drawable.placeholder_image);
         }
-
+        
         // Set click listener
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -70,6 +82,22 @@ public class ArticleVerticalAdapter extends RecyclerView.Adapter<ArticleVertical
     @Override
     public int getItemCount() {
         return articleList.size();
+    }
+
+    public void setArticles(List<Article> articles) {
+        this.articleList.clear();
+        if (articles != null) {
+            this.articleList.addAll(articles);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void appendArticles(List<Article> articles) {
+        if (articles != null && !articles.isEmpty()) {
+            int startPosition = articleList.size();
+            this.articleList.addAll(articles);
+            notifyItemRangeInserted(startPosition, articles.size());
+        }
     }
 
     public static class ArticleViewHolder extends RecyclerView.ViewHolder {

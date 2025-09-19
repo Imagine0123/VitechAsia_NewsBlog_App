@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.CategoryManager;
+import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,14 +74,12 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
         private final MaterialButton viewAllButton;
         private final RecyclerView articlesRecyclerView;
         private final ArticleHorizontalAdapter articlesAdapter;
-        private final CategoryManager categoryManager;
 
         public SubcategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             subcategoryTitle = itemView.findViewById(R.id.subcategoryTitle);
             viewAllButton = itemView.findViewById(R.id.viewAllButton);
             articlesRecyclerView = itemView.findViewById(R.id.articlesRecyclerView);
-            categoryManager = CategoryManager.getInstance();
 
             // Set up horizontal layout manager for articles
             articlesRecyclerView.setLayoutManager(
@@ -109,15 +107,12 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
             });
 
             // Set up articles (first 5)
-            Category category = categoryManager.getCategory(categoryId);
-            if (category != null) {
-                List<Article> articles = category.getArticlesForSubcategory(subcategoryName);
-                if (articles != null && !articles.isEmpty()) {
-                    int count = Math.min(5, articles.size());
-                    articlesAdapter.setArticles(articles.subList(0, count));
-                } else {
-                    articlesAdapter.setArticles(new ArrayList<>());
-                }
+            List<Article> articles = DummyDataGenerator.getDummyArticlesBySubcategory(subcategoryName);
+            if (articles != null && !articles.isEmpty()) {
+                int count = Math.min(5, articles.size());
+                articlesAdapter.setArticles(articles.subList(0, count));
+            } else {
+                articlesAdapter.setArticles(new ArrayList<>());
             }
 
             // Set button color based on category

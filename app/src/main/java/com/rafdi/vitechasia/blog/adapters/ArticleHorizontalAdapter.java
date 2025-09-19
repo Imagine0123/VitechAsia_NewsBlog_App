@@ -39,7 +39,34 @@ public class ArticleHorizontalAdapter extends RecyclerView.Adapter<ArticleHorizo
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         Article article = articles.get(position);
-        holder.bind(article, listener);
+        
+        // Set article data to views
+        holder.articleTitle.setText(article.getTitle());
+        holder.articleCategory.setText(article.getCategoryId());
+        holder.articleSubcategory.setText(article.getSubcategoryId());
+        holder.articleAuthor.setText(article.getAuthorName());
+        
+        // Format and set date
+        String formattedDate = article.getFormattedDate();
+        holder.articleDate.setText(formattedDate);
+        
+        // Load image using Glide
+        if (article.getImageUrl() != null && !article.getImageUrl().isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                 .load(article.getImageUrl())
+                 .placeholder(R.drawable.placeholder_image)
+                 .error(R.drawable.error_image)
+                 .into(holder.articleImage);
+        } else {
+            holder.articleImage.setImageResource(R.drawable.placeholder_image);
+        }
+        
+        // Set click listener
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onArticleClick(article);
+            }
+        });
     }
 
     @Override
@@ -68,37 +95,6 @@ public class ArticleHorizontalAdapter extends RecyclerView.Adapter<ArticleHorizo
             articleSubcategory = itemView.findViewById(R.id.articleSubcategory);
             articleAuthor = itemView.findViewById(R.id.articleAuthor);
             articleDate = itemView.findViewById(R.id.articleDate);
-        }
-
-        public void bind(Article article, OnArticleClickListener listener) {
-            // Load article image
-            Glide.with(itemView.getContext())
-                    .load(article.getImageUrl())
-                    .placeholder(R.drawable.ic_placeholder_image)
-                    .into(articleImage);
-
-            // Set article details
-            articleTitle.setText(article.getTitle());
-            articleCategory.setText(article.getCategory());
-
-            // Set subcategory if available
-            String subcategory = article.getSubcategoryDisplayName();
-            if (subcategory != null && !subcategory.isEmpty()) {
-                articleSubcategory.setText(subcategory);
-                articleSubcategory.setVisibility(View.VISIBLE);
-            } else {
-                articleSubcategory.setVisibility(View.GONE);
-            }
-
-            articleAuthor.setText(article.getAuthorName());
-            articleDate.setText(article.getFormattedDate());
-
-            // Set click listener
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onArticleClick(article);
-                }
-            });
         }
     }
 }

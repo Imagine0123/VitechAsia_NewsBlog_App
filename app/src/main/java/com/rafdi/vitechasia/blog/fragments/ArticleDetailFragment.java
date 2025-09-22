@@ -10,13 +10,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
-public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     
     private static final String ARG_ARTICLE = "article";
     
@@ -31,6 +33,8 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     private SwipeRefreshLayout swipeRefreshLayout;
     
     private Article article;
+    private String categoryId;
+    private String subcategoryId;
     
     public static ArticleDetailFragment newInstance(Article article) {
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -73,16 +77,22 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
                 swipeRefreshLayout.setOnRefreshListener(this);
             }
             
+            // Set click listeners for category and subcategory
+            articleCategory.setOnClickListener(this);
+            articleSubcategory.setOnClickListener(this);
+            
             // Get article from arguments
             if (getArguments() != null) {
                 article = getArguments().getParcelable(ARG_ARTICLE);
                 if (article != null) {
+                    // Store category and subcategory IDs for navigation
+                    categoryId = article.getCategoryId();
+                    subcategoryId = article.getSubcategoryId();
                     updateUI();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle error state if needed
             if (getActivity() != null) {
                 getActivity().onBackPressed();
             }
@@ -118,6 +128,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             if (article.getCategory() != null) {
                 articleCategory.setText(article.getCategory());
                 articleCategory.setVisibility(View.VISIBLE);
+                articleCategory.setClickable(true);
+                articleCategory.setTextColor(getResources().getColor(R.color.primary, null));
+                articleCategory.setPaintFlags(articleCategory.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
             } else {
                 articleCategory.setVisibility(View.GONE);
             }
@@ -127,6 +140,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             if (subcategory != null && !subcategory.isEmpty()) {
                 articleSubcategory.setText(subcategory);
                 articleSubcategory.setVisibility(View.VISIBLE);
+                articleSubcategory.setClickable(true);
+                articleSubcategory.setTextColor(getResources().getColor(R.color.primary, null));
+                articleSubcategory.setPaintFlags(articleSubcategory.getPaintFlags() | android.graphics.Paint.UNDERLINE_TEXT_FLAG);
             } else {
                 articleSubcategory.setVisibility(View.GONE);
             }
@@ -165,6 +181,30 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         if (updatedArticle != null && getView() != null) {
             this.article = updatedArticle;
             updateUI();
+        }
+    }
+    
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.articleCategory) {
+            // Navigate to CategoryFragment
+            if (categoryId != null && getActivity() != null) {
+                Fragment categoryFragment = CategoryFragment.newInstance(categoryId);
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, categoryFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        } else if (v.getId() == R.id.articleSubcategory) {
+            // Navigate to SubcategoryFragment
+            if (categoryId != null && subcategoryId != null && getActivity() != null) {
+                String categoryName = article != null ? article.getCategory() : "";
+                Fragment subcategoryFragment = SubcategoryFragment.newInstance(categoryName, subcategoryId);
+                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, subcategoryFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         }
     }
     

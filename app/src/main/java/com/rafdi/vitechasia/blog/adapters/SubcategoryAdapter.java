@@ -74,6 +74,7 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
         private final MaterialButton viewAllButton;
         private final RecyclerView articlesRecyclerView;
         private final ArticleHorizontalAdapter articlesAdapter;
+        private OnArticleClickListener articleClickListener;
 
         public SubcategoryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,7 +89,9 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
 
             // Initialize articles adapter
             articlesAdapter = new ArticleHorizontalAdapter(article -> {
-                // Handle article click
+                if (this.articleClickListener != null) {
+                    this.articleClickListener.onArticleClick(article);
+                }
             });
             articlesRecyclerView.setAdapter(articlesAdapter);
         }
@@ -96,6 +99,9 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
         public void bind(String subcategoryName, String categoryId,
                         OnViewAllClickListener viewAllListener,
                         OnArticleClickListener articleClickListener) {
+            // Store the click listener
+            this.articleClickListener = articleClickListener;
+            
             // Set subcategory title
             subcategoryTitle.setText(subcategoryName);
 

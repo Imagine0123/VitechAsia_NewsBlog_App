@@ -59,8 +59,17 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
         TextView subcategoryTitle = view.findViewById(R.id.subcategoryTitle);
         TextView noArticlesText = view.findViewById(R.id.noArticlesText);
 
-        // Set title
-        String title = String.format("%s - %s", categoryName, getSubcategoryDisplayName(subcategoryName));
+        // Set title with proper capitalization
+        String formattedCategory = categoryName != null && !categoryName.isEmpty() ?
+                categoryName.substring(0, 1).toUpperCase() + 
+                (categoryName.length() > 1 ? categoryName.substring(1).toLowerCase() : "") : "";
+                
+        String formattedSubcategory = getSubcategoryDisplayName(subcategoryName);
+        formattedSubcategory = formattedSubcategory != null && !formattedSubcategory.isEmpty() ?
+                formattedSubcategory.substring(0, 1).toUpperCase() + 
+                (formattedSubcategory.length() > 1 ? formattedSubcategory.substring(1).toLowerCase() : "") : "";
+                
+        String title = String.format("%s - %s", formattedCategory, formattedSubcategory);
         subcategoryTitle.setText(title);
 
         // Setup RecyclerView

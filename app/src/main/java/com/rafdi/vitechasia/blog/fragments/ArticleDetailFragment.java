@@ -126,7 +126,11 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             
             // Set category
             if (article.getCategory() != null) {
-                articleCategory.setText(article.getCategory());
+                String category = article.getCategory();
+                // Format category: first letter uppercase, rest lowercase
+                String formattedCategory = category.substring(0, 1).toUpperCase() + 
+                                         (category.length() > 1 ? category.substring(1).toLowerCase() : "");
+                articleCategory.setText(formattedCategory);
                 articleCategory.setVisibility(View.VISIBLE);
                 articleCategory.setClickable(true);
                 articleCategory.setTextColor(getResources().getColor(R.color.primary, null));
@@ -138,7 +142,10 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             // Set subcategory if available
             String subcategory = article.getSubcategoryDisplayName();
             if (subcategory != null && !subcategory.isEmpty()) {
-                articleSubcategory.setText(subcategory);
+                // Format subcategory: first letter uppercase, rest lowercase
+                String formattedSubcategory = subcategory.substring(0, 1).toUpperCase() + 
+                                           (subcategory.length() > 1 ? subcategory.substring(1).toLowerCase() : "");
+                articleSubcategory.setText(formattedSubcategory);
                 articleSubcategory.setVisibility(View.VISIBLE);
                 articleSubcategory.setClickable(true);
                 articleSubcategory.setTextColor(getResources().getColor(R.color.primary, null));

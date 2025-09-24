@@ -42,8 +42,18 @@ public class ArticleHorizontalAdapter extends RecyclerView.Adapter<ArticleHorizo
         
         // Set article data to views
         holder.articleTitle.setText(article.getTitle());
-        holder.articleCategory.setText(article.getCategoryId());
-        holder.articleSubcategory.setText(article.getSubcategoryId());
+        
+        // Format category and subcategory for display (first letter uppercase, rest lowercase)
+        String category = article.getCategoryId() != null ? 
+                         article.getCategoryId().substring(0, 1).toUpperCase() + 
+                         article.getCategoryId().substring(1).toLowerCase() : "";
+        
+        String subcategory = article.getSubcategoryId() != null ? 
+                           article.getSubcategoryId().substring(0, 1).toUpperCase() + 
+                           article.getSubcategoryId().substring(1).toLowerCase() : "";
+        
+        holder.articleCategory.setText(category);
+        holder.articleSubcategory.setText(subcategory);
         holder.articleAuthor.setText(article.getAuthorName());
         
         // Format and set date

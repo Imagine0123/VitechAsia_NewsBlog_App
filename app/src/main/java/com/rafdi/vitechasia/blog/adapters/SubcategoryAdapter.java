@@ -102,8 +102,11 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
             // Store the click listener
             this.articleClickListener = articleClickListener;
             
-            // Set subcategory title
-            subcategoryTitle.setText(subcategoryName);
+            // Set subcategory title with proper capitalization
+            String formattedSubcategory = subcategoryName != null && !subcategoryName.isEmpty() ?
+                    subcategoryName.substring(0, 1).toUpperCase() + 
+                    (subcategoryName.length() > 1 ? subcategoryName.substring(1).toLowerCase() : "") : "";
+            subcategoryTitle.setText(formattedSubcategory);
 
             // Set up view all button
             viewAllButton.setOnClickListener(v -> {
@@ -131,7 +134,9 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
         private int getCategoryColor(String categoryId) {
             if (categoryId == null) return R.color.tech_category_color;
 
-            switch (categoryId) {
+            // Convert to lowercase for case-insensitive comparison
+            String lowerCategoryId = categoryId.toLowerCase();
+            switch (lowerCategoryId) {
                 case "sports":
                     return R.color.sports_category_color;
                 case "tech":

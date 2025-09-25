@@ -126,6 +126,31 @@ public class DummyDataGenerator {
         return articles.subList(0, Math.min(limit, articles.size()));
     }
 
+    /**
+     * Search for articles that match the given query in title, content, or author name
+     * @param query The search query
+     * @return List of matching articles
+     */
+    public static List<Article> searchArticles(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        String searchQuery = query.toLowerCase().trim();
+        List<Article> allArticles = getDummyArticles();
+        List<Article> results = new ArrayList<>();
+        
+        for (Article article : allArticles) {
+            if ((article.getTitle() != null && article.getTitle().toLowerCase().contains(searchQuery)) ||
+                (article.getContent() != null && article.getContent().toLowerCase().contains(searchQuery)) ||
+                (article.getAuthorName() != null && article.getAuthorName().toLowerCase().contains(searchQuery))) {
+                results.add(article);
+            }
+        }
+        
+        return results;
+    }
+
     private static List<Article> generateDummyArticles() {
         List<Article> articles = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();

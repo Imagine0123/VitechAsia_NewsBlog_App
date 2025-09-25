@@ -1,11 +1,14 @@
 package com.rafdi.vitechasia.blog.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -29,13 +32,15 @@ import com.rafdi.vitechasia.blog.fragments.HomeFragment;
 import com.rafdi.vitechasia.blog.fragments.LatestFragment;
 import com.rafdi.vitechasia.blog.fragments.PopularFragment;
 import com.rafdi.vitechasia.blog.fragments.ProfileFragment;
+import com.rafdi.vitechasia.blog.fragments.SearchResultsFragment;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
+import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 
 import android.util.Log;
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends AppCompatActivity implements ArticleVerticalAdapter.OnArticleClickListener {
 
     private static final String TAG = "HomePage";
     private SessionManager sessionManager;
@@ -235,18 +240,62 @@ public class HomePage extends AppCompatActivity {
     private void setupSearch() {
         EditText searchText = findViewById(R.id.searchText);
         ImageButton searchButton = findViewById(R.id.searchButton);
-
-        searchText.setHint(R.string.search_hint);
-
+        
+        // Handle search button click
         searchButton.setOnClickListener(v -> {
             String query = searchText.getText().toString().trim();
             if (!query.isEmpty()) {
-                // TODO: Implement search functionality
-                android.widget.Toast.makeText(this,
-                        getString(R.string.searching_for, query),
-                        android.widget.Toast.LENGTH_SHORT).show();
+                performSearch(query);
             }
         });
+        
+        // Handle search on keyboard's search/enter key
+        searchText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String query = searchText.getText().toString().trim();
+                if (!query.isEmpty()) {
+                    performSearch(query);
+                    // Hide the keyboard
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+                    return true;
+                }
+            }
+            return false;
+        });
+        
+        // Clear search and return to home when search text is empty
+        searchText.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.toString().trim().isEmpty() && 
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof SearchResultsFragment) {
+                    // If search is cleared and we're on search results, go back to home
+                    loadHomeFragment();
+                }
+            }
+            
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
+    }
+    
+    private void performSearch(String query) {
+        if (query.trim().isEmpty()) {
+            loadHomeFragment();
+            return;
+        }
+        
+        // Create and show the search results fragment
+        SearchResultsFragment fragment = SearchResultsFragment.newInstance(query);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack("search")
+                .commit();
     }
 
     public void updateBottomNavSelection(int itemId) {
@@ -254,6 +303,11 @@ public class HomePage extends AppCompatActivity {
         if (bottomNavView != null) {
             bottomNavView.setSelectedItemId(itemId);
         }
+    }
+
+    @Override
+    public void onArticleClick(Article article) {
+        loadArticleDetailFragment(article);
     }
 
     @Override

@@ -255,4 +255,7 @@
 
     <!-- Bookmark Fragment -->
     <string name="saved_articles">Saved Articles</string>
+
+    <!-- Search -->
+    <string name="no_search_results">No results found for "%1$s"</string>
 </resources>

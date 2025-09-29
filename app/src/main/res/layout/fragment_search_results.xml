@@ -7,28 +7,58 @@
     android:background="?attr/colorSurface"
     tools:context=".fragments.SearchResultsFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/resultsRecyclerView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:scrollbars="vertical"
-        android:overScrollMode="never"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-        tools:listitem="@layout/item_article_vertical" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/noResultsText"
-        android:layout_width="match_parent"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            app:singleLine="true"
+            app:singleSelection="false"
+            android:scrollHorizontally="true"
+            android:clipToPadding="false"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/resultsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:scrollbars="vertical"
+            android:overScrollMode="never"
+            tools:listitem="@layout/item_article_vertical" />
+
+        <TextView
+            android:id="@+id/noResultsText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="32dp"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:visibility="gone"
+            tools:text="No results found for 'android'" />
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_filter"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:padding="32dp"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?attr/colorOnSurface"
-        android:visibility="gone"
-        tools:text="No results found for 'android'" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/filter"
+        android:src="@drawable/ic_filter_list"
+        app:backgroundTint="?attr/colorPrimary"
+        app:tint="?attr/colorOnPrimary"
+        app:fabSize="normal" />
 
 </FrameLayout>

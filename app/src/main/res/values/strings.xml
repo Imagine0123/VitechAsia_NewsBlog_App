@@ -258,4 +258,13 @@
 
     <!-- Search -->
     <string name="no_search_results">No results found for "%1$s"</string>
+
+    <!-- Filter Strings -->
+    <string name="filter">Filter</string>
+    <string name="filter_by">Filter By</string>
+    <string name="subcategories">Subcategories</string>
+    <string name="filter_results">Filter Results</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="no_results_found">No results found for "%1$s"</string>
 </resources>

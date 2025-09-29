@@ -1,8 +1,10 @@
 package com.rafdi.vitechasia.blog.utils;
 
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.models.Category;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -149,6 +151,66 @@ public class DummyDataGenerator {
         }
         
         return results;
+    }
+
+    /**
+     * Get all available categories with their subcategories
+     */
+    public static List<Category> getAllCategories() {
+        List<Category> categories = new ArrayList<>();
+        
+        // Technology
+        List<String> techSubcategories = Arrays.asList(SUBCATEGORY_ANDROID, SUBCATEGORY_IOS, 
+            SUBCATEGORY_WEB, SUBCATEGORY_AI);
+        categories.add(new Category(CATEGORY_TECH, "Technology", techSubcategories));
+        
+        // Health
+        List<String> healthSubcategories = Arrays.asList(SUBCATEGORY_FITNESS, SUBCATEGORY_NUTRITION, 
+            SUBCATEGORY_MENTAL_HEALTH);
+        categories.add(new Category(CATEGORY_HEALTH, "Health", healthSubcategories));
+        
+        // Lifestyle
+        List<String> lifestyleSubcategories = Arrays.asList(SUBCATEGORY_TRAVEL, SUBCATEGORY_FOOD, 
+            SUBCATEGORY_FASHION);
+        categories.add(new Category(CATEGORY_LIFESTYLE, "Lifestyle", lifestyleSubcategories));
+        
+        // Business
+        List<String> businessSubcategories = Arrays.asList(SUBCATEGORY_FINANCE, SUBCATEGORY_ECONOMY);
+        categories.add(new Category(CATEGORY_BUSINESS, "Business", businessSubcategories));
+        
+        // Sports
+        List<String> sportsSubcategories = Arrays.asList(SUBCATEGORY_FOOTBALL, 
+            SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
+        categories.add(new Category(CATEGORY_SPORTS, "Sports", sportsSubcategories));
+        
+        // News
+        List<String> newsSubcategories = Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, 
+            SUBCATEGORY_TECHNOLOGY, SUBCATEGORY_ECONOMY);
+        categories.add(new Category(CATEGORY_NEWS, "News", newsSubcategories));
+        
+        return categories;
+    }
+
+    /**
+     * Get subcategories for a specific category
+     */
+    public static List<String> getSubcategoriesForCategory(String categoryName) {
+        switch (categoryName.toLowerCase()) {
+            case CATEGORY_TECH:
+                return Arrays.asList(SUBCATEGORY_ANDROID, SUBCATEGORY_IOS, SUBCATEGORY_WEB, SUBCATEGORY_AI);
+            case CATEGORY_HEALTH:
+                return Arrays.asList(SUBCATEGORY_FITNESS, SUBCATEGORY_NUTRITION, SUBCATEGORY_MENTAL_HEALTH);
+            case CATEGORY_LIFESTYLE:
+                return Arrays.asList(SUBCATEGORY_TRAVEL, SUBCATEGORY_FOOD, SUBCATEGORY_FASHION);
+            case CATEGORY_BUSINESS:
+                return Arrays.asList(SUBCATEGORY_FINANCE, SUBCATEGORY_ECONOMY);
+            case CATEGORY_SPORTS:
+                return Arrays.asList(SUBCATEGORY_FOOTBALL, SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
+            case CATEGORY_NEWS:
+                return Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, SUBCATEGORY_TECHNOLOGY, SUBCATEGORY_ECONOMY);
+            default:
+                return new ArrayList<>();
+        }
     }
 
     private static List<Article> generateDummyArticles() {

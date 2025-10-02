@@ -66,15 +66,14 @@ public class PopularFragment extends Fragment {
         
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
-            // Get all articles from DummyDataGenerator and sort by view count (most popular first)
-            List<Article> allArticles = DummyDataGenerator.getDummyArticles();
-            allArticles.sort((a1, a2) -> Integer.compare(a2.getViewCount(), a1.getViewCount()));
+            // Get most viewed articles directly from DummyDataGenerator
+            List<Article> popularArticles = DummyDataGenerator.getMostViewedArticles(100); // Get top 100 most viewed articles
             
             // Initialize or update pagination
             if (paginationUtils == null) {
-                paginationUtils = new PaginationUtils<>(allArticles, ITEMS_PER_PAGE);
+                paginationUtils = new PaginationUtils<>(popularArticles, ITEMS_PER_PAGE);
             } else {
-                paginationUtils.updateData(allArticles);
+                paginationUtils.updateData(popularArticles);
             }
             
             // Update UI

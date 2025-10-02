@@ -128,8 +128,6 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
                 return getString(R.string.subcategory_world);
             case DummyDataGenerator.SUBCATEGORY_POLITICS:
                 return getString(R.string.subcategory_politics);
-            case DummyDataGenerator.SUBCATEGORY_TECHNOLOGY:
-                return getString(R.string.subcategory_technology);
             case DummyDataGenerator.SUBCATEGORY_ECONOMY:
                 return getString(R.string.subcategory_economy);
             default:

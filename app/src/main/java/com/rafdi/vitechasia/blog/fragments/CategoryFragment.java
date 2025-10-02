@@ -136,7 +136,6 @@ public class CategoryFragment extends Fragment implements
                 return new String[]{
                     DummyDataGenerator.SUBCATEGORY_WORLD,
                     DummyDataGenerator.SUBCATEGORY_POLITICS,
-                    DummyDataGenerator.SUBCATEGORY_TECHNOLOGY,
                     DummyDataGenerator.SUBCATEGORY_ECONOMY
                 };
             default:

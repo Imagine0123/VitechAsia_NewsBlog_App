@@ -35,7 +35,7 @@ public class DummyDataGenerator {
     public static final String SUBCATEGORY_FINANCE = "finance";
     public static final String SUBCATEGORY_FITNESS = "fitness";
     public static final String SUBCATEGORY_NUTRITION = "nutrition";
-    public static final String SUBCATEGORY_MENTAL_HEALTH = "mental_health";
+    public static final String SUBCATEGORY_MENTAL_HEALTH = "mental health";
     public static final String SUBCATEGORY_TRAVEL = "travel";
     public static final String SUBCATEGORY_FOOD = "food";
     public static final String SUBCATEGORY_FASHION = "fashion";
@@ -44,7 +44,6 @@ public class DummyDataGenerator {
     public static final String SUBCATEGORY_TENNIS = "tennis";
     public static final String SUBCATEGORY_WORLD = "world";
     public static final String SUBCATEGORY_POLITICS = "politics";
-    public static final String SUBCATEGORY_TECHNOLOGY = "technology";
     public static final String SUBCATEGORY_ECONOMY = "economy";
 
     private static List<Article> allArticles = null;
@@ -160,13 +159,11 @@ public class DummyDataGenerator {
         List<Category> categories = new ArrayList<>();
         
         // Technology
-        List<String> techSubcategories = Arrays.asList(SUBCATEGORY_ANDROID, SUBCATEGORY_IOS, 
-            SUBCATEGORY_WEB, SUBCATEGORY_AI);
+        List<String> techSubcategories = Arrays.asList(SUBCATEGORY_ANDROID, SUBCATEGORY_IOS, SUBCATEGORY_WEB, SUBCATEGORY_AI);
         categories.add(new Category(CATEGORY_TECH, "Technology", techSubcategories));
         
         // Health
-        List<String> healthSubcategories = Arrays.asList(SUBCATEGORY_FITNESS, SUBCATEGORY_NUTRITION, 
-            SUBCATEGORY_MENTAL_HEALTH);
+        List<String> healthSubcategories = Arrays.asList(SUBCATEGORY_FITNESS, SUBCATEGORY_NUTRITION, SUBCATEGORY_MENTAL_HEALTH);
         categories.add(new Category(CATEGORY_HEALTH, "Health", healthSubcategories));
         
         // Lifestyle
@@ -179,13 +176,11 @@ public class DummyDataGenerator {
         categories.add(new Category(CATEGORY_BUSINESS, "Business", businessSubcategories));
         
         // Sports
-        List<String> sportsSubcategories = Arrays.asList(SUBCATEGORY_FOOTBALL, 
-            SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
+        List<String> sportsSubcategories = Arrays.asList(SUBCATEGORY_FOOTBALL, SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
         categories.add(new Category(CATEGORY_SPORTS, "Sports", sportsSubcategories));
         
         // News
-        List<String> newsSubcategories = Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, 
-            SUBCATEGORY_TECHNOLOGY, SUBCATEGORY_ECONOMY);
+        List<String> newsSubcategories = Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, SUBCATEGORY_ECONOMY);
         categories.add(new Category(CATEGORY_NEWS, "News", newsSubcategories));
         
         return categories;
@@ -207,7 +202,7 @@ public class DummyDataGenerator {
             case CATEGORY_SPORTS:
                 return Arrays.asList(SUBCATEGORY_FOOTBALL, SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
             case CATEGORY_NEWS:
-                return Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, SUBCATEGORY_TECHNOLOGY, SUBCATEGORY_ECONOMY);
+                return Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, SUBCATEGORY_ECONOMY);
             default:
                 return new ArrayList<>();
         }

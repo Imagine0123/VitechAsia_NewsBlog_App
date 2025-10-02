@@ -66,15 +66,14 @@ public class LatestFragment extends Fragment {
         
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
-            // Get all articles from DummyDataGenerator and sort by date (newest first)
-            List<Article> allArticles = DummyDataGenerator.getDummyArticles();
-            allArticles.sort((a1, a2) -> a2.getPublishDate().compareTo(a1.getPublishDate()));
+            // Get newest articles directly from DummyDataGenerator
+            List<Article> latestArticles = DummyDataGenerator.getNewestArticles(100); // Get 100 newest articles
             
             // Initialize or update pagination
             if (paginationUtils == null) {
-                paginationUtils = new PaginationUtils<>(allArticles, ITEMS_PER_PAGE);
+                paginationUtils = new PaginationUtils<>(latestArticles, ITEMS_PER_PAGE);
             } else {
-                paginationUtils.updateData(allArticles);
+                paginationUtils.updateData(latestArticles);
             }
             
             // Update UI

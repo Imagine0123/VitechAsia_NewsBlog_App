@@ -23,6 +23,7 @@ public class Article implements Parcelable {
     private Date publishDate;
     private int viewCount;
     private int likeCount;
+    private boolean isBookmarked; // Track if article is bookmarked
 
     public Article() {
     }
@@ -52,6 +53,14 @@ public class Article implements Parcelable {
         this.likeCount = likeCount;
     }
 
+    public boolean isBookmarked() {
+        return isBookmarked;
+    }
+
+    public void setBookmarked(boolean bookmarked) {
+        isBookmarked = bookmarked;
+    }
+
     protected Article(Parcel in) {
         id = in.readString();
         title = in.readString();
@@ -65,6 +74,7 @@ public class Article implements Parcelable {
         authorImageUrl = in.readString();
         viewCount = in.readInt();
         likeCount = in.readInt();
+        isBookmarked = in.readByte() != 0;
         // Handle potential null date
         long dateMillis = in.readLong();
         publishDate = dateMillis == -1 ? null : new Date(dateMillis);
@@ -226,6 +236,7 @@ public class Article implements Parcelable {
         dest.writeString(authorImageUrl);
         dest.writeInt(viewCount);
         dest.writeInt(likeCount);
+        dest.writeByte((byte) (isBookmarked ? 1 : 0));
         // Write -1 if publishDate is null, otherwise write the timestamp
         dest.writeLong(publishDate != null ? publishDate.getTime() : -1);
     }

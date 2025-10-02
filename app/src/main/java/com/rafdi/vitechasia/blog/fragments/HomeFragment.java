@@ -1,5 +1,6 @@
 package com.rafdi.vitechasia.blog.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +19,21 @@ import com.rafdi.vitechasia.blog.adapters.ArticleHorizontalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.OnArticleClickListener {
+    
+    public interface NavigationCallback {
+        void onHeaderClicked(int navItemId);
+    }
+    
+    private NavigationCallback navigationCallback;
+    
 
     // RecyclerViews
     private RecyclerView latestArticlesRecyclerView;
     private RecyclerView popularArticlesRecyclerView;
+    private RecyclerView bookmarkedArticlesRecyclerView;
     private RecyclerView sportsArticlesRecyclerView;
     private RecyclerView techArticlesRecyclerView;
     private RecyclerView newsArticlesRecyclerView;
@@ -35,6 +41,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     // Adapters
     private ArticleHorizontalAdapter latestArticlesAdapter;
     private ArticleHorizontalAdapter popularArticlesAdapter;
+    private ArticleHorizontalAdapter bookmarkedArticlesAdapter;
     private ArticleHorizontalAdapter sportsArticlesAdapter;
     private ArticleHorizontalAdapter techArticlesAdapter;
     private ArticleHorizontalAdapter newsArticlesAdapter;
@@ -54,23 +61,40 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof NavigationCallback) {
+            navigationCallback = (NavigationCallback) context;
+        }
+    }
+
+    // Navigation constants
+    private static final String NAV_LATEST = "latest";
+    private static final String NAV_POPULAR = "popular";
+    private static final String NAV_BOOKMARKS = "bookmarks";
+
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+    
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
         // Initialize views
         initializeViews(view);
         setupRecyclerViews();
         setupClickListeners();
-
-        return view;
     }
 
     private void initializeViews(View view) {
         // Initialize RecyclerViews
         latestArticlesRecyclerView = view.findViewById(R.id.latestArticlesRecyclerView);
         popularArticlesRecyclerView = view.findViewById(R.id.popularArticlesRecyclerView);
+        bookmarkedArticlesRecyclerView = view.findViewById(R.id.bookmarkedArticlesRecyclerView);
         sportsArticlesRecyclerView = view.findViewById(R.id.sportsArticlesRecyclerView);
         techArticlesRecyclerView = view.findViewById(R.id.techArticlesRecyclerView);
         newsArticlesRecyclerView = view.findViewById(R.id.newsArticlesRecyclerView);
@@ -87,6 +111,9 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         
         // Popular Articles
         setupHorizontalRecyclerView(popularArticlesRecyclerView, "popular");
+        
+        // Bookmarked Articles
+        setupHorizontalRecyclerView(bookmarkedArticlesRecyclerView, "bookmarked");
         
         // Category Articles
         setupHorizontalRecyclerView(sportsArticlesRecyclerView, DummyDataGenerator.CATEGORY_SPORTS);
@@ -108,13 +135,23 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         
         // Load appropriate data based on type
         if ("latest".equals(type)) {
-            List<Article> latestArticles = DummyDataGenerator.getDummyArticles();
-            latestArticles.sort((a1, a2) -> a2.getPublishDate().compareTo(a1.getPublishDate()));
-            adapter.setArticles(latestArticles.subList(0, Math.min(5, latestArticles.size())));
+           List<Article> latestArticles = DummyDataGenerator.getNewestArticles(5);
+           adapter.setArticles(latestArticles);
         } else if ("popular".equals(type)) {
-            List<Article> popularArticles = new ArrayList<>(DummyDataGenerator.getDummyArticles());
-            popularArticles.sort((a1, a2) -> Integer.compare(a2.getViewCount(), a1.getViewCount()));
-            adapter.setArticles(popularArticles.subList(0, Math.min(5, popularArticles.size())));
+           List<Article> popularArticles = DummyDataGenerator.getMostViewedArticles(5);
+           adapter.setArticles(popularArticles);
+        } else if ("bookmarked".equals(type)) {
+            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles();
+            if (bookmarkedArticles.isEmpty()) {
+                recyclerView.setVisibility(View.GONE);
+                View bookmarkedHeader = getView().findViewById(R.id.bookmarkedHeader);
+                if (bookmarkedHeader != null) {
+                    bookmarkedHeader.setVisibility(View.GONE);
+                }
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                adapter.setArticles(bookmarkedArticles);
+            }
         } else {
             // This is a category view
             List<Article> categoryArticles = DummyDataGenerator.getDummyArticlesByCategory(type);
@@ -123,32 +160,107 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     }
 
     private void setupClickListeners() {
+        View rootView = getView();
+        if (rootView == null) {
+            return;
+        }
+
         // Set up View All button click listeners
-        viewAllSportsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
-        viewAllTechButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
-        viewAllNewsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
+        if (viewAllSportsButton != null) {
+            viewAllSportsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
+        }
+        
+        if (viewAllTechButton != null) {
+            viewAllTechButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
+        }
+        
+        if (viewAllNewsButton != null) {
+            viewAllNewsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
+        }
+
+        // Set up header click listeners to navigate to respective fragments
+        setupHeaderClickListener(R.id.latestHeader, () -> navigateToFragment(NAV_LATEST));
+        setupHeaderClickListener(R.id.popularHeader, () -> navigateToFragment(NAV_POPULAR));
+        setupHeaderClickListener(R.id.bookmarkedHeader, () -> navigateToFragment(NAV_BOOKMARKS));
 
         // Set up category card click listeners
-        View view = getView();
-        if (view != null) {
-            view.findViewById(R.id.sportsCard).setOnClickListener(v -> 
-                navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
-            
-            view.findViewById(R.id.techCard).setOnClickListener(v -> 
-                navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
-            
-            view.findViewById(R.id.newsCard).setOnClickListener(v -> 
-                navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
+        View sportsCard = rootView.findViewById(R.id.sportsCard);
+        if (sportsCard != null) {
+            sportsCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
+        }
+
+        View techCard = rootView.findViewById(R.id.techCard);
+        if (techCard != null) {
+            techCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
+        }
+
+        View newsCard = rootView.findViewById(R.id.newsCard);
+        if (newsCard != null) {
+            newsCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
         }
     }
 
+    
+    private void setupHeaderClickListener(int viewId, Runnable onClickAction) {
+        View view = getView();
+        if (view == null) {
+            return;
+        }
+        
+        View header = view.findViewById(viewId);
+        if (header != null) {
+            header.setOnClickListener(v -> {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                onClickAction.run();
+            });
+            header.setClickable(true);
+            header.setFocusable(true);
+        }
+    }
+
+    private void navigateToFragment(String fragmentType) {
+        if (getActivity() == null) return;
+        
+        int navItemId = -1;
+        Fragment fragment = null;
+        
+        switch (fragmentType) {
+            case NAV_LATEST:
+                fragment = new LatestFragment();
+                navItemId = R.id.navigation_latest;
+                break;
+            case NAV_POPULAR:
+                fragment = new PopularFragment();
+                navItemId = R.id.navigation_popular;
+                break;
+            case NAV_BOOKMARKS:
+                fragment = new BookmarkFragment();
+                navItemId = R.id.navigation_bookmark;
+                break;
+        }
+        
+        if (fragment != null) {
+            getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
+                
+            // Update bottom navigation if callback is available
+            if (navigationCallback != null) {
+                navigationCallback.onHeaderClicked(navItemId);
+            }
+        }
+    }
+    
     private void navigateToCategory(String categoryId) {
         if (getActivity() != null) {
             Fragment categoryFragment = CategoryFragment.newInstance(categoryId);
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container, categoryFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, categoryFragment)
+                .addToBackStack(null)
+                .commit();
         }
     }
 

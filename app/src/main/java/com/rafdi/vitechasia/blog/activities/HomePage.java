@@ -40,7 +40,7 @@ import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 
 import android.util.Log;
 
-public class HomePage extends AppCompatActivity implements ArticleVerticalAdapter.OnArticleClickListener {
+public class HomePage extends AppCompatActivity implements ArticleVerticalAdapter.OnArticleClickListener, HomeFragment.NavigationCallback {
 
     private static final String TAG = "HomePage";
     private SessionManager sessionManager;
@@ -308,6 +308,11 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
     @Override
     public void onArticleClick(Article article) {
         loadArticleDetailFragment(article);
+    }
+
+    @Override
+    public void onHeaderClicked(int navItemId) {
+        updateBottomNavSelection(navItemId);
     }
 
     @Override

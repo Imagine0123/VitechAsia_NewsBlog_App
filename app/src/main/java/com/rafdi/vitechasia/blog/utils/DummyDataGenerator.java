@@ -49,6 +49,19 @@ public class DummyDataGenerator {
     private static List<Article> allArticles = null;
 
     /**
+     * Get all bookmarked articles
+     */
+    public static List<Article> getBookmarkedArticles() {
+        List<Article> bookmarked = new ArrayList<>();
+        for (Article article : getDummyArticles()) {
+            if (article.isBookmarked()) {
+                bookmarked.add(article);
+            }
+        }
+        return bookmarked;
+    }
+
+    /**
      * Get all dummy articles. The list is cached after first creation.
      */
     public static List<Article> getDummyArticles() {
@@ -211,6 +224,9 @@ public class DummyDataGenerator {
     private static List<Article> generateDummyArticles() {
         List<Article> articles = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
+        
+        // Mark some articles as bookmarked for demonstration
+        List<Integer> bookmarkedIndices = Arrays.asList(1, 3, 5, 7, 9);
         
         // Add Tech Articles - Android
         articles.add(createArticle(
@@ -409,7 +425,7 @@ public class DummyDataGenerator {
                                        String imageName, Date date, int viewCount, 
                                        String categoryId, String subcategoryId) {
         String imageUrl = "https://example.com/images/" + imageName; // Replace with your actual image URL pattern
-        return new Article(
+        Article article = new Article(
                 id,
                 title,
                 content,
@@ -424,5 +440,14 @@ public class DummyDataGenerator {
                 viewCount,
                 viewCount / 10 // Simulate likes as 10% of views
         );
+        
+        // Mark some articles as bookmarked based on their ID
+        List<String> bookmarkedIds = Arrays.asList("tech2", "tech4", "tech6", "tech8", "health2");
+        if (bookmarkedIds.contains(id)) {
+            article.setBookmarked(true);
+        }
+        
+        return article;
     }
+
 }

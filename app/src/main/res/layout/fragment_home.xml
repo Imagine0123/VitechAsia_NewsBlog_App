@@ -15,18 +15,38 @@
         android:paddingBottom="16dp">
 
         <!-- Latest Articles Section -->
-        <TextView
-            android:id="@+id/latestLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/latestHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="@string/latest_articles"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/latestLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/latest_articles"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_arrow_forward"
+                app:tint="?attr/colorOnSurface" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/latestArticlesRecyclerView"
@@ -38,22 +58,43 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/latestLabel"
+            app:layout_constraintTop_toBottomOf="@id/latestHeader"
             tools:listitem="@layout/item_article_horizontal" />
 
         <!-- Popular Articles Section -->
-        <TextView
-            android:id="@+id/popularLabel"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/popularHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
-            android:text="@string/popular_articles"
-            android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textColor="?attr/colorOnSurface"
-            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/latestArticlesRecyclerView" />
+            app:layout_constraintTop_toBottomOf="@id/latestArticlesRecyclerView">
+
+            <TextView
+                android:id="@+id/popularLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/popular_articles"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_arrow_forward"
+                app:tint="?attr/colorOnSurface" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/popularArticlesRecyclerView"
@@ -65,10 +106,57 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/popularLabel"
+            app:layout_constraintTop_toBottomOf="@id/popularHeader"
             tools:listitem="@layout/item_article_horizontal" />
 
         <!-- Category Sections -->
+        <!-- Bookmarked Articles Section -->
+        <LinearLayout
+            android:id="@+id/bookmarkedHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/popularArticlesRecyclerView">
+
+            <TextView
+                android:id="@+id/bookmarkedLabel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/bookmarked_articles"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="?attr/colorOnSurface"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_arrow_forward"
+                app:tint="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bookmarkedArticlesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/bookmarkedHeader"
+            tools:listitem="@layout/item_article_horizontal" />
+
         <TextView
             android:id="@+id/categoriesLabel"
             android:layout_width="wrap_content"
@@ -80,7 +168,7 @@
             android:textColor="?attr/colorOnSurface"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/popularArticlesRecyclerView" />
+            app:layout_constraintTop_toBottomOf="@id/bookmarkedArticlesRecyclerView" />
 
         <!-- Sports Category -->
         <com.google.android.material.card.MaterialCardView

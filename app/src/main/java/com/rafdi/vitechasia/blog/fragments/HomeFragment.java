@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.media.AudioManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -166,16 +166,31 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         }
 
         // Set up View All button click listeners
+        View.OnClickListener categoryClickListener = v -> {
+            if (isVibrateMode() && v != null) {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            
+            int id = v.getId();
+            if (id == R.id.viewAllSportsButton) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS);
+            } else if (id == R.id.viewAllTechButton) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_TECH);
+            } else if (id == R.id.viewAllNewsButton) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_NEWS);
+            }
+        };
+
         if (viewAllSportsButton != null) {
-            viewAllSportsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
+            viewAllSportsButton.setOnClickListener(categoryClickListener);
         }
         
         if (viewAllTechButton != null) {
-            viewAllTechButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
+            viewAllTechButton.setOnClickListener(categoryClickListener);
         }
         
         if (viewAllNewsButton != null) {
-            viewAllNewsButton.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
+            viewAllNewsButton.setOnClickListener(categoryClickListener);
         }
 
         // Set up header click listeners to navigate to respective fragments
@@ -184,23 +199,44 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         setupHeaderClickListener(R.id.bookmarkedHeader, () -> navigateToFragment(NAV_BOOKMARKS));
 
         // Set up category card click listeners
+        View.OnClickListener cardClickListener = v -> {
+            if (isVibrateMode() && v != null) {
+                v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+            }
+            
+            int id = v.getId();
+            if (id == R.id.sportsCard) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS);
+            } else if (id == R.id.techCard) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_TECH);
+            } else if (id == R.id.newsCard) {
+                navigateToCategory(DummyDataGenerator.CATEGORY_NEWS);
+            }
+        };
+
         View sportsCard = rootView.findViewById(R.id.sportsCard);
         if (sportsCard != null) {
-            sportsCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS));
+            sportsCard.setOnClickListener(cardClickListener);
         }
 
         View techCard = rootView.findViewById(R.id.techCard);
         if (techCard != null) {
-            techCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_TECH));
+            techCard.setOnClickListener(cardClickListener);
         }
 
         View newsCard = rootView.findViewById(R.id.newsCard);
         if (newsCard != null) {
-            newsCard.setOnClickListener(v -> navigateToCategory(DummyDataGenerator.CATEGORY_NEWS));
+            newsCard.setOnClickListener(cardClickListener);
         }
     }
 
     
+    private boolean isVibrateMode() {
+        if (getActivity() == null) return false;
+        AudioManager audioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+        return audioManager != null && audioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE;
+    }
+
     private void setupHeaderClickListener(int viewId, Runnable onClickAction) {
         View view = getView();
         if (view == null) {
@@ -210,7 +246,9 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         View header = view.findViewById(viewId);
         if (header != null) {
             header.setOnClickListener(v -> {
-                v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                if (isVibrateMode()) {
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.VIRTUAL_KEY);
+                }
                 onClickAction.run();
             });
             header.setClickable(true);

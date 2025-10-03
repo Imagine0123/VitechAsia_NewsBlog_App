@@ -21,7 +21,6 @@ import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BookmarkFragment extends Fragment {
     

@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.adapters.SubcategoryAdapter;
-import com.rafdi.vitechasia.blog.fragments.ArticleDetailFragment;
-import com.rafdi.vitechasia.blog.fragments.SubcategoryFragment;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 

@@ -16,7 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     

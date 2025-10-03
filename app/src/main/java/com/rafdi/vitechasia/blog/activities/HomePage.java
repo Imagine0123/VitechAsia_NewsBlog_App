@@ -1,6 +1,5 @@
 package com.rafdi.vitechasia.blog.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -37,8 +36,6 @@ import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
-
-import android.util.Log;
 
 public class HomePage extends AppCompatActivity implements ArticleVerticalAdapter.OnArticleClickListener, HomeFragment.NavigationCallback {
 

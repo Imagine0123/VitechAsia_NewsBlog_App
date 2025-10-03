@@ -1,6 +1,5 @@
 package com.rafdi.vitechasia.blog.utils;
 
-import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Category;
 
 import java.util.ArrayList;

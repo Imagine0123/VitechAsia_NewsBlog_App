@@ -1,6 +1,5 @@
 package com.rafdi.vitechasia.blog.fragments;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +23,7 @@ import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class SearchResultsFragment extends Fragment implements ArticleVerticalAdapter.OnArticleClickListener {
     private static final String ARG_QUERY = "search_query";

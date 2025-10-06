@@ -91,7 +91,7 @@ public class Category implements Parcelable {
                 article.setId("article_" + subcategory.toLowerCase() + "_" + i);
                 article.setTitle(subcategory + " Article " + i);
                 article.setContent("This is a sample article about " + subcategory + ". This is article number " + i + ".");
-                article.setCategory(name);
+                article.setCategoryId(id);
                 article.setSubcategoryId(subcategory);
                 article.setAuthorName("Author " + (i % 3 + 1));
                 article.setPublishDate(new Date());

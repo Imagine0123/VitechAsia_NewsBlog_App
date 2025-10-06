@@ -424,21 +424,20 @@ public class DummyDataGenerator {
     private static Article createArticle(String id, String title, String content, String authorName, 
                                        String imageName, Date date, int viewCount, 
                                        String categoryId, String subcategoryId) {
-        String imageUrl = "https://example.com/images/" + imageName; // Replace with your actual image URL pattern
+        String imageUrl = "https://example.com/images/" + imageName;
         Article article = new Article(
                 id,
                 title,
                 content,
                 imageUrl,
-                categoryId, // category (kept for backward compatibility)
-                categoryId, // categoryId
+                categoryId,
                 subcategoryId,
-                "author_" + id, // authorId
+                "author_" + id,
                 authorName,
                 "https://example.com/authors/" + authorName.toLowerCase().replace(" ", "_") + ".jpg",
                 date,
                 viewCount,
-                viewCount / 10 // Simulate likes as 10% of views
+                viewCount / 10
         );
         
         // Mark some articles as bookmarked based on their ID

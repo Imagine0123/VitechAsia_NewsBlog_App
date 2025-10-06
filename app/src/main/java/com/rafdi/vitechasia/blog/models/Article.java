@@ -14,7 +14,6 @@ public class Article implements Parcelable {
     private String title;
     private String content;
     private String imageUrl;
-    private String category; // Kept for backward compatibility
     private String categoryId;
     private String subcategoryId;
     private String authorId;
@@ -28,22 +27,14 @@ public class Article implements Parcelable {
     public Article() {
     }
 
-    // Original constructor for backward compatibility
-    public Article(String id, String title, String content, String imageUrl, String category,
-                  String authorId, String authorName, String authorImageUrl, Date publishDate) {
-        this(id, title, content, imageUrl, category, null, null, authorId, authorName, authorImageUrl, publishDate, 0, 0);
-    }
-    
-    // New constructor with category and subcategory support
-    public Article(String id, String title, String content, String imageUrl, String category,
+    public Article(String id, String title, String content, String imageUrl,
                   String categoryId, String subcategoryId, String authorId, String authorName, 
                   String authorImageUrl, Date publishDate, int viewCount, int likeCount) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
-        this.category = category; // Kept for backward compatibility
-        this.categoryId = categoryId != null ? categoryId : (category != null ? category.toLowerCase() : null);
+        this.categoryId = categoryId;
         this.subcategoryId = subcategoryId;
         this.authorId = authorId;
         this.authorName = authorName;
@@ -66,7 +57,6 @@ public class Article implements Parcelable {
         title = in.readString();
         content = in.readString();
         imageUrl = in.readString();
-        category = in.readString();
         categoryId = in.readString();
         subcategoryId = in.readString();
         authorId = in.readString();
@@ -126,16 +116,7 @@ public class Article implements Parcelable {
     }
 
     public String getCategory() {
-        // Return the legacy category field for backward compatibility
-        return category != null ? category : (categoryId != null ? CategoryManager.getCategoryDisplayName(categoryId) : null);
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-        // Update categoryId if not set
-        if (this.categoryId == null && category != null) {
-            this.categoryId = category.toLowerCase();
-        }
+        return categoryId != null ? CategoryManager.getCategoryDisplayName(categoryId) : null;
     }
     
     public String getCategoryId() {
@@ -144,10 +125,6 @@ public class Article implements Parcelable {
     
     public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
-        // Update legacy category field if not set
-        if (this.category == null && categoryId != null) {
-            this.category = CategoryManager.getCategoryDisplayName(categoryId);
-        }
     }
     
     public String getSubcategoryId() {
@@ -228,7 +205,6 @@ public class Article implements Parcelable {
         dest.writeString(title);
         dest.writeString(content);
         dest.writeString(imageUrl);
-        dest.writeString(category); // For backward compatibility
         dest.writeString(categoryId);
         dest.writeString(subcategoryId);
         dest.writeString(authorId);

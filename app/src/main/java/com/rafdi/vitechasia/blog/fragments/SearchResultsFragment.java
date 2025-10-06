@@ -32,7 +32,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private String selectedCategory = null;
     private String selectedSubcategory = null;
     private RecyclerView resultsRecyclerView;
-    private ArticleVerticalAdapter adapter;
+    private ArticleVerticalAdapter verticalAdapter;
     private TextView noResultsText;
     private ChipGroup chipGroupFilters;
     private List<Article> allSearchResults = new ArrayList<>();
@@ -66,9 +66,9 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         view.findViewById(R.id.btn_filter).setOnClickListener(v -> showFilterDialog());
 
         // Setup RecyclerView
-        adapter = new ArticleVerticalAdapter(new ArrayList<>(), this);
+        verticalAdapter = new ArticleVerticalAdapter(new ArrayList<>(), this);
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        resultsRecyclerView.setAdapter(adapter);
+        resultsRecyclerView.setAdapter(verticalAdapter);
 
         // Perform initial search
         performSearch();
@@ -295,8 +295,8 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             resultsRecyclerView.setVisibility(View.VISIBLE);
             noResultsText.setVisibility(View.GONE);
 
-            if (adapter != null) {
-                adapter.setArticles(results);
+            if (verticalAdapter != null) {
+                verticalAdapter.setArticles(results);
             }
         }
     }

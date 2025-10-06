@@ -29,7 +29,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
     private String categoryName;
     private String subcategoryName;
     private RecyclerView articlesRecyclerView;
-    private ArticleVerticalAdapter adapter;
+    private ArticleVerticalAdapter verticalAdapter;
 
     public static SubcategoryFragment newInstance(String categoryName, String subcategoryName) {
         SubcategoryFragment fragment = new SubcategoryFragment();
@@ -74,9 +74,9 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
         subcategoryTitle.setText(title);
 
         // Setup RecyclerView
-        adapter = new ArticleVerticalAdapter(new ArrayList<>(), this);
+        verticalAdapter = new ArticleVerticalAdapter(new ArrayList<>(), this);
         articlesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        articlesRecyclerView.setAdapter(adapter);
+        articlesRecyclerView.setAdapter(verticalAdapter);
 
         // Load articles
         loadArticles(noArticlesText);
@@ -101,7 +101,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
         } else {
             noArticlesText.setVisibility(View.GONE);
             articlesRecyclerView.setVisibility(View.VISIBLE);
-            adapter.setArticles(subcategoryArticles);
+            verticalAdapter.setArticles(subcategoryArticles);
         }
     }
     

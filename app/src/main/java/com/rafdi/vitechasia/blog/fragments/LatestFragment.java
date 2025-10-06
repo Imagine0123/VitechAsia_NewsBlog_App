@@ -28,7 +28,7 @@ public class LatestFragment extends Fragment {
     private RecyclerView recyclerView;
     private Button btnLoadMore;
     private ProgressBar progressBar;
-    private ArticleVerticalAdapter articleVerticalAdapter;
+    private ArticleVerticalAdapter verticalAdapter;
     private PaginationUtils<Article> paginationUtils;
     
     public LatestFragment() {
@@ -49,8 +49,8 @@ public class LatestFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         
         // Initialize adapter
-        articleVerticalAdapter = new ArticleVerticalAdapter(new ArrayList<>(), this::onArticleClick);
-        recyclerView.setAdapter(articleVerticalAdapter);
+        verticalAdapter = new ArticleVerticalAdapter(new ArrayList<>(), this::onArticleClick);
+        recyclerView.setAdapter(verticalAdapter);
         
         // Set up load more button
         btnLoadMore.setOnClickListener(v -> loadNextPage());
@@ -87,7 +87,7 @@ public class LatestFragment extends Fragment {
     private void updateArticleList() {
         if (paginationUtils != null) {
             List<Article> currentPage = paginationUtils.getCurrentPageItems();
-            articleVerticalAdapter.setArticles(currentPage);
+            verticalAdapter.setArticles(currentPage);
         }
     }
     

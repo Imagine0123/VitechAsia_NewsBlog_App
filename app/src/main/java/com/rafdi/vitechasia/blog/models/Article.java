@@ -22,7 +22,7 @@ public class Article implements Parcelable {
     private Date publishDate;
     private int viewCount;
     private int likeCount;
-    private boolean isBookmarked; // Track if article is bookmarked
+    private boolean isBookmarked;
 
     public Article() {
     }
@@ -70,7 +70,7 @@ public class Article implements Parcelable {
         publishDate = dateMillis == -1 ? null : new Date(dateMillis);
     }
 
-    public static final Creator<Article> CREATOR = new Creator<Article>() {
+    public static final Creator<Article> CREATOR = new Creator<>() {
         @Override
         public Article createFromParcel(Parcel in) {
             return new Article(in);
@@ -213,7 +213,6 @@ public class Article implements Parcelable {
         dest.writeInt(viewCount);
         dest.writeInt(likeCount);
         dest.writeByte((byte) (isBookmarked ? 1 : 0));
-        // Write -1 if publishDate is null, otherwise write the timestamp
         dest.writeLong(publishDate != null ? publishDate.getTime() : -1);
     }
 }

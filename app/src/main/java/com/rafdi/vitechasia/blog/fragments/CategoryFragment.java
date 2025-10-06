@@ -17,6 +17,7 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.adapters.SubcategoryAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class CategoryFragment extends Fragment implements
     private static final String ARG_CATEGORY_ID = "category_id";
 
     private String categoryId;
+    private Category category;
     private SubcategoryAdapter subcategoryAdapter;
 
     public static CategoryFragment newInstance(String categoryId) {
@@ -75,38 +77,42 @@ public class CategoryFragment extends Fragment implements
     }
 
     private void loadSubcategories() {
-        // Get articles for this category
-        List<Article> categoryArticles = DummyDataGenerator.getDummyArticlesByCategory(categoryId);
+        // Find the category object from DummyDataGenerator
+        category = findCategoryById(categoryId);
         
-        // Create a map to store subcategory name to display name mapping
-        Map<String, String> subcategoryMap = new HashMap<>();
-        
-        // Get all possible subcategories for this category
-        String[] subcategoryIds = getSubcategoryIdsForCategory(categoryId);
-        String[] subcategoryNames = getSubcategoryNamesForCategory(categoryId);
-        
-        // Create mapping of subcategory IDs to display names
-        for (int i = 0; i < subcategoryIds.length; i++) {
-            subcategoryMap.put(subcategoryIds[i], subcategoryNames[i]);
+        if (category == null) {
+            return;
         }
         
-        // Create a list to store subcategories that have articles
+        // Get subcategories from the Category object
+        List<String> subcategories = category.getSubcategories();
+        
+        // Filter subcategories that have articles
         List<String> subcategoriesWithArticles = new ArrayList<>();
         
-        // Check which subcategories have articles
-        for (String subcategoryId : subcategoryMap.keySet()) {
-            List<Article> subcategoryArticles = DummyDataGenerator.getDummyArticlesBySubcategory(subcategoryId);
-            if (!subcategoryArticles.isEmpty()) {
+        for (String subcategoryId : subcategories) {
+            List<Article> articles = category.getArticlesForSubcategory(subcategoryId);
+            if (!articles.isEmpty()) {
                 subcategoriesWithArticles.add(subcategoryId);
             }
         }
         
         // If no subcategories with articles found, use all available subcategories
         if (subcategoriesWithArticles.isEmpty()) {
-            subcategoriesWithArticles.addAll(subcategoryMap.keySet());
+            subcategoriesWithArticles.addAll(subcategories);
         }
         
         subcategoryAdapter.setSubcategories(subcategoriesWithArticles);
+    }
+    
+    private Category findCategoryById(String categoryId) {
+        List<Category> categories = DummyDataGenerator.getAllCategories();
+        for (Category cat : categories) {
+            if (cat.getId().equals(categoryId)) {
+                return cat;
+            }
+        }
+        return null;
     }
     
     private String[] getSubcategoryIdsForCategory(String categoryId) {

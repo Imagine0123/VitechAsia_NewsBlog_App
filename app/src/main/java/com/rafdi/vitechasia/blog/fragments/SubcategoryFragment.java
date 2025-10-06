@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 import java.util.ArrayList;
@@ -84,8 +85,13 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
     }
 
     private void loadArticles(TextView noArticlesText) {
-        // Get articles directly by subcategory
-        List<Article> subcategoryArticles = DummyDataGenerator.getDummyArticlesBySubcategory(subcategoryName);
+        // Find the category that contains this subcategory
+        Category category = findCategoryBySubcategory(subcategoryName);
+        
+        List<Article> subcategoryArticles = new ArrayList<>();
+        if (category != null) {
+            subcategoryArticles = category.getArticlesForSubcategory(subcategoryName);
+        }
 
         // Update UI based on whether we found articles
         if (subcategoryArticles == null || subcategoryArticles.isEmpty()) {
@@ -97,6 +103,16 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
             articlesRecyclerView.setVisibility(View.VISIBLE);
             adapter.setArticles(subcategoryArticles);
         }
+    }
+    
+    private Category findCategoryBySubcategory(String subcategoryId) {
+        List<Category> categories = DummyDataGenerator.getAllCategories();
+        for (Category category : categories) {
+            if (category.getSubcategories().contains(subcategoryId)) {
+                return category;
+            }
+        }
+        return null;
     }
 
     private String getSubcategoryDisplayName(String subcategoryId) {

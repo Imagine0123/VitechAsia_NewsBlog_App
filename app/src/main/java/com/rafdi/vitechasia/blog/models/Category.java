@@ -3,8 +3,9 @@ package com.rafdi.vitechasia.blog.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Category implements Parcelable {
@@ -77,39 +78,8 @@ public class Category implements Parcelable {
         return subcategories != null && !subcategories.isEmpty();
     }
     
-    // Helper method to get dummy articles for a subcategory
-    // In a real app, this would fetch from your data source
     public List<Article> getArticlesForSubcategory(String subcategory) {
-        List<Article> articles = new ArrayList<>();
-        
-        // Add sample articles based on subcategory
-        // Replace this with your actual data loading logic
-        if (subcategory != null && !subcategory.isEmpty()) {
-            // Example: Create 3 sample articles for the subcategory
-            for (int i = 1; i <= 3; i++) {
-                Article article = new Article();
-                article.setId("article_" + subcategory.toLowerCase() + "_" + i);
-                article.setTitle(subcategory + " Article " + i);
-                article.setContent("This is a sample article about " + subcategory + ". This is article number " + i + ".");
-                article.setCategoryId(id);
-                article.setSubcategoryId(subcategory);
-                article.setAuthorName("Author " + (i % 3 + 1));
-                article.setPublishDate(new Date());
-                
-                // Add some sample image URLs (replace with your actual image loading)
-                if (i % 3 == 1) {
-                    article.setImageUrl("https://picsum.photos/400/300?random=" + System.currentTimeMillis());
-                } else if (i % 3 == 2) {
-                    article.setImageUrl("https://picsum.photos/400/300?random=" + (System.currentTimeMillis() + 1));
-                } else {
-                    article.setImageUrl("https://picsum.photos/400/300?random=" + (System.currentTimeMillis() + 2));
-                }
-                
-                articles.add(article);
-            }
-        }
-        
-        return articles;
+        return DummyDataGenerator.getDummyArticlesBySubcategory(subcategory);
     }
 
     @Override

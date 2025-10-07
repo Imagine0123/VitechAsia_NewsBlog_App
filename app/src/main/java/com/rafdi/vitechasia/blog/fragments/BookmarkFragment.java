@@ -77,8 +77,8 @@ public class BookmarkFragment extends Fragment {
         
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
-            // Get all bookmarked articles from DummyDataGenerator
-            List<Article> bookmarkedArticles = DummyDataGenerator.getDummyArticles();
+            // Get bookmarked articles from DummyDataGenerator
+            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles(requireContext());
             
             // Initialize or update pagination
             if (paginationUtils == null) {

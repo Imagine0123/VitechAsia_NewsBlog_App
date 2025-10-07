@@ -141,7 +141,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
            List<Article> popularArticles = DummyDataGenerator.getMostViewedArticles(5);
            adapter.setArticles(popularArticles);
         } else if ("bookmarked".equals(type)) {
-            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles();
+            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles(requireContext());
             if (bookmarkedArticles.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 View bookmarkedHeader = getView().findViewById(R.id.bookmarkedHeader);

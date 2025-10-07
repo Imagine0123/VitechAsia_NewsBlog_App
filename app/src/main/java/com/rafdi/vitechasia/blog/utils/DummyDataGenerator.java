@@ -49,11 +49,15 @@ public class DummyDataGenerator {
     private static List<Article> allArticles = null;
 
     /**
-     * Get all bookmarked articles
+     * Get all bookmarked articles, synced with BookmarkManager
      */
-    public static List<Article> getBookmarkedArticles() {
+    public static List<Article> getBookmarkedArticles(android.content.Context context) {
+        List<Article> allArticles = getDummyArticles();
+        BookmarkManager bookmarkManager = BookmarkManager.getInstance(context);
+        bookmarkManager.syncArticleBookmarkStatus(allArticles);
+        
         List<Article> bookmarked = new ArrayList<>();
-        for (Article article : getDummyArticles()) {
+        for (Article article : allArticles) {
             if (article.isBookmarked()) {
                 bookmarked.add(article);
             }

@@ -91,8 +91,6 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
 
         //Text Styling
         TextView vitechText = findViewById(R.id.vitechText);
-        EditText searchText = findViewById(R.id.searchText);
-        ImageButton searchButton = findViewById(R.id.searchButton);
 
         setupSearch();
 

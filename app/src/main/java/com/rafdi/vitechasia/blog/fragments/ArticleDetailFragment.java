@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.utils.BookmarkManager;
 
 public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     
@@ -29,11 +31,13 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     private TextView articleAuthor;
     private TextView articleDate;
     private TextView articleContent;
+    private ImageButton bookmarkButton;
     private SwipeRefreshLayout swipeRefreshLayout;
     
     private Article article;
     private String categoryId;
     private String subcategoryId;
+    private BookmarkManager bookmarkManager;
     
     public static ArticleDetailFragment newInstance(Article article) {
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -60,6 +64,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         super.onViewCreated(view, savedInstanceState);
         
         try {
+            // Initialize BookmarkManager
+            bookmarkManager = BookmarkManager.getInstance(requireContext());
+            
             // Initialize views
             articleImage = view.findViewById(R.id.articleImage);
             articleCategory = view.findViewById(R.id.articleCategory);
@@ -69,6 +76,7 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             articleAuthor = view.findViewById(R.id.articleAuthor);
             articleDate = view.findViewById(R.id.articleDate);
             articleContent = view.findViewById(R.id.articleContent);
+            bookmarkButton = view.findViewById(R.id.bookmarkButton);
             
             // Set up swipe to refresh
             swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
@@ -80,6 +88,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             articleCategory.setOnClickListener(this);
             articleSubcategory.setOnClickListener(this);
             
+            // Set bookmark button click listener
+            bookmarkButton.setOnClickListener(v -> toggleBookmark());
+            
             // Get article from arguments
             if (getArguments() != null) {
                 article = getArguments().getParcelable(ARG_ARTICLE);
@@ -87,6 +98,8 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
                     // Store category and subcategory IDs for navigation
                     categoryId = article.getCategoryId();
                     subcategoryId = article.getSubcategoryId();
+                    // Sync bookmark status
+                    bookmarkManager.syncArticleBookmarkStatus(article);
                     updateUI();
                 }
             }
@@ -177,8 +190,32 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
                     .into(authorImage);
             }
             
+            // Update bookmark button icon
+            updateBookmarkButton();
+            
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    private void toggleBookmark() {
+        if (article == null) return;
+        
+        bookmarkManager.toggleBookmark(article);
+        updateBookmarkButton();
+        
+        // Optional: Show a toast message
+        String message = article.isBookmarked() ? "Added to bookmarks" : "Removed from bookmarks";
+        android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateBookmarkButton() {
+        if (article == null || bookmarkButton == null) return;
+        
+        if (article.isBookmarked()) {
+            bookmarkButton.setImageResource(R.drawable.ic_star_filled);
+        } else {
+            bookmarkButton.setImageResource(R.drawable.ic_star_outline);
         }
     }
     

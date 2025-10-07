@@ -49,7 +49,7 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="8dp"
-            android:text="@string/vitechText"
+            android:text="@string/app_name"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/searchButton"
             app:layout_constraintEnd_toEndOf="parent"

@@ -96,22 +96,22 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
 
         setupSearch();
 
-        String fullText = vitechText.getText().toString();
+        String fullText = getString(R.string.app_name);
         SpannableString spannable = new SpannableString(fullText);
-        int colorVitech = ThemeManager.isDarkTheme(this) ? Color.WHITE : Color.BLACK;
-        int colorAsia = getColor(R.color.colorAccent);
-        String vitechPart = "Vitech";
+        int colorSin = ThemeManager.isDarkTheme(this) ? Color.WHITE : Color.BLACK;
+        int colorTesis = getColor(R.color.colorAccent);
+        String sinPart = "Sin";
 
         spannable.setSpan(
-                new ForegroundColorSpan(colorVitech),
+                new ForegroundColorSpan(colorSin),
                 0,
-                vitechPart.length(),
+                sinPart.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         );
 
         spannable.setSpan(
-                new ForegroundColorSpan(colorAsia),
-                vitechPart.length(),
+                new ForegroundColorSpan(colorTesis),
+                sinPart.length(),
                 fullText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         );

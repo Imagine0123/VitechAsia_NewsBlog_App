@@ -1,6 +1,6 @@
 <resources>
     <!-- App Name -->
-    <string name="app_name">Vitech Asia Blog</string>
+    <string name="app_name">Sintesis</string>
     
     <!-- Theme Settings -->
     <string name="pref_header_display">Display</string>

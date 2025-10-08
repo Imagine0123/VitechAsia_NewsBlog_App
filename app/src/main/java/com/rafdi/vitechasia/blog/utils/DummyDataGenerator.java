@@ -444,12 +444,6 @@ public class DummyDataGenerator {
                 viewCount / 10
         );
         
-        // Mark some articles as bookmarked based on their ID
-        List<String> bookmarkedIds = Arrays.asList("tech2", "tech4", "tech6", "tech8", "health2");
-        if (bookmarkedIds.contains(id)) {
-            article.setBookmarked(true);
-        }
-        
         return article;
     }
 

@@ -9,6 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Singleton utility class for managing article bookmarks.
+ * Handles bookmark persistence using SharedPreferences.
+ */
 public class BookmarkManager {
     private static final String PREF_NAME = "BookmarkPreferences";
     private static final String KEY_BOOKMARKS = "bookmarked_article_ids";

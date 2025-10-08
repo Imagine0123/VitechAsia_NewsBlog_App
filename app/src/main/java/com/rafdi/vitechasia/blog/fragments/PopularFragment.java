@@ -21,6 +21,10 @@ import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for displaying most popular articles based on view count.
+ * Supports pagination for loading more trending content.
+ */
 public class PopularFragment extends Fragment {
     
     private static final int ITEMS_PER_PAGE = 10;

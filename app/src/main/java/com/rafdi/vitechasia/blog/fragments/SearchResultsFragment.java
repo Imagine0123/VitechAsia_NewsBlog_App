@@ -25,6 +25,10 @@ import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for displaying search results based on user queries.
+ * Shows filtered articles with category-based search capabilities.
+ */
 public class SearchResultsFragment extends Fragment implements ArticleVerticalAdapter.OnArticleClickListener {
     private static final String ARG_QUERY = "search_query";
 

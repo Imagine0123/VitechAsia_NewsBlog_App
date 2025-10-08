@@ -21,6 +21,10 @@ import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for displaying the latest articles in chronological order.
+ * Supports pagination for loading more content.
+ */
 public class LatestFragment extends Fragment {
     
     private static final int ITEMS_PER_PAGE = 10;

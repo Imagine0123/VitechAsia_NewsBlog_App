@@ -20,6 +20,10 @@ import com.rafdi.vitechasia.blog.activities.LoginActivity;
 import com.rafdi.vitechasia.blog.models.User;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 
+/**
+ * Fragment for displaying user profile information and settings.
+ * Shows user details and provides logout functionality.
+ */
 public class ProfileFragment extends Fragment {
     
     private ImageView profileImage;

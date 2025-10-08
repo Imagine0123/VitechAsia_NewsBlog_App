@@ -37,6 +37,10 @@ import com.rafdi.vitechasia.blog.utils.SessionManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 
+/**
+ * Main activity for the blog application home page.
+ * Handles navigation, search, and fragment management.
+ */
 public class HomePage extends AppCompatActivity implements ArticleVerticalAdapter.OnArticleClickListener, HomeFragment.NavigationCallback {
 
     private static final String TAG = "HomePage";

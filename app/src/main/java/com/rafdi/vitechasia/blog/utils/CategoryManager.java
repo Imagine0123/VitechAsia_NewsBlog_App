@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Singleton utility class for managing blog categories and their subcategories.
+ * Provides centralized access to category data throughout the application.
+ */
 public class CategoryManager {
     private static CategoryManager instance;
     private final Map<String, Category> categories;

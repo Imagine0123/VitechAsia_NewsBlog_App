@@ -14,10 +14,13 @@ import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RecyclerView adapter for displaying subcategories with nested article lists.
+ * Used in category fragments to show subcategories and their preview articles.
+ */
 public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.SubcategoryViewHolder> {
 
     private final List<String> subcategoryNames;

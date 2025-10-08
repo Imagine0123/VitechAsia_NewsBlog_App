@@ -9,6 +9,10 @@ import java.util.Locale;
 
 import com.rafdi.vitechasia.blog.utils.CategoryManager;
 
+/**
+ * Model class representing a blog article.
+ * Implements Parcelable for Android component communication.
+ */
 public class Article implements Parcelable {
     private String id;
     private String title;

@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.rafdi.vitechasia.blog.models.User;
 
+/**
+ * Utility class for managing user sessions and authentication state.
+ * Handles login status and user data persistence using SharedPreferences.
+ */
 public class SessionManager {
     private static final String PREF_NAME = "VitechAsiaBlogPref";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";

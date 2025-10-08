@@ -15,6 +15,10 @@ import com.rafdi.vitechasia.blog.models.Article;
 
 import java.util.List;
 
+/**
+ * RecyclerView adapter for displaying articles in vertical layout.
+ * Used for article lists, bookmarks, and search results.
+ */
 public class ArticleVerticalAdapter extends RecyclerView.Adapter<ArticleVerticalAdapter.ArticleViewHolder> {
 
     private final List<Article> articleList;

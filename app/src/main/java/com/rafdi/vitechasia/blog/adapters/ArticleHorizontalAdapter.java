@@ -16,6 +16,10 @@ import com.rafdi.vitechasia.blog.models.Article;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * RecyclerView adapter for displaying articles in horizontal layout.
+ * Used for featured articles and category sections.
+ */
 public class ArticleHorizontalAdapter extends RecyclerView.Adapter<ArticleHorizontalAdapter.ArticleViewHolder> {
     private List<Article> articles = new ArrayList<>();
     private OnArticleClickListener listener;

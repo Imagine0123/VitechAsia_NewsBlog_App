@@ -6,6 +6,10 @@ import android.content.res.Configuration;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+/**
+ * Utility class for managing application themes (light/dark mode).
+ * Handles theme persistence and application across activities.
+ */
 public class ThemeManager {
     private static final String THEME_PREF = "theme_pref";
     private static final String THEME_MODE = "theme_mode";

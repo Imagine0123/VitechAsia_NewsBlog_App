@@ -21,6 +21,10 @@ import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 
 import java.util.List;
 
+/**
+ * Fragment for the home screen displaying featured articles and categories.
+ * Shows latest, popular, and bookmarked content sections.
+ */
 public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.OnArticleClickListener {
     
     public interface NavigationCallback {

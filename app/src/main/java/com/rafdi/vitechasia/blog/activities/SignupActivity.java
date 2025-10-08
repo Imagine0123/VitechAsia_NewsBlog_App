@@ -14,6 +14,10 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.User;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 
+/**
+ * Activity for user registration functionality.
+ * Handles new user account creation and validation.
+ */
 public class SignupActivity extends AppCompatActivity {
     private TextInputLayout nameLayout, emailLayout, passwordLayout, confirmPasswordLayout;
     private SessionManager sessionManager;

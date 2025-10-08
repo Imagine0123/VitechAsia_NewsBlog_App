@@ -22,6 +22,10 @@ import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for displaying user's bookmarked articles.
+ * Supports pagination and bookmark management.
+ */
 public class BookmarkFragment extends Fragment {
     
     private static final int ITEMS_PER_PAGE = 10;

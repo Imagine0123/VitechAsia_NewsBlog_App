@@ -19,6 +19,10 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.BookmarkManager;
 
+/**
+ * Fragment for displaying detailed view of a single article.
+ * Includes bookmark functionality and navigation to related content.
+ */
 public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     
     private static final String ARG_ARTICLE = "article";

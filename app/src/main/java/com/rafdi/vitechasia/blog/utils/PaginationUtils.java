@@ -3,6 +3,10 @@ package com.rafdi.vitechasia.blog.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Generic utility class for handling pagination of lists.
+ * Supports loading items in pages with navigation methods.
+ */
 public class PaginationUtils<T> {
     private List<T> fullList;
     private final int itemsPerPage;

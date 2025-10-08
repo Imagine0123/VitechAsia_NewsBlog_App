@@ -25,6 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Fragment for displaying articles within a specific category.
+ * Shows subcategories and their associated articles.
+ */
 public class CategoryFragment extends Fragment implements 
         ArticleVerticalAdapter.OnArticleClickListener,
         SubcategoryAdapter.OnViewAllClickListener,

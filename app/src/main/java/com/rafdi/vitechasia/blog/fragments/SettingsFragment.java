@@ -16,6 +16,10 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.utils.ThemeManager;
 import com.rafdi.vitechasia.blog.utils.ThemeManager.ThemeMode;
 
+/**
+ * Fragment for application settings and preferences.
+ * Allows users to configure theme and other app settings.
+ */
 public class SettingsFragment extends PreferenceFragmentCompat {
     
     @Override

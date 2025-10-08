@@ -14,6 +14,10 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.User;
 import com.rafdi.vitechasia.blog.utils.SessionManager;
 
+/**
+ * Activity for user login functionality.
+ * Handles user authentication and redirects to home page upon success.
+ */
 public class LoginActivity extends AppCompatActivity {
     private TextInputLayout emailLayout, passwordLayout;
     private SessionManager sessionManager;

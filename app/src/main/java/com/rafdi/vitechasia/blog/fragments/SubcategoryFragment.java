@@ -22,6 +22,10 @@ import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for displaying articles within a specific subcategory.
+ * Shows detailed articles for the selected subcategory.
+ */
 public class SubcategoryFragment extends Fragment implements ArticleVerticalAdapter.OnArticleClickListener {
     private static final String ARG_CATEGORY_NAME = "category_name";
     private static final String ARG_SUBCATEGORY_NAME = "subcategory_name";

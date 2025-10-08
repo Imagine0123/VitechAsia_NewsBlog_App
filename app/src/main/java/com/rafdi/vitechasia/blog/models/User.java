@@ -1,5 +1,9 @@
 package com.rafdi.vitechasia.blog.models;
 
+/**
+ * Model class representing a user in the blog application.
+ * Used for user authentication and profile management.
+ */
 public class User {
     private String id;
     private String name;

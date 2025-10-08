@@ -8,6 +8,10 @@ import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Model class representing a blog category with subcategories.
+ * Implements Parcelable for Android component communication.
+ */
 public class Category implements Parcelable {
     private String id;
     private String name;

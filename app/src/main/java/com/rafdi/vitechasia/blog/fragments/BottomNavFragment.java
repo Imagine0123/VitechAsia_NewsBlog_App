@@ -13,6 +13,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.activities.HomePage;
 
+/**
+ * Fragment containing the bottom navigation bar.
+ * Handles navigation between different app sections.
+ */
 public class BottomNavFragment extends Fragment implements BottomNavigationView.OnItemSelectedListener {
 
     private BottomNavigationView bottomNavView;

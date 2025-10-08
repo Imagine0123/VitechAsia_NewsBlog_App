@@ -46,7 +46,7 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
     private static final String TAG = "HomePage";
     private SessionManager sessionManager;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Article currentArticle; // To store the current article when in ArticleDetailFragment
+    private Article currentArticle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +94,7 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
         );
 
         //Text Styling
-        TextView vitechText = findViewById(R.id.vitechText);
+        TextView appNameText = findViewById(R.id.app_name);
 
         setupSearch();
 
@@ -118,9 +118,9 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         );
 
-        vitechText.setText(spannable);
+        appNameText.setText(spannable);
 
-        vitechText.setOnClickListener(v -> {
+        appNameText.setOnClickListener(v -> {
             loadHomeFragment();
             updateBottomNavSelection(R.id.navigation_home);
         });

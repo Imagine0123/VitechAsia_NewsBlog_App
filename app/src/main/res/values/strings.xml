@@ -45,9 +45,9 @@
     <string name="views">%1$d Views</string>
     <string name="comments">%1$d Comments</string>
     <string name="share_article">Share Article</string>
-    <string name="like_article">Like Article</string>
-    <string name="comment_hint">Add a comment…</string>
-    
+    <string name="search_results_for">Search results for \"%s\"</string>
+    <string name="no_search_history">No search history available</string>
+
     <!-- Categories -->
     <string name="category_sports">Sports</string>
     <string name="category_tech">Technology</string>

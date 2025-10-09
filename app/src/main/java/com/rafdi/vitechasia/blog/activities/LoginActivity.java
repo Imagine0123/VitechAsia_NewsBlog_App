@@ -50,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    //TODO: Use actual user data from backend
     private void attemptLogin() {
         // Reset errors
         emailLayout.setError(null);

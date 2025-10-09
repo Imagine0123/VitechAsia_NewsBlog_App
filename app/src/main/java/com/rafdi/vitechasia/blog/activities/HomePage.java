@@ -5,12 +5,21 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.view.View;
+import android.view.ViewGroup;
+import android.text.style.ForegroundColorSpan;
+import android.graphics.drawable.ColorDrawable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.rafdi.vitechasia.blog.utils.SearchHistoryManager;
+import com.rafdi.vitechasia.blog.adapters.SearchHistoryAdapter;
+import java.util.List;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -48,6 +57,12 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
     private SwipeRefreshLayout swipeRefreshLayout;
     private Article currentArticle;
 
+    // Search components
+    private EditText searchText;
+    private ImageButton searchButton;
+    private PopupWindow searchDropdown;
+    private SearchHistoryManager searchHistoryManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Initialize session manager
@@ -65,6 +80,12 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
+
+        // Initialize search components
+        searchText = findViewById(R.id.searchText);
+        searchButton = findViewById(R.id.searchButton);
+        searchHistoryManager = SearchHistoryManager.getInstance(this);
+        searchDropdown = createSearchDropdown();
 
         // Enable edge-to-edge display
         EdgeToEdge.enable(this);
@@ -95,8 +116,19 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
 
         //Text Styling
         TextView appNameText = findViewById(R.id.app_name);
-
-        setupSearch();
+        
+        // Setup search after all components are initialized
+        if (searchText != null && searchButton != null) {
+            setupSearch();
+        } else {
+            // Log error if search components are not found
+            if (searchText == null) {
+                android.util.Log.e("HomePage", "Search EditText not found in layout");
+            }
+            if (searchButton == null) {
+                android.util.Log.e("HomePage", "Search Button not found in layout");
+            }
+        }
 
         String fullText = getString(R.string.app_name);
         SpannableString spannable = new SpannableString(fullText);
@@ -237,23 +269,27 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
     }
 
     private void setupSearch() {
-        EditText searchText = findViewById(R.id.searchText);
-        ImageButton searchButton = findViewById(R.id.searchButton);
+        if (searchButton == null || searchText == null) {
+            android.util.Log.e("HomePage", "Search components not properly initialized");
+            return;
+        }
         
         // Handle search button click
         searchButton.setOnClickListener(v -> {
             String query = searchText.getText().toString().trim();
             if (!query.isEmpty()) {
                 performSearch(query);
+                searchDropdown.dismiss(); // Hide dropdown when performing search
             }
         });
-        
+
         // Handle search on keyboard's search/enter key
         searchText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 String query = searchText.getText().toString().trim();
                 if (!query.isEmpty()) {
                     performSearch(query);
+                    searchDropdown.dismiss(); // Hide dropdown when performing search
                     // Hide the keyboard
                     InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
@@ -262,32 +298,124 @@ public class HomePage extends AppCompatActivity implements ArticleVerticalAdapte
             }
             return false;
         });
-        
+
+        // Show search history dropdown when EditText gains focus
+        searchText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                List<String> recentSearches = searchHistoryManager.getSearchHistory();
+                if (recentSearches != null && !recentSearches.isEmpty()) {
+                    showSearchDropdown(recentSearches);
+                }
+            } else {
+                searchDropdown.dismiss();
+            }
+        });
+
+        // Hide dropdown when clicking outside
+        searchText.setOnClickListener(v -> {
+            List<String> recentSearches = searchHistoryManager.getSearchHistory();
+            if (recentSearches != null && !recentSearches.isEmpty()) {
+                showSearchDropdown(recentSearches);
+            }
+        });
+
         // Clear search and return to home when search text is empty
         searchText.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().isEmpty() && 
+                if (s.toString().trim().isEmpty() &&
                     getSupportFragmentManager().findFragmentById(R.id.fragment_container) instanceof SearchResultsFragment) {
                     // If search is cleared and we're on search results, go back to home
                     loadHomeFragment();
                 }
             }
-            
+
             @Override
             public void afterTextChanged(android.text.Editable s) {}
         });
     }
     
-    private void performSearch(String query) {
+    private PopupWindow createSearchDropdown() {
+        // Inflate the dropdown layout
+        View dropdownView = getLayoutInflater().inflate(R.layout.layout_search_dropdown, null);
+
+        // Create the popup window
+        PopupWindow popupWindow = new PopupWindow(
+                dropdownView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+        );
+
+        // Set background drawable for proper shadow
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        // Set elevation for Material Design shadow
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            popupWindow.setElevation(8);
+        }
+
+        // Set outside touchable to dismiss popup
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(false);
+
+        return popupWindow;
+    }
+
+    private void showSearchDropdown(List<String> recentSearches) {
+        if (recentSearches.isEmpty()) {
+            searchDropdown.dismiss();
+            return;
+        }
+
+        // Get the dropdown content view
+        View dropdownView = searchDropdown.getContentView();
+        RecyclerView recyclerView = dropdownView.findViewById(R.id.recyclerView);
+
+        // Limit to 5 recent searches as requested
+        List<String> limitedSearches = recentSearches.size() > 5 ?
+                recentSearches.subList(0, 5) : recentSearches;
+
+        // Setup adapter
+        SearchHistoryAdapter adapter = new SearchHistoryAdapter(limitedSearches,
+                query -> {
+                    // Set the search text and perform search
+                    searchText.setText(query);
+                    performSearch(query);
+                    searchDropdown.dismiss();
+
+                    // Hide keyboard after selection
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+                });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        // Show popup below the search bar if not already showing
+        if (!searchDropdown.isShowing()) {
+            searchDropdown.showAsDropDown(searchText);
+        }
+
+        // Set on dismiss listener to handle cleanup
+        searchDropdown.setOnDismissListener(() -> {
+            // Any cleanup if needed
+        });
+    }
+    
+    public void performSearch(String query) {
         if (query.trim().isEmpty()) {
             loadHomeFragment();
             return;
         }
-        
+
+        // Add search to history before performing search
+        SearchHistoryManager searchHistoryManager = SearchHistoryManager.getInstance(this);
+        searchHistoryManager.addSearchQuery(query);
+
         // Create and show the search results fragment
         SearchResultsFragment fragment = SearchResultsFragment.newInstance(query);
         getSupportFragmentManager().beginTransaction()

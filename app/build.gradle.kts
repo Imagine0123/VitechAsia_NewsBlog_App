@@ -52,6 +52,9 @@ dependencies {
     // AndroidX Preference Library
     implementation(libs.preference.ktx)
     implementation(libs.androidx.swiperefreshlayout)
+    
+    // Gson for JSON serialization/deserialization
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -13,6 +13,7 @@ compose = "1.8.9"
 preference = "1.2.1"
 swiperefreshlayout = "1.2.0"
 swiperefreshlayoutVersion = "1.1.0"
+gson = "2.10.1"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -28,6 +29,7 @@ material3-window-size = { group = "androidx.compose.material3", name = "material
 fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "compose" }
 preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayoutVersion" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

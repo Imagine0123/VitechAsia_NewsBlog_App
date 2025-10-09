@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,13 +22,17 @@ import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.SearchHistoryManager;
+import com.rafdi.vitechasia.blog.utils.CategoryManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Fragment for displaying search results based on user queries.
- * Shows filtered articles with category-based search capabilities.
+ * Shows filtered articles with category-based search capabilities and search history.
  */
 public class SearchResultsFragment extends Fragment implements ArticleVerticalAdapter.OnArticleClickListener {
     private static final String ARG_QUERY = "search_query";
@@ -38,8 +43,12 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private RecyclerView resultsRecyclerView;
     private ArticleVerticalAdapter verticalAdapter;
     private TextView noResultsText;
+    private TextView searchQueryText;
     private ChipGroup chipGroupFilters;
+    private LinearLayout searchHistoryLayout;
     private List<Article> allSearchResults = new ArrayList<>();
+    private SearchHistoryManager searchHistoryManager;
+    private CategoryManager categoryManager;
 
     public static SearchResultsFragment newInstance(String query) {
         SearchResultsFragment fragment = new SearchResultsFragment();
@@ -55,6 +64,15 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         if (getArguments() != null) {
             searchQuery = getArguments().getString(ARG_QUERY);
         }
+
+        // Initialize managers
+        searchHistoryManager = SearchHistoryManager.getInstance(requireContext());
+        categoryManager = CategoryManager.getInstance();
+
+        // Add to search history
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            searchHistoryManager.addSearchQuery(searchQuery);
+        }
     }
 
     @Nullable
@@ -66,7 +84,15 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         // Initialize views
         resultsRecyclerView = view.findViewById(R.id.resultsRecyclerView);
         noResultsText = view.findViewById(R.id.noResultsText);
+        searchQueryText = view.findViewById(R.id.searchQueryText);
         chipGroupFilters = view.findViewById(R.id.chip_group_filters);
+        searchHistoryLayout = view.findViewById(R.id.searchHistoryLayout);
+
+        // Set search query text
+        if (searchQueryText != null && searchQuery != null) {
+            searchQueryText.setText(getString(R.string.search_results_for, searchQuery));
+        }
+
         view.findViewById(R.id.btn_filter).setOnClickListener(v -> showFilterDialog());
 
         // Setup RecyclerView
@@ -74,8 +100,13 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         resultsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         resultsRecyclerView.setAdapter(verticalAdapter);
 
-        // Perform initial search
-        performSearch();
+        // Display search history if no query
+        if (searchQuery == null || searchQuery.trim().isEmpty()) {
+            displaySearchHistory();
+        } else {
+            // Perform initial search
+            performSearch();
+        }
 
         return view;
     }
@@ -87,9 +118,41 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         }
     }
 
+    private void displaySearchHistory() {
+        if (searchHistoryLayout == null) return;
+
+        searchHistoryLayout.removeAllViews();
+        List<String> history = searchHistoryManager.getSearchHistory();
+
+        if (history.isEmpty()) {
+            noResultsText.setVisibility(View.VISIBLE);
+            noResultsText.setText("No search history available");
+            resultsRecyclerView.setVisibility(View.GONE);
+            return;
+        }
+
+        noResultsText.setVisibility(View.GONE);
+        resultsRecyclerView.setVisibility(View.GONE);
+
+        // Add history items
+        for (String query : history) {
+            Chip chip = new Chip(requireContext());
+            chip.setText(query);
+            chip.setClickable(true);
+            chip.setCheckable(false);
+            chip.setOnClickListener(v -> {
+                // Navigate to new search results
+                if (getActivity() instanceof HomePage) {
+                    ((HomePage) getActivity()).performSearch(query);
+                }
+            });
+            searchHistoryLayout.addView(chip);
+        }
+    }
+
     private void performSearch() {
         if (searchQuery == null || searchQuery.trim().isEmpty()) {
-            showNoResults();
+            displaySearchHistory();
             return;
         }
 
@@ -150,7 +213,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             chip.setText(category.getName());
             chip.setCheckable(true);
             chip.setChecked(category.getId().equals(selectedCategory));
-            
+
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     // Clear previous selection
@@ -173,17 +236,11 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             updateSubcategoryChips(subcategoryChipGroup, subcategoriesLabel, selectedCategory);
         }
 
-        // Set up dialog with default theme
+        // Set up dialog
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create();
 
-        // Apply window background color for dark mode
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        }
-
-        // Set up button click listeners
         btnApply.setOnClickListener(v -> {
             applyFilters();
             dialog.dismiss();
@@ -197,6 +254,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             subcategoryChipGroup.setVisibility(View.GONE);
             subcategoriesLabel.setVisibility(View.GONE);
             applyFilters();
+            dialog.dismiss();
         });
 
         dialog.show();
@@ -216,7 +274,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
                 if (subcategory == null) continue;
 
                 // Capitalize the first letter of the subcategory
-                String displayName = subcategory.substring(0, 1).toUpperCase() + 
+                String displayName = subcategory.substring(0, 1).toUpperCase() +
                                   (subcategory.length() > 1 ? subcategory.substring(1) : "");
 
                 Chip chip = new Chip(requireContext());
@@ -271,19 +329,13 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private void addFilterChip(String text, View.OnClickListener onCloseClick) {
         if (chipGroupFilters == null || text == null) return;
 
-        // Create chip with Material 3 style
         Chip chip = new Chip(requireContext());
-        
-        // Set chip text and appearance
         chip.setText(text);
         chip.setCloseIconVisible(true);
-        
-        // Use theme attributes for colors
         chip.setChipBackgroundColorResource(R.color.primary);
         chip.setTextColor(getResources().getColor(R.color.on_primary, requireContext().getTheme()));
         chip.setCloseIconTintResource(R.color.on_primary);
 
-        // Set click listener for close icon
         chip.setOnCloseIconClickListener(v -> {
             if (onCloseClick != null) {
                 onCloseClick.onClick(v);
@@ -308,6 +360,10 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private void showNoResults() {
         noResultsText.setVisibility(View.VISIBLE);
         resultsRecyclerView.setVisibility(View.GONE);
-        noResultsText.setText(getString(R.string.no_results_found, searchQuery));
+        if (searchQuery != null) {
+            noResultsText.setText(getString(R.string.no_results_found, searchQuery));
+        } else {
+            noResultsText.setText("No results found");
+        }
     }
 }

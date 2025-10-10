@@ -3,8 +3,6 @@ package com.rafdi.vitechasia.blog.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Set;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -64,49 +62,16 @@ public class SearchHistoryManager {
     /**
      * Get search history as a list
      */
-    @SuppressWarnings("unchecked")
     public List<String> getSearchHistory() {
         try {
-            // First try to get as JSON string (new format)
-            if (preferences.contains(KEY_SEARCH_HISTORY)) {
-                try {
-                    String historyJson = preferences.getString(KEY_SEARCH_HISTORY, null);
-                    if (historyJson != null && !historyJson.isEmpty()) {
-                        // Try to parse as JSON array
-                        Type type = new TypeToken<List<String>>() {}.getType();
-                        List<String> history = gson.fromJson(historyJson, type);
-                        if (history != null) {
-                            return history;
-                        }
-                    }
-                } catch (ClassCastException e) {
-                    // This might be the old format, try to migrate
-                    try {
-                        // Check if it's a Set<String>
-                        if (preferences.contains(KEY_SEARCH_HISTORY)) {
-                            Object value = preferences.getAll().get(KEY_SEARCH_HISTORY);
-                            if (value instanceof Set) {
-                                Set<String> oldSet = (Set<String>) value;
-                                if (!oldSet.isEmpty()) {
-                                    // Convert to list and save in new format
-                                    List<String> migratedList = new ArrayList<>(oldSet);
-                                    // Save in new format
-                                    saveHistory(migratedList);
-                                    // Clear old format
-                                    preferences.edit().remove(KEY_SEARCH_HISTORY).apply();
-                                    return migratedList;
-                                }
-                            }
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+            String historyJson = preferences.getString(KEY_SEARCH_HISTORY, null);
+            if (historyJson != null && !historyJson.isEmpty()) {
+                Type type = new TypeToken<List<String>>() {}.getType();
+                List<String> history = gson.fromJson(historyJson, type);
+                if (history != null) {
+                    return history;
                 }
             }
-            
-            // If we get here, return empty list
             return new ArrayList<>();
         } catch (Exception e) {
             e.printStackTrace();

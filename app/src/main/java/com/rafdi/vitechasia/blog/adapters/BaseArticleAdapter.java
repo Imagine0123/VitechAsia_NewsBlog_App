@@ -9,7 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import android.util.Log;
+
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.rafdi.vitechasia.blog.R;
+import androidx.annotation.Nullable;
 import com.rafdi.vitechasia.blog.models.Article;
 
 import java.util.ArrayList;
@@ -21,6 +25,10 @@ import java.util.List;
  */
 public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     extends RecyclerView.Adapter<VH> {
+    
+    private static final String TAG = "BaseArticleAdapter";
+    private static final int DEFAULT_IMAGE_PLACEHOLDER = R.drawable.ic_placeholder_image;
+    private static final int DEFAULT_IMAGE_ERROR = R.drawable.error_image;
 
     protected List<Article> articles = new ArrayList<>();
     protected OnArticleClickListener listener;
@@ -38,46 +46,99 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
      * Subclasses should call this and then add their specific binding logic.
      */
     protected void bindArticleData(ArticleViewHolder holder, Article article) {
-        // Set basic article information
-        holder.articleTitle.setText(article.getTitle());
-        holder.articleAuthor.setText(article.getAuthorName());
-
+        if (article == null || holder == null) {
+            Log.w(TAG, "Article or holder is null in bindArticleData");
+            return;
+        }
+        
+        // Bind text views
+        bindTextViews(holder, article);
+        
+        // Load and bind image
+        bindImageView(holder, article);
+        
+        // Set category and subcategory with proper formatting
+        bindCategories(holder, article);
+    }
+    
+    /**
+     * Bind text-related views for the article
+     */
+    private void bindTextViews(ArticleViewHolder holder, Article article) {
+        // Safe text setting with null checks
+        holder.articleTitle.setText(article.getTitle() != null ? article.getTitle() : "");
+        holder.articleAuthor.setText(article.getAuthorName() != null ? article.getAuthorName() : "");
+        
         if (article.getPublishDate() != null) {
             holder.articleDate.setText(article.getFormattedDate());
+        } else {
+            holder.articleDate.setText("");
         }
-
-        // Load article image with enhanced error handling and caching
-        loadArticleImage(holder.articleImage, article.getImageUrl());
-
-        // Set category and subcategory with proper formatting
-        setCategoryAndSubcategory(holder, article);
+    }
+    
+    /**
+     * Bind image view with the article's image
+     */
+    private void bindImageView(ArticleViewHolder holder, Article article) {
+        if (holder.articleImage != null) {
+            loadArticleImage(holder.articleImage, article.getImageUrl());
+        }
     }
 
     /**
      * Enhanced image loading with caching and error handling.
      */
     protected void loadArticleImage(ImageView imageView, String imageUrl) {
+        if (imageView == null) {
+            Log.w(TAG, "ImageView is null, cannot load image");
+            return;
+        }
+        
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(imageView.getContext())
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_placeholder_image)
-                    .error(R.drawable.error_image)
+                    .placeholder(DEFAULT_IMAGE_PLACEHOLDER)
+                    .error(DEFAULT_IMAGE_ERROR)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(false)
+                    .transition(DrawableTransitionOptions.withCrossFade())
                     .into(imageView);
         } else {
-            imageView.setImageResource(R.drawable.ic_placeholder_image);
+            imageView.setImageResource(DEFAULT_IMAGE_PLACEHOLDER);
         }
     }
 
     /**
      * Format and set category and subcategory text.
      */
-    protected void setCategoryAndSubcategory(ArticleViewHolder holder, Article article) {
-        String category = ArticleFormatter.formatCategory(article.getCategoryId());
-        String subcategory = ArticleFormatter.formatSubcategory(article.getSubcategoryId());
-
-        holder.articleCategory.setText(category);
-        holder.articleSubcategory.setText(subcategory);
+    /**
+     * Set category and subcategory text with null safety
+     */
+    private void bindCategories(ArticleViewHolder holder, Article article) {
+        if (article == null || holder == null) {
+            return;
+        }
+        
+        String category = "";
+        String subcategory = "";
+        
+        try {
+            if (article.getCategoryId() != null) {
+                category = ArticleFormatter.formatCategory(article.getCategoryId());
+            }
+            if (article.getSubcategoryId() != null) {
+                subcategory = ArticleFormatter.formatSubcategory(article.getSubcategoryId());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error formatting categories", e);
+        }
+        
+        if (holder.articleCategory != null) {
+            holder.articleCategory.setText(category);
+        }
+        if (holder.articleSubcategory != null) {
+            holder.articleSubcategory.setText(subcategory);
+        }
     }
 
     /**
@@ -159,25 +220,48 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * Common ViewHolder class that contains views shared by article adapters.
+     * ViewHolder class for article items that holds references to all the views.
+     * All view fields are marked as @Nullable since they might not be present in all layouts.
      */
     public static class ArticleViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView articleImage;
-        public final TextView articleTitle;
-        public final TextView articleAuthor;
-        public final TextView articleDate;
-        public final TextView articleCategory;
-        public final TextView articleSubcategory;
+        @Nullable public final ImageView articleImage;
+        @Nullable public final TextView articleTitle;
+        @Nullable public final TextView articleAuthor;
+        @Nullable public final TextView articleDate;
+        @Nullable public final TextView articleCategory;
+        @Nullable public final TextView articleSubcategory;
 
         public ArticleViewHolder(@NonNull View itemView) {
             super(itemView);
-            // All views now use camelCase IDs
-            articleImage = itemView.findViewById(R.id.articleImage);
-            articleTitle = itemView.findViewById(R.id.articleTitle);
-            articleAuthor = itemView.findViewById(R.id.articleAuthor);
-            articleDate = itemView.findViewById(R.id.articleDate);
-            articleCategory = itemView.findViewById(R.id.articleCategory);
-            articleSubcategory = itemView.findViewById(R.id.articleSubcategory);
+            // Initialize all views with null checks
+            articleImage = safeFindView(itemView, R.id.articleImage, ImageView.class);
+            articleTitle = safeFindView(itemView, R.id.articleTitle, TextView.class);
+            articleAuthor = safeFindView(itemView, R.id.articleAuthor, TextView.class);
+            articleDate = safeFindView(itemView, R.id.articleDate, TextView.class);
+            articleCategory = safeFindView(itemView, R.id.articleCategory, TextView.class);
+            articleSubcategory = safeFindView(itemView, R.id.articleSubcategory, TextView.class);
+        }
+        
+        /**
+         * Safely find a view by ID and cast it to the specified type.
+         * @param <T> The type of view to find
+         * @param root The root view to search in
+         * @param id The ID of the view to find
+         * @param viewClass The class of the view to find
+         * @return The view if found, null otherwise
+         */
+        @Nullable
+        private <T extends View> T safeFindView(@NonNull View root, int id, Class<T> viewClass) {
+            try {
+                View view = root.findViewById(id);
+                if (view != null && viewClass.isInstance(view)) {
+                    return viewClass.cast(view);
+                }
+                return null;
+            } catch (Exception e) {
+                Log.w(TAG, "Error finding view with ID: " + root.getResources().getResourceName(id), e);
+                return null;
+            }
         }
     }
 }

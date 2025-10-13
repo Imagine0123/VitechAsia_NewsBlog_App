@@ -9,9 +9,6 @@ import androidx.annotation.NonNull;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * RecyclerView adapter for displaying articles in horizontal layout.
  * Now extends BaseArticleAdapter to reduce code duplication and improve maintainability.

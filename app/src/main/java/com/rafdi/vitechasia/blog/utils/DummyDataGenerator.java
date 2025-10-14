@@ -229,9 +229,6 @@ public class DummyDataGenerator {
         List<Article> articles = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         
-        // Mark some articles as bookmarked for demonstration
-        List<Integer> bookmarkedIndices = Arrays.asList(1, 3, 5, 7, 9);
-        
         // Add Tech Articles - Android
         articles.add(createArticle(
                 "tech1",

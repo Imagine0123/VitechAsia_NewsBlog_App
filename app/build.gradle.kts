@@ -55,6 +55,21 @@ dependencies {
     
     // Gson for JSON serialization/deserialization
     implementation(libs.gson)
+    
+    // Retrofit for network calls
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    
+    // Coroutines for asynchronous programming
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    
+    // Room for local database
+    implementation("androidx.room:room-runtime:2.4.3")
+    annotationProcessor("androidx.room:room-compiler:2.4.3")
+    implementation("androidx.room:room-ktx:2.4.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

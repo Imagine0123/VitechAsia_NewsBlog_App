@@ -12,14 +12,34 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Repository class that handles data operations for articles.
+ * Serves as a single source of truth for all article-related data in the application.
+ * 
+ * <p>This class follows the repository pattern to abstract the data sources from the rest of the app.
+ * It handles the communication between the API service and the ViewModel, and can be extended
+ * to include local data caching in the future.
+ * 
+ * <p>Use {@link #getInstance()} to get the singleton instance of this class.
+ */
+
 public class ArticleRepository {
     private static ArticleRepository instance;
     private final ArticleApiService apiService;
     
+    /**
+     * Private constructor to prevent direct instantiation.
+     * Initializes the API service using {@link ApiClient}.
+     */
     private ArticleRepository() {
         apiService = ApiClient.getArticleApiService();
     }
     
+    /**
+     * Returns the singleton instance of ArticleRepository.
+     * 
+     * @return The singleton instance of ArticleRepository
+     */
     public static synchronized ArticleRepository getInstance() {
         if (instance == null) {
             instance = new ArticleRepository();
@@ -27,6 +47,14 @@ public class ArticleRepository {
         return instance;
     }
     
+    /**
+     * Fetches a list of articles from the API with pagination and optional category filtering.
+     * 
+     * @param category The category to filter by, or null for all categories
+     * @param page The page number for pagination (starting from 1)
+     * @param limit The maximum number of articles to return per page
+     * @param callback The callback to handle the response or error
+     */
     public void getArticles(String category, int page, int limit, final ArticleCallback callback) {
         apiService.getArticles(category, page, limit).enqueue(new Callback<List<Article>>() {
             @Override
@@ -45,6 +73,12 @@ public class ArticleRepository {
         });
     }
     
+    /**
+     * Fetches a single article by its ID from the API.
+     * 
+     * @param id The ID of the article to fetch
+     * @param callback The callback to handle the response or error
+     */
     public void getArticleById(String id, final SingleArticleCallback callback) {
         apiService.getArticleById(id).enqueue(new Callback<Article>() {
             @Override
@@ -63,11 +97,17 @@ public class ArticleRepository {
         });
     }
     
+    /**
+     * Callback interface for handling article list responses.
+     */
     public interface ArticleCallback {
         void onSuccess(List<Article> articles);
         void onError(String message);
     }
     
+    /**
+     * Callback interface for handling single article responses.
+     */
     public interface SingleArticleCallback {
         void onSuccess(Article article);
         void onError(String message);

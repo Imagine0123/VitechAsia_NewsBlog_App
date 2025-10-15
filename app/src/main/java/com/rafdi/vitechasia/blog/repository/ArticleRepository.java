@@ -1,10 +1,14 @@
 package com.rafdi.vitechasia.blog.repository;
 
+import android.content.Context;
+
 import androidx.lifecycle.MutableLiveData;
 
+import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.api.ApiClient;
 import com.rafdi.vitechasia.blog.api.ArticleApiService;
 import com.rafdi.vitechasia.blog.models.Article;
+import com.rafdi.vitechasia.blog.utils.NetworkUtils;
 
 import java.util.List;
 
@@ -20,35 +24,45 @@ import retrofit2.Response;
  * It handles the communication between the API service and the ViewModel, and can be extended
  * to include local data caching in the future.
  * 
- * <p>Use {@link #getInstance()} to get the singleton instance of this class.
+ * <p>Use {@link #getInstance(Context)} to get the singleton instance of this class.
  */
 
 public class ArticleRepository {
-    private static ArticleRepository instance;
+    private static volatile ArticleRepository instance;
     private final ArticleApiService apiService;
+    private final Context context;
     
     /**
      * Private constructor to prevent direct instantiation.
      * Initializes the API service using {@link ApiClient}.
+     *
+     * @param context The application context for checking network connectivity
      */
-    private ArticleRepository() {
-        apiService = ApiClient.getArticleApiService();
+    private ArticleRepository(Context context) {
+        this.context = context.getApplicationContext();
+        this.apiService = ApiClient.getArticleApiService();
     }
     
     /**
      * Returns the singleton instance of ArticleRepository.
      * 
+     * @param context The application context (will use application context internally)
      * @return The singleton instance of ArticleRepository
      */
-    public static synchronized ArticleRepository getInstance() {
+    public static ArticleRepository getInstance(Context context) {
         if (instance == null) {
-            instance = new ArticleRepository();
+            synchronized (ArticleRepository.class) {
+                if (instance == null) {
+                    instance = new ArticleRepository(context);
+                }
+            }
         }
         return instance;
     }
-    
+
     /**
      * Fetches a list of articles from the API with pagination and optional category filtering.
+     * Checks for network connectivity before making the API call.
      * 
      * @param category The category to filter by, or null for all categories
      * @param page The page number for pagination (starting from 1)
@@ -56,6 +70,12 @@ public class ArticleRepository {
      * @param callback The callback to handle the response or error
      */
     public void getArticles(String category, int page, int limit, final ArticleCallback callback) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (callback != null) {
+                callback.onError(context.getString(R.string.error_no_internet_connection));
+            }
+            return;
+        }
         apiService.getArticles(category, page, limit).enqueue(new Callback<List<Article>>() {
             @Override
             public void onResponse(Call<List<Article>> call, Response<List<Article>> response) {
@@ -79,7 +99,20 @@ public class ArticleRepository {
      * @param id The ID of the article to fetch
      * @param callback The callback to handle the response or error
      */
+    /**
+     * Fetches a single article by its ID from the API.
+     * Checks for network connectivity before making the API call.
+     * 
+     * @param id The ID of the article to fetch
+     * @param callback The callback to handle the response or error
+     */
     public void getArticleById(String id, final SingleArticleCallback callback) {
+        if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (callback != null) {
+                callback.onError(context.getString(R.string.error_no_internet_connection));
+            }
+            return;
+        }
         apiService.getArticleById(id).enqueue(new Callback<Article>() {
             @Override
             public void onResponse(Call<Article> call, Response<Article> response) {

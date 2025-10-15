@@ -1,8 +1,11 @@
 package com.rafdi.vitechasia.blog.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.repository.ArticleRepository;
@@ -18,15 +21,16 @@ import java.util.List;
  * by UI components to react to data changes.
  */
 
-public class ArticleViewModel extends ViewModel {
+public class ArticleViewModel extends AndroidViewModel {
     private final ArticleRepository repository;
     private final MutableLiveData<List<Article>> articlesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Article> articleLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loadingLiveData = new MutableLiveData<>();
 
-    public ArticleViewModel() {
-        this.repository = ArticleRepository.getInstance();
+    public ArticleViewModel(@NonNull Application application) {
+        super(application);
+        this.repository = ArticleRepository.getInstance(application);
     }
 
     /**

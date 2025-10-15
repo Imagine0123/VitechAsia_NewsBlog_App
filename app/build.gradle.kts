@@ -32,45 +32,47 @@ android {
 }
 
 dependencies {
+    // AndroidX Core
     implementation(libs.appcompat)
-    implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     
+    // Material Design
+    implementation(libs.material)
+    
     // Glide for image loading
     implementation(libs.glide)
+    annotationProcessor("com.github.bumptech.glide:compiler:${libs.versions.glide.get()}")
 
     // Material 3
     implementation(libs.material3)
-
-    // For backward compatibility with Material 3 components
     implementation(libs.material3.window.size)
 
-    // Fragment KTX for viewModels()
+    // AndroidX KTX
     implementation(libs.fragment.ktx)
-
-    // AndroidX Preference Library
     implementation(libs.preference.ktx)
     implementation(libs.androidx.swiperefreshlayout)
     
-    // Gson for JSON serialization/deserialization
+    // Networking
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging)
     implementation(libs.gson)
     
-    // Retrofit for network calls
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    // Coroutines
+    implementation(libs.coroutines.android)
     
-    // Coroutines for asynchronous programming
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    // Lifecycle
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
     
-    // Room for local database
-    implementation("androidx.room:room-runtime:2.4.3")
-    annotationProcessor("androidx.room:room-compiler:2.4.3")
-    implementation("androidx.room:room-ktx:2.4.3")
+    // Room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+    implementation(libs.room.ktx)
 
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -1,7 +1,14 @@
 package com.rafdi.vitechasia.blog.utils;
 
+import android.app.Application;
+import android.content.Context;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.models.Category;
+import com.rafdi.vitechasia.blog.viewmodel.ArticleViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +17,70 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Utility class for generating dummy article data.
- * TODO: replace with real API calls later.
+ * Utility class for managing article data.
+ * Tries to fetch data from the API first, falls back to dummy data if needed.
  */
 public class DataHandler {
+    private static volatile DataHandler instance;
+    private ArticleViewModel articleViewModel;
+    private boolean isViewModelInitialized = false;
+
+    /**
+     * Interface for receiving data load callbacks
+     */
+    public interface DataLoadListener {
+        void onDataLoaded(List<Article> articles);
+
+        void onError(String message);
+    }
+
+    /**
+     * Interface for receiving single article callbacks
+     */
+    public interface SingleArticleCallback {
+        void onArticleLoaded(Article article);
+
+        void onError(String message);
+    }
+
+    private DataHandler() {
+        // Private constructor to prevent direct instantiation
+    }
+
+    /**
+     * Initializes the DataHandler with a Context.
+     * Must be called before using any other methods.
+     *
+     * @param context The application context
+     */
+    public static void initialize(Context context) {
+        if (instance == null) {
+            synchronized (DataHandler.class) {
+                if (instance == null) {
+                    instance = new DataHandler();
+                    if (context != null && context.getApplicationContext() instanceof Application) {
+                        instance.articleViewModel = new ArticleViewModel((Application) context.getApplicationContext());
+                        instance.isViewModelInitialized = true;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the singleton instance of DataHandler.
+     * initialize() must be called first.
+     *
+     * @return The DataHandler instance
+     * @throws IllegalStateException if initialize() hasn't been called
+     */
+    public static DataHandler getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("DataHandler must be initialized first. Call initialize() in your Application class.");
+        }
+        return instance;
+    }
+
     private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
             "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.";
@@ -25,7 +92,7 @@ public class DataHandler {
     public static final String CATEGORY_BUSINESS = "business";
     public static final String CATEGORY_SPORTS = "sports";
     public static final String CATEGORY_NEWS = "news";
-    
+
     // Subcategory IDs
     public static final String SUBCATEGORY_ANDROID = "android";
     public static final String SUBCATEGORY_IOS = "ios";
@@ -47,6 +114,8 @@ public class DataHandler {
     public static final String SUBCATEGORY_ECONOMY = "economy";
 
     private static List<Article> allArticles = null;
+    private boolean isLoading = false;
+    private DataLoadListener dataLoadListener;
 
     /**
      * Get all bookmarked articles, synced with BookmarkManager
@@ -55,7 +124,7 @@ public class DataHandler {
         List<Article> allArticles = getDummyArticles();
         BookmarkManager bookmarkManager = BookmarkManager.getInstance(context);
         bookmarkManager.syncArticleBookmarkStatus(allArticles);
-        
+
         List<Article> bookmarked = new ArrayList<>();
         for (Article article : allArticles) {
             if (article.isBookmarked()) {
@@ -76,7 +145,60 @@ public class DataHandler {
     }
 
     /**
-     * Get articles filtered by category ID
+     * Get articles filtered by category ID, trying the API first and falling back to dummy data
+     *
+     * @param categoryId The category ID to filter by
+     * @param callback   Callback to receive the results asynchronously
+     */
+    public void getArticlesByCategory(String categoryId, DataLoadListener callback) {
+        if (!isViewModelInitialized) {
+            // Fall back to dummy data if ViewModel isn't initialized
+            List<Article> dummyArticles = getDummyArticlesByCategory(categoryId);
+            if (callback != null) {
+                callback.onDataLoaded(dummyArticles);
+            }
+            return;
+        }
+
+        // Try to get data from the API first
+        articleViewModel.loadArticles(categoryId, 1, 20); // Default page 1, 20 items per page
+        articleViewModel.getArticlesLiveData().observeForever(new Observer<List<Article>>() {
+            @Override
+            public void onChanged(List<Article> articles) {
+                if (articles != null && !articles.isEmpty()) {
+                    if (callback != null) {
+                        callback.onDataLoaded(articles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                } else {
+                    // Fall back to dummy data if API returns empty
+                    List<Article> dummyArticles = getDummyArticlesByCategory(categoryId);
+                    if (callback != null) {
+                        callback.onDataLoaded(dummyArticles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                }
+            }
+        });
+
+        // Set up error handling
+        articleViewModel.getErrorLiveData().observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(String error) {
+                if (error != null) {
+                    // On error, fall back to dummy data
+                    List<Article> dummyArticles = getDummyArticlesByCategory(categoryId);
+                    if (callback != null) {
+                        callback.onDataLoaded(dummyArticles);
+                    }
+                    articleViewModel.getErrorLiveData().removeObserver(this);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get articles filtered by category ID (dummy data fallback)
      */
     public static List<Article> getDummyArticlesByCategory(String categoryId) {
         List<Article> filtered = new ArrayList<>();
@@ -86,6 +208,71 @@ public class DataHandler {
             }
         }
         return filtered;
+    }
+
+    /**
+     * Get a single article by ID, trying the API first and falling back to dummy data
+     *
+     * @param id       The article ID to fetch
+     * @param callback Callback to receive the result asynchronously
+     */
+    public void getArticleById(String id, SingleArticleCallback callback) {
+        if (!isViewModelInitialized) {
+            // Fall back to dummy data if ViewModel isn't initialized
+            Article dummyArticle = getDummyArticleById(id);
+            if (callback != null) {
+                callback.onArticleLoaded(dummyArticle);
+            }
+            return;
+        }
+
+        // Try to get data from the API first
+        articleViewModel.loadArticleById(id);
+        articleViewModel.getArticleLiveData().observeForever(new Observer<Article>() {
+            @Override
+            public void onChanged(Article article) {
+                if (article != null) {
+                    if (callback != null) {
+                        callback.onArticleLoaded(article);
+                    }
+                    articleViewModel.getArticleLiveData().removeObserver(this);
+                } else {
+                    // Fall back to dummy data if API returns null
+                    Article dummyArticle = getDummyArticleById(id);
+                    if (callback != null) {
+                        callback.onArticleLoaded(dummyArticle);
+                    }
+                    articleViewModel.getArticleLiveData().removeObserver(this);
+                }
+            }
+        });
+
+        // Set up error handling
+        articleViewModel.getErrorLiveData().observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(String error) {
+                if (error != null) {
+                    // On error, fall back to dummy data
+                    Article dummyArticle = getDummyArticleById(id);
+                    if (callback != null) {
+                        callback.onArticleLoaded(dummyArticle);
+                    }
+                    articleViewModel.getErrorLiveData().removeObserver(this);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get a single article by ID from dummy data (fallback method)
+     */
+    private Article getDummyArticleById(String id) {
+        for (Article article : getDummyArticles()) {
+            if (id.equals(article.getId())) {
+                return article;
+            }
+        }
+        return null;
     }
 
     /**
@@ -116,6 +303,7 @@ public class DataHandler {
 
     /**
      * Get the most viewed articles
+     *
      * @param limit Maximum number of articles to return
      */
     public static List<Article> getMostViewedArticles(int limit) {
@@ -126,6 +314,7 @@ public class DataHandler {
 
     /**
      * Get the most liked articles
+     *
      * @param limit Maximum number of articles to return
      */
     public static List<Article> getMostLikedArticles(int limit) {
@@ -136,6 +325,7 @@ public class DataHandler {
 
     /**
      * Get the newest articles
+     *
      * @param limit Maximum number of articles to return
      */
     public static List<Article> getNewestArticles(int limit) {
@@ -146,6 +336,7 @@ public class DataHandler {
 
     /**
      * Search for articles that match the given query in title, content, or author name
+     *
      * @param query The search query
      * @return List of matching articles
      */
@@ -153,19 +344,19 @@ public class DataHandler {
         if (query == null || query.trim().isEmpty()) {
             return new ArrayList<>();
         }
-        
+
         String searchQuery = query.toLowerCase().trim();
         List<Article> allArticles = getDummyArticles();
         List<Article> results = new ArrayList<>();
-        
+
         for (Article article : allArticles) {
             if ((article.getTitle() != null && article.getTitle().toLowerCase().contains(searchQuery)) ||
-                (article.getContent() != null && article.getContent().toLowerCase().contains(searchQuery)) ||
-                (article.getAuthorName() != null && article.getAuthorName().toLowerCase().contains(searchQuery))) {
+                    (article.getContent() != null && article.getContent().toLowerCase().contains(searchQuery)) ||
+                    (article.getAuthorName() != null && article.getAuthorName().toLowerCase().contains(searchQuery))) {
                 results.add(article);
             }
         }
-        
+
         return results;
     }
 
@@ -174,32 +365,32 @@ public class DataHandler {
      */
     public static List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
-        
+
         // Technology
         List<String> techSubcategories = Arrays.asList(SUBCATEGORY_ANDROID, SUBCATEGORY_IOS, SUBCATEGORY_WEB, SUBCATEGORY_AI);
         categories.add(new Category(CATEGORY_TECH, "Technology", techSubcategories));
-        
+
         // Health
         List<String> healthSubcategories = Arrays.asList(SUBCATEGORY_FITNESS, SUBCATEGORY_NUTRITION, SUBCATEGORY_MENTAL_HEALTH);
         categories.add(new Category(CATEGORY_HEALTH, "Health", healthSubcategories));
-        
+
         // Lifestyle
-        List<String> lifestyleSubcategories = Arrays.asList(SUBCATEGORY_TRAVEL, SUBCATEGORY_FOOD, 
-            SUBCATEGORY_FASHION);
+        List<String> lifestyleSubcategories = Arrays.asList(SUBCATEGORY_TRAVEL, SUBCATEGORY_FOOD,
+                SUBCATEGORY_FASHION);
         categories.add(new Category(CATEGORY_LIFESTYLE, "Lifestyle", lifestyleSubcategories));
-        
+
         // Business
         List<String> businessSubcategories = Arrays.asList(SUBCATEGORY_FINANCE, SUBCATEGORY_ECONOMY);
         categories.add(new Category(CATEGORY_BUSINESS, "Business", businessSubcategories));
-        
+
         // Sports
         List<String> sportsSubcategories = Arrays.asList(SUBCATEGORY_FOOTBALL, SUBCATEGORY_BASKETBALL, SUBCATEGORY_TENNIS);
         categories.add(new Category(CATEGORY_SPORTS, "Sports", sportsSubcategories));
-        
+
         // News
         List<String> newsSubcategories = Arrays.asList(SUBCATEGORY_WORLD, SUBCATEGORY_POLITICS, SUBCATEGORY_ECONOMY);
         categories.add(new Category(CATEGORY_NEWS, "News", newsSubcategories));
-        
+
         return categories;
     }
 
@@ -228,7 +419,7 @@ public class DataHandler {
     private static List<Article> generateDummyArticles() {
         List<Article> articles = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        
+
         // Add Tech Articles - Android
         articles.add(createArticle(
                 "tech1",
@@ -418,13 +609,134 @@ public class DataHandler {
         ));
 
         // Add more articles for better coverage...
-        
+
         return articles;
     }
 
-    private static Article createArticle(String id, String title, String content, String authorName, 
-                                       String imageName, Date date, int viewCount, 
-                                       String categoryId, String subcategoryId) {
+    /**
+     * Gets popular articles, trying the API first and falling back to dummy data
+     *
+     * @param count    Maximum number of articles to return
+     * @param callback Callback to receive the results asynchronously
+     */
+    public void getPopularArticles(int count, DataLoadListener callback) {
+        // For this example, we'll just get all articles and sort by view count
+        // In a real app, you might have a separate API endpoint for popular articles
+        getAllArticles(new DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                if (articles != null) {
+                    // Sort by view count (descending) and limit to count
+                    articles.sort((a1, a2) -> Integer.compare(a2.getViewCount(), a1.getViewCount()));
+                    List<Article> result = articles.subList(0, Math.min(count, articles.size()));
+                    if (callback != null) {
+                        callback.onDataLoaded(result);
+                    }
+                } else if (callback != null) {
+                    callback.onError("Failed to load popular articles");
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                if (callback != null) {
+                    callback.onError(message);
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets latest articles, trying the API first and falling back to dummy data
+     *
+     * @param count    Maximum number of articles to return
+     * @param callback Callback to receive the results asynchronously
+     */
+    public void getLatestArticles(int count, DataLoadListener callback) {
+        // For this example, we'll just get all articles and sort by date
+        // In a real app, you might have a separate API endpoint for latest articles
+        getAllArticles(new DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                if (articles != null) {
+                    // Sort by publish date (newest first) and limit to count
+                    articles.sort((a1, a2) -> a2.getPublishDate().compareTo(a1.getPublishDate()));
+                    List<Article> result = articles.subList(0, Math.min(count, articles.size()));
+                    if (callback != null) {
+                        callback.onDataLoaded(result);
+                    }
+                } else if (callback != null) {
+                    callback.onError("Failed to load latest articles");
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                if (callback != null) {
+                    callback.onError(message);
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets all articles, trying the API first and falling back to dummy data
+     *
+     * @param callback Callback to receive the results asynchronously
+     */
+    private void getAllArticles(DataLoadListener callback) {
+        if (!isViewModelInitialized) {
+            // Fall back to dummy data if ViewModel isn't initialized
+            List<Article> dummyArticles = getDummyAllArticles();
+            if (callback != null) {
+                callback.onDataLoaded(dummyArticles);
+            }
+            return;
+        }
+
+        // Try to get data from the API first
+        articleViewModel.loadArticles(null, 1, 100); // Assuming 100 is a reasonable max
+        articleViewModel.getArticlesLiveData().observeForever(new Observer<List<Article>>() {
+            @Override
+            public void onChanged(List<Article> articles) {
+                if (articles != null && !articles.isEmpty()) {
+                    if (callback != null) {
+                        callback.onDataLoaded(articles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                } else {
+                    List<Article> dummyArticles = getDummyAllArticles();
+                    if (callback != null) {
+                        callback.onDataLoaded(dummyArticles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                }
+            }
+        });
+
+        // Set up error handling
+        articleViewModel.getErrorLiveData().observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(String error) {
+                if (error != null && callback != null) {
+                    List<Article> dummyArticles = getDummyAllArticles();
+                    callback.onDataLoaded(dummyArticles);
+                    articleViewModel.getErrorLiveData().removeObserver(this);
+                }
+            }
+        });
+    }
+
+    /**
+     * Gets all articles from dummy data (fallback method)
+     */
+    private List<Article> getDummyAllArticles() {
+        return getDummyArticles();
+    }
+
+    private static Article createArticle(String id, String title, String content, String authorName,
+                                         String imageName, Date date, int viewCount,
+                                         String categoryId, String subcategoryId) {
         String imageUrl = "https://example.com/images/" + imageName;
         Article article = new Article(
                 id,
@@ -440,8 +752,7 @@ public class DataHandler {
                 viewCount,
                 viewCount / 10
         );
-        
+
         return article;
     }
-
 }

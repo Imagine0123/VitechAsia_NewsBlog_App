@@ -154,14 +154,43 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             return;
         }
 
-        try {
-            // Perform search using DummyDataGenerator
-            allSearchResults = DataHandler.searchArticles(searchQuery);
-            applyFilters();
-        } catch (Exception e) {
-            e.printStackTrace();
-            showNoResults();
-        }
+        // Use new DataHandler approach that tries API first, falls back to dummy data
+        DataHandler.getInstance().getArticlesByCategory(null, new DataHandler.DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                requireActivity().runOnUiThread(() -> {
+                    try {
+                        // Filter articles based on search query
+                        allSearchResults = new ArrayList<>();
+                        for (Article article : articles) {
+                            if (matchesSearchQuery(article, searchQuery)) {
+                                allSearchResults.add(article);
+                            }
+                        }
+                        applyFilters();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showNoResults();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                requireActivity().runOnUiThread(() -> {
+                    showNoResults();
+                });
+            }
+        });
+    }
+
+    private boolean matchesSearchQuery(Article article, String query) {
+        if (article == null || query == null) return false;
+
+        String lowerQuery = query.toLowerCase();
+        return (article.getTitle() != null && article.getTitle().toLowerCase().contains(lowerQuery)) ||
+               (article.getContent() != null && article.getContent().toLowerCase().contains(lowerQuery)) ||
+               (article.getAuthorName() != null && article.getAuthorName().toLowerCase().contains(lowerQuery));
     }
 
     private void applyFilters() {

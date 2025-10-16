@@ -67,25 +67,35 @@ public class LatestFragment extends Fragment {
     
     private void loadLatestArticles() {
         showLoading(true);
-        
-        // Simulate network/database call
-        new android.os.Handler().postDelayed(() -> {
-            // Get newest articles directly from DummyDataGenerator
-            List<Article> latestArticles = DataHandler.getNewestArticles(100); // Get 100 newest articles
-            
-            // Initialize or update pagination
-            if (paginationUtils == null) {
-                paginationUtils = new PaginationUtils<>(latestArticles, ITEMS_PER_PAGE);
-            } else {
-                paginationUtils.updateData(latestArticles);
+
+        // Use new DataHandler approach that tries API first, falls back to dummy data
+        DataHandler.getInstance().getLatestArticles(100, new DataHandler.DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                requireActivity().runOnUiThread(() -> {
+                    // Initialize or update pagination
+                    if (paginationUtils == null) {
+                        paginationUtils = new PaginationUtils<>(articles, ITEMS_PER_PAGE);
+                    } else {
+                        paginationUtils.updateData(articles);
+                    }
+
+                    // Update UI
+                    updateArticleList();
+                    showLoading(false);
+                    updateLoadMoreButton();
+                });
             }
-            
-            // Update UI
-            updateArticleList();
-            showLoading(false);
-            updateLoadMoreButton();
-            
-        }, 500); // Simulate network delay
+
+            @Override
+            public void onError(String message) {
+                requireActivity().runOnUiThread(() -> {
+                    showLoading(false);
+                    // Could show error message to user here if needed
+                    // For now, we'll just hide loading indicator
+                });
+            }
+        });
     }
     
     private void updateArticleList() {

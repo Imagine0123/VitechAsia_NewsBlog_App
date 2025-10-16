@@ -95,12 +95,6 @@ public class ArticleRepository {
     
     /**
      * Fetches a single article by its ID from the API.
-     * 
-     * @param id The ID of the article to fetch
-     * @param callback The callback to handle the response or error
-     */
-    /**
-     * Fetches a single article by its ID from the API.
      * Checks for network connectivity before making the API call.
      * 
      * @param id The ID of the article to fetch

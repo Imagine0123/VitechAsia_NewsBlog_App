@@ -251,7 +251,7 @@
     <string name="error_no_internet_connection">No internet connection. Please check your network settings and try again.</string>
     <string name="try_again">Try Again</string>
     <string name="searching_for">Searching for: %s</string>
-    <string name="welcome_message">Welcome to Vitech Asia</string>
+    <string name="welcome_message">Welcome to Sintesis</string>
     <string name="articles_in_subcategory">Articles in %s - %s</string>
 
     <!-- Bookmark Fragment -->

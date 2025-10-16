@@ -21,14 +21,12 @@ import com.rafdi.vitechasia.blog.activities.HomePage;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.models.Category;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 import com.rafdi.vitechasia.blog.utils.SearchHistoryManager;
 import com.rafdi.vitechasia.blog.utils.CategoryManager;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Fragment for displaying search results based on user queries.
@@ -158,7 +156,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
 
         try {
             // Perform search using DummyDataGenerator
-            allSearchResults = DummyDataGenerator.searchArticles(searchQuery);
+            allSearchResults = DataHandler.searchArticles(searchQuery);
             applyFilters();
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,7 +203,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         com.google.android.material.button.MaterialButton btnReset = dialogView.findViewById(R.id.btn_reset);
 
         // Get categories with their IDs
-        List<Category> categories = DummyDataGenerator.getAllCategories();
+        List<Category> categories = DataHandler.getAllCategories();
 
         // Add category chips
         for (Category category : categories) {
@@ -264,7 +262,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         if (subcategoryChipGroup == null || subcategoriesLabel == null) return;
 
         subcategoryChipGroup.removeAllViews();
-        List<String> subcategories = DummyDataGenerator.getSubcategoriesForCategory(category);
+        List<String> subcategories = DataHandler.getSubcategoriesForCategory(category);
 
         if (subcategories != null && !subcategories.isEmpty()) {
             subcategoriesLabel.setVisibility(View.VISIBLE);
@@ -318,7 +316,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
 
     private String getDisplayNameForCategory(String categoryId) {
         if (categoryId == null) return "";
-        for (Category category : DummyDataGenerator.getAllCategories()) {
+        for (Category category : DataHandler.getAllCategories()) {
             if (categoryId.equalsIgnoreCase(category.getId())) {
                 return category.getName();
             }

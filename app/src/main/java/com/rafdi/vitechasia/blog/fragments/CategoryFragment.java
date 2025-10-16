@@ -18,12 +18,10 @@ import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.adapters.SubcategoryAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.models.Category;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Fragment for displaying articles within a specific category.
@@ -110,7 +108,7 @@ public class CategoryFragment extends Fragment implements
     }
     
     private Category findCategoryById(String categoryId) {
-        List<Category> categories = DummyDataGenerator.getAllCategories();
+        List<Category> categories = DataHandler.getAllCategories();
         for (Category cat : categories) {
             if (cat.getId().equals(categoryId)) {
                 return cat;
@@ -121,30 +119,30 @@ public class CategoryFragment extends Fragment implements
     
     private String[] getSubcategoryIdsForCategory(String categoryId) {
         switch (categoryId) {
-            case DummyDataGenerator.CATEGORY_TECH:
+            case DataHandler.CATEGORY_TECH:
                 return new String[]{
-                    DummyDataGenerator.SUBCATEGORY_ANDROID,
-                    DummyDataGenerator.SUBCATEGORY_IOS,
-                    DummyDataGenerator.SUBCATEGORY_WEB,
-                    DummyDataGenerator.SUBCATEGORY_AI
+                    DataHandler.SUBCATEGORY_ANDROID,
+                    DataHandler.SUBCATEGORY_IOS,
+                    DataHandler.SUBCATEGORY_WEB,
+                    DataHandler.SUBCATEGORY_AI
                 };
-            case DummyDataGenerator.CATEGORY_HEALTH:
+            case DataHandler.CATEGORY_HEALTH:
                 return new String[]{
-                    DummyDataGenerator.SUBCATEGORY_FITNESS,
-                    DummyDataGenerator.SUBCATEGORY_NUTRITION,
-                    DummyDataGenerator.SUBCATEGORY_MENTAL_HEALTH
+                    DataHandler.SUBCATEGORY_FITNESS,
+                    DataHandler.SUBCATEGORY_NUTRITION,
+                    DataHandler.SUBCATEGORY_MENTAL_HEALTH
                 };
-            case DummyDataGenerator.CATEGORY_SPORTS:
+            case DataHandler.CATEGORY_SPORTS:
                 return new String[]{
-                    DummyDataGenerator.SUBCATEGORY_FOOTBALL,
-                    DummyDataGenerator.SUBCATEGORY_BASKETBALL,
-                    DummyDataGenerator.SUBCATEGORY_TENNIS
+                    DataHandler.SUBCATEGORY_FOOTBALL,
+                    DataHandler.SUBCATEGORY_BASKETBALL,
+                    DataHandler.SUBCATEGORY_TENNIS
                 };
-            case DummyDataGenerator.CATEGORY_NEWS:
+            case DataHandler.CATEGORY_NEWS:
                 return new String[]{
-                    DummyDataGenerator.SUBCATEGORY_WORLD,
-                    DummyDataGenerator.SUBCATEGORY_POLITICS,
-                    DummyDataGenerator.SUBCATEGORY_ECONOMY
+                    DataHandler.SUBCATEGORY_WORLD,
+                    DataHandler.SUBCATEGORY_POLITICS,
+                    DataHandler.SUBCATEGORY_ECONOMY
                 };
             default:
                 return new String[0];
@@ -153,13 +151,13 @@ public class CategoryFragment extends Fragment implements
     
     private String[] getSubcategoryNamesForCategory(String categoryId) {
         switch (categoryId) {
-            case DummyDataGenerator.CATEGORY_TECH:
+            case DataHandler.CATEGORY_TECH:
                 return getResources().getStringArray(R.array.subcategories_tech);
-            case DummyDataGenerator.CATEGORY_HEALTH:
+            case DataHandler.CATEGORY_HEALTH:
                 return getResources().getStringArray(R.array.subcategories_health);
-            case DummyDataGenerator.CATEGORY_SPORTS:
+            case DataHandler.CATEGORY_SPORTS:
                 return getResources().getStringArray(R.array.subcategories_sports);
-            case DummyDataGenerator.CATEGORY_NEWS:
+            case DataHandler.CATEGORY_NEWS:
                 return getResources().getStringArray(R.array.subcategories_news);
             default:
                 return new String[0];
@@ -198,13 +196,13 @@ public class CategoryFragment extends Fragment implements
     private String getCategoryDisplayName(String categoryId) {
         if (categoryId == null) return "";
         switch (categoryId.toLowerCase()) {
-            case DummyDataGenerator.CATEGORY_TECH:
+            case DataHandler.CATEGORY_TECH:
                 return getString(R.string.category_tech);
-            case DummyDataGenerator.CATEGORY_HEALTH:
+            case DataHandler.CATEGORY_HEALTH:
                 return getString(R.string.category_health);
-            case DummyDataGenerator.CATEGORY_SPORTS:
+            case DataHandler.CATEGORY_SPORTS:
                 return getString(R.string.category_sports);
-            case DummyDataGenerator.CATEGORY_NEWS:
+            case DataHandler.CATEGORY_NEWS:
                 return getString(R.string.category_news);
             default:
                 return categoryId;

@@ -16,7 +16,7 @@ import java.util.List;
  * ViewModel class that manages and provides data for the UI components.
  * Acts as a communication center between the {@link ArticleRepository} and the UI.
  * 
- * <p>This class holds and manages UI-related data in a lifecycle-conscious way, allowing data to
+ * This class holds and manages UI-related data in a lifecycle-conscious way, allowing data to
  * survive configuration changes such as screen rotations. It provides LiveData that can be observed
  * by UI components to react to data changes.
  */

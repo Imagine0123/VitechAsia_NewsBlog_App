@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class BookmarkFragment extends Fragment {
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
             // Get bookmarked articles from DummyDataGenerator
-            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles(requireContext());
+            List<Article> bookmarkedArticles = DataHandler.getBookmarkedArticles(requireContext());
             
             // Initialize or update pagination
             if (paginationUtils == null) {

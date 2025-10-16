@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class LatestFragment extends Fragment {
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
             // Get newest articles directly from DummyDataGenerator
-            List<Article> latestArticles = DummyDataGenerator.getNewestArticles(100); // Get 100 newest articles
+            List<Article> latestArticles = DataHandler.getNewestArticles(100); // Get 100 newest articles
             
             // Initialize or update pagination
             if (paginationUtils == null) {

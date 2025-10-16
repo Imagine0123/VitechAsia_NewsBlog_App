@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,7 +118,7 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
             });
 
             // Set up articles (first 5)
-            List<Article> articles = DummyDataGenerator.getDummyArticlesBySubcategory(subcategoryName);
+            List<Article> articles = DataHandler.getDummyArticlesBySubcategory(subcategoryName);
             if (articles != null && !articles.isEmpty()) {
                 int count = Math.min(5, articles.size());
                 articlesAdapter.setArticles(articles.subList(0, count));

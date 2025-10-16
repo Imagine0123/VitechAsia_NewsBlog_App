@@ -17,7 +17,7 @@ import com.google.android.material.button.MaterialButton;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleHorizontalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 
 import java.util.List;
 
@@ -120,9 +120,9 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         setupHorizontalRecyclerView(bookmarkedArticlesRecyclerView, "bookmarked");
         
         // Category Articles
-        setupHorizontalRecyclerView(sportsArticlesRecyclerView, DummyDataGenerator.CATEGORY_SPORTS);
-        setupHorizontalRecyclerView(techArticlesRecyclerView, DummyDataGenerator.CATEGORY_TECH);
-        setupHorizontalRecyclerView(newsArticlesRecyclerView, DummyDataGenerator.CATEGORY_NEWS);
+        setupHorizontalRecyclerView(sportsArticlesRecyclerView, DataHandler.CATEGORY_SPORTS);
+        setupHorizontalRecyclerView(techArticlesRecyclerView, DataHandler.CATEGORY_TECH);
+        setupHorizontalRecyclerView(newsArticlesRecyclerView, DataHandler.CATEGORY_NEWS);
     }
     
     private void setupHorizontalRecyclerView(RecyclerView recyclerView, String type) {
@@ -139,13 +139,13 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         
         // Load appropriate data based on type
         if ("latest".equals(type)) {
-           List<Article> latestArticles = DummyDataGenerator.getNewestArticles(5);
+           List<Article> latestArticles = DataHandler.getNewestArticles(5);
            adapter.setArticles(latestArticles);
         } else if ("popular".equals(type)) {
-           List<Article> popularArticles = DummyDataGenerator.getMostViewedArticles(5);
+           List<Article> popularArticles = DataHandler.getMostViewedArticles(5);
            adapter.setArticles(popularArticles);
         } else if ("bookmarked".equals(type)) {
-            List<Article> bookmarkedArticles = DummyDataGenerator.getBookmarkedArticles(requireContext());
+            List<Article> bookmarkedArticles = DataHandler.getBookmarkedArticles(requireContext());
             if (bookmarkedArticles.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 View bookmarkedHeader = getView().findViewById(R.id.bookmarkedHeader);
@@ -158,7 +158,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
             }
         } else {
             // This is a category view
-            List<Article> categoryArticles = DummyDataGenerator.getDummyArticlesByCategory(type);
+            List<Article> categoryArticles = DataHandler.getDummyArticlesByCategory(type);
             adapter.setArticles(categoryArticles.subList(0, Math.min(5, categoryArticles.size())));
         }
     }
@@ -177,11 +177,11 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
             
             int id = v.getId();
             if (id == R.id.viewAllSportsButton) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS);
+                navigateToCategory(DataHandler.CATEGORY_SPORTS);
             } else if (id == R.id.viewAllTechButton) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_TECH);
+                navigateToCategory(DataHandler.CATEGORY_TECH);
             } else if (id == R.id.viewAllNewsButton) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_NEWS);
+                navigateToCategory(DataHandler.CATEGORY_NEWS);
             }
         };
 
@@ -210,11 +210,11 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
             
             int id = v.getId();
             if (id == R.id.sportsCard) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_SPORTS);
+                navigateToCategory(DataHandler.CATEGORY_SPORTS);
             } else if (id == R.id.techCard) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_TECH);
+                navigateToCategory(DataHandler.CATEGORY_TECH);
             } else if (id == R.id.newsCard) {
-                navigateToCategory(DummyDataGenerator.CATEGORY_NEWS);
+                navigateToCategory(DataHandler.CATEGORY_NEWS);
             }
         };
 

@@ -11,9 +11,9 @@ import java.util.List;
 
 /**
  * Utility class for generating dummy article data.
- * Can be easily replaced with real API calls later.
+ * TODO: replace with real API calls later.
  */
-public class DummyDataGenerator {
+public class DataHandler {
     private static final String LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
             "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
             "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.";

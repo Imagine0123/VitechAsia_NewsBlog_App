@@ -17,7 +17,7 @@ import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.models.Category;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +110,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
     }
     
     private Category findCategoryBySubcategory(String subcategoryId) {
-        List<Category> categories = DummyDataGenerator.getAllCategories();
+        List<Category> categories = DataHandler.getAllCategories();
         for (Category category : categories) {
             if (category.getSubcategories().contains(subcategoryId)) {
                 return category;
@@ -124,31 +124,31 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
 
         // Map subcategory IDs to display names
         switch (subcategoryId.toLowerCase()) {
-            case DummyDataGenerator.SUBCATEGORY_ANDROID:
+            case DataHandler.SUBCATEGORY_ANDROID:
                 return getString(R.string.subcategory_android);
-            case DummyDataGenerator.SUBCATEGORY_IOS:
+            case DataHandler.SUBCATEGORY_IOS:
                 return getString(R.string.subcategory_ios);
-            case DummyDataGenerator.SUBCATEGORY_WEB:
+            case DataHandler.SUBCATEGORY_WEB:
                 return getString(R.string.subcategory_web);
-            case DummyDataGenerator.SUBCATEGORY_AI:
+            case DataHandler.SUBCATEGORY_AI:
                 return getString(R.string.subcategory_ai);
-            case DummyDataGenerator.SUBCATEGORY_FITNESS:
+            case DataHandler.SUBCATEGORY_FITNESS:
                 return getString(R.string.subcategory_fitness);
-            case DummyDataGenerator.SUBCATEGORY_NUTRITION:
+            case DataHandler.SUBCATEGORY_NUTRITION:
                 return getString(R.string.subcategory_nutrition);
-            case DummyDataGenerator.SUBCATEGORY_MENTAL_HEALTH:
+            case DataHandler.SUBCATEGORY_MENTAL_HEALTH:
                 return getString(R.string.subcategory_mental_health);
-            case DummyDataGenerator.SUBCATEGORY_FOOTBALL:
+            case DataHandler.SUBCATEGORY_FOOTBALL:
                 return getString(R.string.subcategory_football);
-            case DummyDataGenerator.SUBCATEGORY_BASKETBALL:
+            case DataHandler.SUBCATEGORY_BASKETBALL:
                 return getString(R.string.subcategory_basketball);
-            case DummyDataGenerator.SUBCATEGORY_TENNIS:
+            case DataHandler.SUBCATEGORY_TENNIS:
                 return getString(R.string.subcategory_tennis);
-            case DummyDataGenerator.SUBCATEGORY_WORLD:
+            case DataHandler.SUBCATEGORY_WORLD:
                 return getString(R.string.subcategory_world);
-            case DummyDataGenerator.SUBCATEGORY_POLITICS:
+            case DataHandler.SUBCATEGORY_POLITICS:
                 return getString(R.string.subcategory_politics);
-            case DummyDataGenerator.SUBCATEGORY_ECONOMY:
+            case DataHandler.SUBCATEGORY_ECONOMY:
                 return getString(R.string.subcategory_economy);
             default:
                 // Capitalize first letter as fallback

@@ -3,7 +3,7 @@ package com.rafdi.vitechasia.blog.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,7 @@ public class Category implements Parcelable {
     }
     
     public List<Article> getArticlesForSubcategory(String subcategory) {
-        return DummyDataGenerator.getDummyArticlesBySubcategory(subcategory);
+        return DataHandler.getDummyArticlesBySubcategory(subcategory);
     }
 
     @Override

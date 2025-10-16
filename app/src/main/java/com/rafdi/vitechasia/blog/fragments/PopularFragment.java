@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
 import com.rafdi.vitechasia.blog.models.Article;
-import com.rafdi.vitechasia.blog.utils.DummyDataGenerator;
+import com.rafdi.vitechasia.blog.utils.DataHandler;
 import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class PopularFragment extends Fragment {
         // Simulate network/database call
         new android.os.Handler().postDelayed(() -> {
             // Get most viewed articles directly from DummyDataGenerator
-            List<Article> popularArticles = DummyDataGenerator.getMostViewedArticles(100); // Get top 100 most viewed articles
+            List<Article> popularArticles = DataHandler.getMostViewedArticles(100); // Get top 100 most viewed articles
             
             // Initialize or update pagination
             if (paginationUtils == null) {

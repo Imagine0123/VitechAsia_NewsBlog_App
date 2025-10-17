@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,8 +36,13 @@ public class LatestFragment extends Fragment {
     private ArticleVerticalAdapter verticalAdapter;
     private PaginationUtils<Article> paginationUtils;
     
-    public LatestFragment() {
-        // Required empty public constructor
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Initialize DataHandler to enable API-first functionality
+        if (getActivity() != null) {
+            DataHandler.initialize(getActivity().getApplication());
+        }
     }
 
     @Override

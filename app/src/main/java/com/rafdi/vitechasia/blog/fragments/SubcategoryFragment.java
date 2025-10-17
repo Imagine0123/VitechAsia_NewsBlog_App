@@ -51,6 +51,11 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
             categoryName = getArguments().getString(ARG_CATEGORY_NAME);
             subcategoryName = getArguments().getString(ARG_SUBCATEGORY_NAME);
         }
+
+        // Initialize DataHandler to enable API-first functionality
+        if (getContext() != null) {
+            DataHandler.initialize(getContext().getApplicationContext());
+        }
     }
 
     @Nullable

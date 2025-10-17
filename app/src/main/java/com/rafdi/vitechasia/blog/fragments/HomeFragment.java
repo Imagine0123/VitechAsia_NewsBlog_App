@@ -62,6 +62,11 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize DataHandler to enable API-first functionality
+        if (getContext() != null) {
+            DataHandler.initialize(getContext().getApplicationContext());
+        }
     }
 
     @Override

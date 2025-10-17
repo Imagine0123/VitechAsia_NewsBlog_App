@@ -52,6 +52,11 @@ public class CategoryFragment extends Fragment implements
         if (getArguments() != null) {
             categoryId = getArguments().getString(ARG_CATEGORY_ID);
         }
+
+        // Initialize DataHandler to enable API-first functionality
+        if (getContext() != null) {
+            DataHandler.initialize(getContext().getApplicationContext());
+        }
     }
 
     @Nullable

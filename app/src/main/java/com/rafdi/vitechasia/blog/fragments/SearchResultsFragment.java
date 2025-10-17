@@ -63,6 +63,9 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             searchQuery = getArguments().getString(ARG_QUERY);
         }
 
+        // Initialize DataHandler to enable API-first functionality
+        DataHandler.initialize(requireContext().getApplicationContext());
+
         // Initialize managers
         searchHistoryManager = SearchHistoryManager.getInstance(requireContext());
         categoryManager = CategoryManager.getInstance();

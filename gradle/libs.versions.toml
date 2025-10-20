@@ -10,7 +10,7 @@ espressoCore = "3.7.0"
 # AndroidX
 appcompat = "1.7.1"
 material = "1.13.0"
-activity = "1.11.0"
+activity = "1.8.2"
 constraintlayout = "2.2.1"
 preference = "1.2.1"
 swiperefreshlayoutVersion = "1.1.0"

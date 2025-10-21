@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,7 +84,7 @@ public class CategoryFragment extends Fragment implements
     }
 
     private void loadSubcategories() {
-        // Find the category object
+        // Find the category object from DummyDataGenerator
         category = findCategoryById(categoryId);
         
         if (category == null) {
@@ -95,64 +94,22 @@ public class CategoryFragment extends Fragment implements
         // Get subcategories from the Category object
         List<String> subcategories = category.getSubcategories();
         
-        // If no subcategories, nothing to do
-        if (subcategories == null || subcategories.isEmpty()) {
-            return;
-        }
-        
-        // We'll track how many subcategories we've processed
-        final int totalSubcategories = subcategories.size();
-        final int[] processedCount = {0};
-        final List<String> subcategoriesWithArticles = new ArrayList<>();
+        // Filter subcategories that have articles
+        List<String> subcategoriesWithArticles = new ArrayList<>();
         
         for (String subcategoryId : subcategories) {
-            category.getArticlesForSubcategory(subcategoryId, new DataHandler.DataLoadListener() {
-                @Override
-                public void onDataLoaded(List<Article> articles) {
-                    if (articles != null && !articles.isEmpty()) {
-                        subcategoriesWithArticles.add(subcategoryId);
-                    }
-                    
-                    // Check if we've processed all subcategories
-                    processedCount[0]++;
-                    if (processedCount[0] >= totalSubcategories) {
-                        // If no subcategories with articles found, use all available subcategories
-                        if (subcategoriesWithArticles.isEmpty()) {
-                            subcategoriesWithArticles.addAll(subcategories);
-                        }
-                        
-                        // Update the adapter on the UI thread
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> 
-                                subcategoryAdapter.setSubcategories(subcategoriesWithArticles)
-                            );
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(String message) {
-                    // Just log the error and continue
-                    if (getActivity() != null) {
-                        Log.e("CategoryFragment", "Error loading articles for subcategory: " + message);
-                    }
-                    
-                    // Still count this as processed
-                    processedCount[0]++;
-                    if (processedCount[0] >= totalSubcategories) {
-                        if (subcategoriesWithArticles.isEmpty()) {
-                            subcategoriesWithArticles.addAll(subcategories);
-                        }
-                        
-                        if (getActivity() != null) {
-                            getActivity().runOnUiThread(() -> 
-                                subcategoryAdapter.setSubcategories(subcategoriesWithArticles)
-                            );
-                        }
-                    }
-                }
-            });
+            List<Article> articles = category.getArticlesForSubcategory(subcategoryId);
+            if (!articles.isEmpty()) {
+                subcategoriesWithArticles.add(subcategoryId);
+            }
         }
+        
+        // If no subcategories with articles found, use all available subcategories
+        if (subcategoriesWithArticles.isEmpty()) {
+            subcategoriesWithArticles.addAll(subcategories);
+        }
+        
+        subcategoryAdapter.setSubcategories(subcategoriesWithArticles);
     }
     
     private Category findCategoryById(String categoryId) {

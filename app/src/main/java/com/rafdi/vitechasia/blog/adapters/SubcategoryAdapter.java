@@ -118,10 +118,7 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
             });
 
             // Set up articles (first 5)
-            // Use the subcategory name as ID since we don't have separate IDs in this context
-            String subcategoryId = subcategoryName != null ? 
-                subcategoryName.toLowerCase().replace(" ", "") : "";
-            List<Article> articles = DataHandler.getDummyArticlesBySubcategory(subcategoryId);
+            List<Article> articles = DataHandler.getDummyArticlesBySubcategory(subcategoryName);
             if (articles != null && !articles.isEmpty()) {
                 int count = Math.min(5, articles.size());
                 articlesAdapter.setArticles(articles.subList(0, count));

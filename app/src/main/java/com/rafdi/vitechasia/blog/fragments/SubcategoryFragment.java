@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -95,54 +94,24 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
     }
 
     private void loadArticles(TextView noArticlesText) {
-        // Show loading state
-        noArticlesText.setVisibility(View.GONE);
-        articlesRecyclerView.setVisibility(View.GONE);
-        
         // Find the category that contains this subcategory
         Category category = findCategoryBySubcategory(subcategoryName);
         
-        if (category == null) {
-            noArticlesText.setVisibility(View.VISIBLE);
-            noArticlesText.setText(getString(R.string.error_loading_subcategory));
-            return;
+        List<Article> subcategoryArticles = new ArrayList<>();
+        if (category != null) {
+            subcategoryArticles = category.getArticlesForSubcategory(subcategoryName);
         }
-        
-        // Show loading indicator or message if needed
-        noArticlesText.setText(getString(R.string.loading));
-        noArticlesText.setVisibility(View.VISIBLE);
-        
-        // Use the async method to get articles
-        category.getArticlesForSubcategory(subcategoryName, new DataHandler.DataLoadListener() {
-            @Override
-            public void onDataLoaded(List<Article> subcategoryArticles) {
-                if (getActivity() == null) return;
-                
-                getActivity().runOnUiThread(() -> {
-                    if (subcategoryArticles == null || subcategoryArticles.isEmpty()) {
-                        noArticlesText.setVisibility(View.VISIBLE);
-                        articlesRecyclerView.setVisibility(View.GONE);
-                        noArticlesText.setText(getString(R.string.no_subcategory_articles));
-                    } else {
-                        noArticlesText.setVisibility(View.GONE);
-                        articlesRecyclerView.setVisibility(View.VISIBLE);
-                        verticalAdapter.setArticles(subcategoryArticles);
-                    }
-                });
-            }
 
-            @Override
-            public void onError(String message) {
-                if (getActivity() == null) return;
-                
-                getActivity().runOnUiThread(() -> {
-                    noArticlesText.setVisibility(View.VISIBLE);
-                    articlesRecyclerView.setVisibility(View.GONE);
-                    noArticlesText.setText(getString(R.string.error_loading_subcategory));
-                    Log.e("SubcategoryFragment", "Error loading articles: " + message);
-                });
-            }
-        });
+        // Update UI based on whether we found articles
+        if (subcategoryArticles == null || subcategoryArticles.isEmpty()) {
+            noArticlesText.setVisibility(View.VISIBLE);
+            articlesRecyclerView.setVisibility(View.GONE);
+            noArticlesText.setText(getString(R.string.no_subcategory_articles));
+        } else {
+            noArticlesText.setVisibility(View.GONE);
+            articlesRecyclerView.setVisibility(View.VISIBLE);
+            verticalAdapter.setArticles(subcategoryArticles);
+        }
     }
     
     private Category findCategoryBySubcategory(String subcategoryId) {

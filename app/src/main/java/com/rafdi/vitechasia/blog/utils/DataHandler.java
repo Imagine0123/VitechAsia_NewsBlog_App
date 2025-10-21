@@ -145,6 +145,117 @@ public class DataHandler {
     }
 
     /**
+     * Get articles filtered by subcategory ID, trying the API first and falling back to dummy data
+     *
+     * @param subcategoryId The subcategory ID to filter by
+     * @param callback     Callback to receive the results asynchronously
+     */
+    public void getArticlesBySubcategory(String subcategoryId, DataLoadListener callback) {
+        if (!isViewModelInitialized) {
+            // Fall back to dummy data if ViewModel isn't initialized
+            List<Article> dummyArticles = getDummyArticlesBySubcategory(subcategoryId);
+            if (callback != null) {
+                callback.onDataLoaded(dummyArticles);
+            }
+            return;
+        }
+
+        // Try to get data from the API first using the subcategory as a category filter
+        articleViewModel.loadArticles(subcategoryId, 1, 20); // Default page 1, 20 items per page
+        articleViewModel.getArticlesLiveData().observeForever(new Observer<List<Article>>() {
+            @Override
+            public void onChanged(List<Article> articles) {
+                if (articles != null && !articles.isEmpty()) {
+                    if (callback != null) {
+                        callback.onDataLoaded(articles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                } else {
+                    // Fall back to dummy data if API returns empty
+                    List<Article> dummyArticles = getDummyArticlesBySubcategory(subcategoryId);
+                    if (callback != null) {
+                        callback.onDataLoaded(dummyArticles);
+                    }
+                    articleViewModel.getArticlesLiveData().removeObserver(this);
+                }
+            }
+        });
+
+        // Set up error handling
+        articleViewModel.getErrorLiveData().observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(String error) {
+                if (error != null) {
+                    // On error, fall back to dummy data
+                    List<Article> dummyArticles = getDummyArticlesBySubcategory(subcategoryId);
+                    if (callback != null) {
+                        callback.onDataLoaded(dummyArticles);
+                    }
+                    articleViewModel.getErrorLiveData().removeObserver(this);
+                }
+            }
+        });
+    }
+
+    /**
+     * Get dummy articles filtered by subcategory ID
+     *
+     * @param subcategoryId The subcategory ID to filter by
+     * @return List of articles in the specified subcategory, or empty list if none found
+     */
+    public static List<Article> getDummyArticlesBySubcategory(String subcategoryId) {
+        if (subcategoryId == null) {
+            return new ArrayList<>();
+        }
+        
+        List<Article> allArticles = getDummyArticles();
+        List<Article> filteredArticles = new ArrayList<>();
+        
+        for (Article article : allArticles) {
+            if (subcategoryId.equalsIgnoreCase(article.getSubcategoryId())) {
+                filteredArticles.add(article);
+            }
+        }
+        
+        return filteredArticles;
+    }
+    
+    /**
+     * Helper method to get a random category for a given subcategory
+     */
+    private static String getRandomCategoryForSubcategory(String subcategoryId) {
+        if (subcategoryId == null) return CATEGORY_TECH;
+        
+        switch (subcategoryId.toLowerCase()) {
+            case SUBCATEGORY_ANDROID:
+            case SUBCATEGORY_IOS:
+            case SUBCATEGORY_WEB:
+            case SUBCATEGORY_AI:
+                return CATEGORY_TECH;
+            case SUBCATEGORY_FITNESS:
+            case SUBCATEGORY_NUTRITION:
+            case SUBCATEGORY_MENTAL_HEALTH:
+                return CATEGORY_HEALTH;
+            case SUBCATEGORY_TRAVEL:
+            case SUBCATEGORY_FOOD:
+            case SUBCATEGORY_FASHION:
+                return CATEGORY_LIFESTYLE;
+            case SUBCATEGORY_FINANCE:
+            case SUBCATEGORY_ECONOMY:
+                return CATEGORY_BUSINESS;
+            case SUBCATEGORY_FOOTBALL:
+            case SUBCATEGORY_BASKETBALL:
+            case SUBCATEGORY_TENNIS:
+                return CATEGORY_SPORTS;
+            case SUBCATEGORY_WORLD:
+            case SUBCATEGORY_POLITICS:
+                return CATEGORY_NEWS;
+            default:
+                return CATEGORY_TECH;
+        }
+    }
+
+    /**
      * Get articles filtered by category ID, trying the API first and falling back to dummy data
      *
      * @param categoryId The category ID to filter by
@@ -275,18 +386,6 @@ public class DataHandler {
         return null;
     }
 
-    /**
-     * Get articles filtered by subcategory ID
-     */
-    public static List<Article> getDummyArticlesBySubcategory(String subcategoryId) {
-        List<Article> filtered = new ArrayList<>();
-        for (Article article : getDummyArticles()) {
-            if (subcategoryId.equalsIgnoreCase(article.getSubcategoryId())) {
-                filtered.add(article);
-            }
-        }
-        return filtered;
-    }
 
     /**
      * Get articles by author ID

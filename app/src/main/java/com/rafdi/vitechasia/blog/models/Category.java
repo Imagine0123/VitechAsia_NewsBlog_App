@@ -82,8 +82,67 @@ public class Category implements Parcelable {
         return subcategories != null && !subcategories.isEmpty();
     }
     
-    public List<Article> getArticlesForSubcategory(String subcategory) {
-        return DataHandler.getDummyArticlesBySubcategory(subcategory);
+    /**
+     * Get articles for a specific subcategory asynchronously
+     * @param subcategory The subcategory to get articles for
+     * @param callback Callback to handle the result or error
+     */
+    public void getArticlesForSubcategory(String subcategory, DataHandler.DataLoadListener callback) {
+        DataHandler.getInstance().getArticlesBySubcategory(subcategory, new DataHandler.DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                if (callback != null) {
+                    callback.onDataLoaded(articles);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                if (callback != null) {
+                    callback.onError(message);
+                }
+            }
+        });
+    }
+    
+    /**
+     * @deprecated Use {@link #getArticlesForSubcategory(String, DataHandler.DataLoadListener)} instead
+     */
+    @Deprecated
+    public List<Article> getArticlesForSubcategorySync(String subcategory) {
+        // This is kept for backward compatibility but should be avoided in new code
+        final List<Article>[] result = new List[1];
+        final Object lock = new Object();
+        
+        getArticlesForSubcategory(subcategory, new DataHandler.DataLoadListener() {
+            @Override
+            public void onDataLoaded(List<Article> articles) {
+                synchronized (lock) {
+                    result[0] = articles;
+                    lock.notify();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                synchronized (lock) {
+                    result[0] = new ArrayList<>();
+                    lock.notify();
+                }
+            }
+        });
+        
+        // Wait for the async operation to complete (not recommended on main thread!)
+        synchronized (lock) {
+            try {
+                lock.wait(5000); // 5 second timeout
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return new ArrayList<>();
+            }
+        }
+        
+        return result[0] != null ? result[0] : new ArrayList<>();
     }
 
     @Override

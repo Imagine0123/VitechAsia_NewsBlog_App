@@ -2,10 +2,12 @@ package com.rafdi.vitechasia.blog.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.media.AudioManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,14 +43,6 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     private RecyclerView sportsArticlesRecyclerView;
     private RecyclerView techArticlesRecyclerView;
     private RecyclerView newsArticlesRecyclerView;
-
-    // Adapters
-    private ArticleHorizontalAdapter latestArticlesAdapter;
-    private ArticleHorizontalAdapter popularArticlesAdapter;
-    private ArticleHorizontalAdapter bookmarkedArticlesAdapter;
-    private ArticleHorizontalAdapter sportsArticlesAdapter;
-    private ArticleHorizontalAdapter techArticlesAdapter;
-    private ArticleHorizontalAdapter newsArticlesAdapter;
 
     // View All Buttons
     private MaterialButton viewAllSportsButton;
@@ -163,8 +157,28 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
             }
         } else {
             // This is a category view
-            List<Article> categoryArticles = DataHandler.getDummyArticlesByCategory(type);
-            adapter.setArticles(categoryArticles.subList(0, Math.min(5, categoryArticles.size())));
+            DataHandler.getInstance().getArticlesByCategory(type, new DataHandler.DataLoadListener() {
+                @Override
+                public void onDataLoaded(List<Article> categoryArticles) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (categoryArticles != null && !categoryArticles.isEmpty()) {
+                                adapter.setArticles(categoryArticles.subList(0, Math.min(5, categoryArticles.size())));
+                            }
+                        });
+                    }
+                }
+                
+                @Override
+                public void onError(String message) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Log.e("HomeFragment", "Error loading articles: " + message);
+                            Toast.makeText(getContext(), "Error loading articles: " + message, Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+            });
         }
     }
 
@@ -322,16 +336,5 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
                 .replace(R.id.fragment_container, articleDetailFragment) // Use your container view id
                 .addToBackStack(null) // Add to back stack so user can navigate back
                 .commit();
-    }
-
-    // Add this method to handle subcategory clicks
-    public void onSubcategoryClick(String categoryName, String subcategoryName) {
-        if (getActivity() != null) {
-            SubcategoryFragment fragment = SubcategoryFragment.newInstance(categoryName, subcategoryName);
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
-        }
     }
 }

@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.lifecycle.MutableLiveData;
 
 import com.rafdi.vitechasia.blog.R;
-import com.rafdi.vitechasia.blog.api.ApiClient;
+import com.rafdi.vitechasia.blog.api.ApiServiceFactory;
 import com.rafdi.vitechasia.blog.api.ArticleApiService;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.NetworkUtils;
@@ -34,13 +34,13 @@ public class ArticleRepository {
     
     /**
      * Private constructor to prevent direct instantiation.
-     * Initializes the API service using {@link ApiClient}.
+     * Initializes the API service using {@link ApiServiceFactory}.
      *
      * @param context The application context for checking network connectivity
      */
     private ArticleRepository(Context context) {
         this.context = context.getApplicationContext();
-        this.apiService = ApiClient.getArticleApiService();
+        this.apiService = ApiServiceFactory.getArticleApiService();
     }
     
     /**

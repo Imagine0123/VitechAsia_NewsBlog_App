@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ApiClient {
-    private static final String BASE_URL = "https://your-api-url.com/api/v1/";
     private static Retrofit retrofit = null;
     
     /**
@@ -36,7 +35,7 @@ public class ApiClient {
                     .addInterceptor(logging);
             
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
+                    .baseUrl(ApiConfig.getBaseUrl())
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build())
                     .build();
@@ -52,5 +51,12 @@ public class ApiClient {
      */
     public static ArticleApiService getArticleApiService() {
         return getClient().create(ArticleApiService.class);
+    }
+    
+    /**
+     * Resets the client instance. Useful for testing or switching API endpoints.
+     */
+    public static void resetClient() {
+        retrofit = null;
     }
 }

@@ -40,12 +40,6 @@
             android:name=".activities.HomePage"
             android:exported="false"
             android:screenOrientation="portrait" />
-
-        <!-- Fake API Test Activity (for development/testing) -->
-        <activity
-            android:name=".api.FakeApiTestActivity"
-            android:exported="false"
-            android:label="API Testing"
-            android:screenOrientation="portrait" />
     </application>
+
 </manifest>

@@ -14,15 +14,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("boolean", "USE_FAKE_API", "true")
     }
 
     buildTypes {
-        debug {
-            buildConfigField("boolean", "USE_FAKE_API", "true")
-        }
         release {
-            buildConfigField("boolean", "USE_FAKE_API", "false")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -52,6 +47,7 @@ dependencies {
     // Material 3
     implementation(libs.material3)
     implementation(libs.material3.window.size)
+
     // AndroidX KTX
     implementation(libs.fragment.ktx)
     implementation(libs.preference.ktx)
@@ -63,8 +59,8 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
     
-    // Fake API Server (for testing)
-    implementation("org.nanohttpd:nanohttpd:2.3.1")
+    // Coroutines
+    implementation(libs.coroutines.android)
     
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)

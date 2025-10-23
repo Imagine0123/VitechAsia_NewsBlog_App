@@ -28,6 +28,11 @@ public class Article implements Parcelable {
     private int likeCount;
     private boolean isBookmarked;
 
+    // Reading progress fields
+    private int readingProgress; // 0-100 percentage
+    private long lastReadTime;
+    private boolean isInProgress;
+
     public Article() {
     }
 
@@ -46,6 +51,9 @@ public class Article implements Parcelable {
         this.publishDate = publishDate;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
+        this.readingProgress = 0;
+        this.lastReadTime = 0;
+        this.isInProgress = false;
     }
 
     public boolean isBookmarked() {
@@ -54,6 +62,33 @@ public class Article implements Parcelable {
 
     public void setBookmarked(boolean bookmarked) {
         isBookmarked = bookmarked;
+    }
+
+    // Reading progress getters and setters
+    public int getReadingProgress() {
+        return readingProgress;
+    }
+
+    public void setReadingProgress(int readingProgress) {
+        this.readingProgress = readingProgress;
+        this.isInProgress = (readingProgress > 0 && readingProgress < 100);
+        this.lastReadTime = System.currentTimeMillis();
+    }
+
+    public long getLastReadTime() {
+        return lastReadTime;
+    }
+
+    public void setLastReadTime(long lastReadTime) {
+        this.lastReadTime = lastReadTime;
+    }
+
+    public boolean isInProgress() {
+        return isInProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        isInProgress = inProgress;
     }
 
     protected Article(Parcel in) {
@@ -69,6 +104,9 @@ public class Article implements Parcelable {
         viewCount = in.readInt();
         likeCount = in.readInt();
         isBookmarked = in.readByte() != 0;
+        readingProgress = in.readInt();
+        lastReadTime = in.readLong();
+        isInProgress = in.readByte() != 0;
         // Handle potential null date
         long dateMillis = in.readLong();
         publishDate = dateMillis == -1 ? null : new Date(dateMillis);
@@ -217,6 +255,9 @@ public class Article implements Parcelable {
         dest.writeInt(viewCount);
         dest.writeInt(likeCount);
         dest.writeByte((byte) (isBookmarked ? 1 : 0));
+        dest.writeInt(readingProgress);
+        dest.writeLong(lastReadTime);
+        dest.writeByte((byte) (isInProgress ? 1 : 0));
         dest.writeLong(publishDate != null ? publishDate.getTime() : -1);
     }
 }

@@ -18,6 +18,9 @@ import com.bumptech.glide.Glide;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.BookmarkManager;
+import android.widget.ScrollView;
+
+import com.rafdi.vitechasia.blog.utils.ReadingProgressManager;
 
 /**
  * Fragment for displaying detailed view of a single article.
@@ -37,11 +40,13 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     private TextView articleContent;
     private ImageButton bookmarkButton;
     private SwipeRefreshLayout swipeRefreshLayout;
-    
+    private ScrollView scrollView;
+
     private Article article;
     private String categoryId;
     private String subcategoryId;
     private BookmarkManager bookmarkManager;
+    private ReadingProgressManager readingProgressManager;
     
     public static ArticleDetailFragment newInstance(Article article) {
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -54,6 +59,11 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize ReadingProgressManager
+        if (getContext() != null) {
+            ReadingProgressManager.initialize(getContext());
+        }
     }
     
     @Nullable
@@ -70,7 +80,10 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         try {
             // Initialize BookmarkManager
             bookmarkManager = BookmarkManager.getInstance(requireContext());
-            
+
+            // Initialize ReadingProgressManager
+            readingProgressManager = ReadingProgressManager.getInstance();
+
             // Initialize views
             articleImage = view.findViewById(R.id.articleImage);
             articleCategory = view.findViewById(R.id.articleCategory);
@@ -81,12 +94,16 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             articleDate = view.findViewById(R.id.articleDate);
             articleContent = view.findViewById(R.id.articleContent);
             bookmarkButton = view.findViewById(R.id.bookmarkButton);
-            
+            scrollView = (ScrollView) view; // The root view is the ScrollView
+
             // Set up swipe to refresh
             swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
             if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setOnRefreshListener(this);
             }
+
+            // Set up reading progress tracking
+            setupReadingProgressTracking();
             
             // Set click listeners for category and subcategory
             articleCategory.setOnClickListener(this);
@@ -223,12 +240,26 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         }
     }
     
-    // Add a method to refresh the article data
-    public void refreshArticle(Article updatedArticle) {
-        if (updatedArticle != null && getView() != null) {
-            this.article = updatedArticle;
-            updateUI();
-        }
+    private void setupReadingProgressTracking() {
+        if (scrollView == null || article == null) return;
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            if (scrollView.getChildCount() > 0) {
+                View child = scrollView.getChildAt(0);
+                int scrollY = scrollView.getScrollY();
+                int height = child.getHeight() - scrollView.getHeight();
+
+                if (height > 0) {
+                    int progress = (int) ((float) scrollY / height * 100);
+                    progress = Math.max(0, Math.min(100, progress));
+
+                    // Save progress every 10% or when significant progress is made
+                    if (progress % 10 == 0 || progress == 100) {
+                        readingProgressManager.saveReadingProgress(article, progress);
+                    }
+                }
+            }
+        });
     }
     
     @Override
@@ -260,6 +291,28 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         // Implement pull-to-refresh if needed
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);
+        }
+        // Refresh article content if needed
+        updateUI();
+    }
+    
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Save current reading progress when leaving the fragment
+        if (readingProgressManager != null && article != null) {
+            // Calculate current progress based on scroll position
+            if (scrollView != null && scrollView.getChildCount() > 0) {
+                View child = scrollView.getChildAt(0);
+                int scrollY = scrollView.getScrollY();
+                int height = child.getHeight() - scrollView.getHeight();
+
+                if (height > 0) {
+                    int progress = (int) ((float) scrollY / height * 100);
+                    progress = Math.max(0, Math.min(100, progress));
+                    readingProgressManager.saveReadingProgress(article, progress);
+                }
+            }
         }
     }
 }

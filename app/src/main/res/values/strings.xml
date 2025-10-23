@@ -36,17 +36,11 @@
     <string name="menu_bookmark">Bookmarks</string>
     <string name="menu_profile">Profile</string>
     
-    <!-- Article Detail -->
-    <string name="article_image">Article Image</string>
-    <string name="author_image">Author Image</string>
-    <string name="bookmark_article">Bookmark Article</string>
-    <string name="read_more">Read More</string>
-    <string name="likes">%1$d Likes</string>
-    <string name="views">%1$d Views</string>
-    <string name="comments">%1$d Comments</string>
-    <string name="share_article">Share Article</string>
-    <string name="search_results_for">Search results for \"%s\"</string>
-    <string name="no_search_history">No search history available</string>
+    <!-- Article Sections -->
+    <string name="latest_articles">Latest Articles</string>
+    <string name="popular_articles">Popular Articles</string>
+    <string name="bookmarked_articles">Bookmarked Articles</string>
+    <string name="continue_reading">Continue Reading</string>
 
     <!-- Categories -->
     <string name="category_sports">Sports</string>
@@ -204,9 +198,6 @@
     <string name="article_count">%1$d articles</string>
 
     <!-- Home Screen -->
-    <string name="latest_articles">Latest Articles</string>
-    <string name="popular_articles">Popular Articles</string>
-    <string name="bookmarked_articles">Bookmarked Articles</string>
     <string name="categories">Categories</string>
     <string name="view_all">View All</string>
     <string name="load_more">Load More Articles</string>

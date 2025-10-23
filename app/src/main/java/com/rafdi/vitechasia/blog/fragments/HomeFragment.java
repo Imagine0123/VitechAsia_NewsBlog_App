@@ -40,6 +40,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     private RecyclerView latestArticlesRecyclerView;
     private RecyclerView popularArticlesRecyclerView;
     private RecyclerView bookmarkedArticlesRecyclerView;
+    private RecyclerView continueReadingRecyclerView;
     private RecyclerView sportsArticlesRecyclerView;
     private RecyclerView techArticlesRecyclerView;
     private RecyclerView newsArticlesRecyclerView;
@@ -75,6 +76,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     private static final String NAV_LATEST = "latest";
     private static final String NAV_POPULAR = "popular";
     private static final String NAV_BOOKMARKS = "bookmarks";
+    private static final String NAV_CONTINUE_READING = "continue_reading";
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -98,6 +100,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         latestArticlesRecyclerView = view.findViewById(R.id.latestArticlesRecyclerView);
         popularArticlesRecyclerView = view.findViewById(R.id.popularArticlesRecyclerView);
         bookmarkedArticlesRecyclerView = view.findViewById(R.id.bookmarkedArticlesRecyclerView);
+        continueReadingRecyclerView = view.findViewById(R.id.continueReadingRecyclerView);
         sportsArticlesRecyclerView = view.findViewById(R.id.sportsArticlesRecyclerView);
         techArticlesRecyclerView = view.findViewById(R.id.techArticlesRecyclerView);
         newsArticlesRecyclerView = view.findViewById(R.id.newsArticlesRecyclerView);
@@ -109,15 +112,18 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
     }
 
     private void setupRecyclerViews() {
+        // Continue Reading Articles (if any articles are in progress)
+        setupContinueReadingRecyclerView();
+
         // Latest Articles
         setupHorizontalRecyclerView(latestArticlesRecyclerView, "latest");
-        
+
         // Popular Articles
         setupHorizontalRecyclerView(popularArticlesRecyclerView, "popular");
-        
+
         // Bookmarked Articles
         setupHorizontalRecyclerView(bookmarkedArticlesRecyclerView, "bookmarked");
-        
+
         // Category Articles
         setupHorizontalRecyclerView(sportsArticlesRecyclerView, DataHandler.CATEGORY_SPORTS);
         setupHorizontalRecyclerView(techArticlesRecyclerView, DataHandler.CATEGORY_TECH);
@@ -182,6 +188,38 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         }
     }
 
+    private void setupContinueReadingRecyclerView() {
+        if (continueReadingRecyclerView == null) return;
+
+        continueReadingRecyclerView.setLayoutManager(new LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL,
+            false
+        ));
+
+        ArticleHorizontalAdapter adapter = new ArticleHorizontalAdapter(this);
+        continueReadingRecyclerView.setAdapter(adapter);
+
+        // Load continue reading articles
+        List<Article> continueReadingArticles = DataHandler.getContinueReadingArticles(requireContext(), 5);
+        if (continueReadingArticles.isEmpty()) {
+            // Hide continue reading section if no articles in progress
+            continueReadingRecyclerView.setVisibility(View.GONE);
+            View continueReadingHeader = getView() != null ? getView().findViewById(R.id.continueReadingHeader) : null;
+            if (continueReadingHeader != null) {
+                continueReadingHeader.setVisibility(View.GONE);
+            }
+        } else {
+            // Show continue reading section
+            continueReadingRecyclerView.setVisibility(View.VISIBLE);
+            View continueReadingHeader = getView() != null ? getView().findViewById(R.id.continueReadingHeader) : null;
+            if (continueReadingHeader != null) {
+                continueReadingHeader.setVisibility(View.VISIBLE);
+            }
+            adapter.setArticles(continueReadingArticles);
+        }
+    }
+
     private void setupClickListeners() {
         View rootView = getView();
         if (rootView == null) {
@@ -220,6 +258,7 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
         setupHeaderClickListener(R.id.latestHeader, () -> navigateToFragment(NAV_LATEST));
         setupHeaderClickListener(R.id.popularHeader, () -> navigateToFragment(NAV_POPULAR));
         setupHeaderClickListener(R.id.bookmarkedHeader, () -> navigateToFragment(NAV_BOOKMARKS));
+        setupHeaderClickListener(R.id.continueReadingHeader, () -> navigateToFragment(NAV_CONTINUE_READING));
 
         // Set up category card click listeners
         View.OnClickListener cardClickListener = v -> {
@@ -298,8 +337,14 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
                 fragment = new BookmarkFragment();
                 navItemId = R.id.navigation_bookmark;
                 break;
+            case NAV_CONTINUE_READING:
+                // For continue reading, just reload the home fragment to show the continue reading section
+                loadHomeFragment();
+                navItemId = R.id.navigation_home;
+                break;
         }
         
+        // Handle regular fragment navigation (not continue reading)
         if (fragment != null) {
             getActivity().getSupportFragmentManager()
                 .beginTransaction()
@@ -312,6 +357,17 @@ public class HomeFragment extends Fragment implements ArticleHorizontalAdapter.O
             if (navigationCallback != null) {
                 navigationCallback.onHeaderClicked(navItemId);
             }
+        }
+    }
+    
+    private void loadHomeFragment() {
+        if (getActivity() != null) {
+            // Replace current fragment with a new HomeFragment instance
+            getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, new HomeFragment())
+                .commit();
         }
     }
     

@@ -434,6 +434,32 @@ public class DataHandler {
     }
 
     /**
+     * Get articles that user has started reading but not completed (continue reading)
+     *
+     * @param context  The context needed for ReadingProgressManager
+     * @param limit    Maximum number of articles to return
+     * @return List of articles in progress, sorted by last read time
+     */
+    public static List<Article> getContinueReadingArticles(Context context, int limit) {
+        List<Article> allArticles = getDummyArticles();
+
+        // Initialize ReadingProgressManager if not already done
+        try {
+            com.rafdi.vitechasia.blog.utils.ReadingProgressManager.initialize(context.getApplicationContext());
+            com.rafdi.vitechasia.blog.utils.ReadingProgressManager readingProgressManager =
+                com.rafdi.vitechasia.blog.utils.ReadingProgressManager.getInstance();
+
+            return readingProgressManager.getContinueReadingArticles(allArticles)
+                .stream()
+                .limit(limit)
+                .collect(ArrayList::new, (list, item) -> list.add(item), (list1, list2) -> list1.addAll(list2));
+        } catch (Exception e) {
+            // If ReadingProgressManager fails, return empty list
+            return new ArrayList<>();
+        }
+    }
+
+    /**
      * Search for articles that match the given query in title, content, or author name
      *
      * @param query The search query

@@ -241,6 +241,16 @@
     <string name="error_loading">Error loading content</string>
     <string name="error_no_internet_connection">No internet connection. Please check your network settings and try again.</string>
     <string name="try_again">Try Again</string>
+    
+    <!-- Article Detail -->
+    <string name="article_image">Article image</string>
+    <string name="author_image">Author image</string>
+    <string name="bookmark_article">Bookmark this article</string>
+    <string name="share_article">Share article</string>
+    <string name="minutes_read">%d min read</string>
+    <string name="read_more">Read more</string>
+    <string name="related_articles">Related Articles</string>
+    <string name="article_published">Published %s</string>
     <string name="searching_for">Searching for: %s</string>
     <string name="welcome_message">Welcome to Sintesis</string>
     <string name="articles_in_subcategory">Articles in %s - %s</string>
@@ -249,6 +259,7 @@
     <string name="saved_articles">Saved Articles</string>
 
     <!-- Search -->
+    <string name="search_results_for">Search results for "%1$s"</string>
     <string name="no_search_results">No results found for "%1$s"</string>
 
     <!-- Filter Strings -->

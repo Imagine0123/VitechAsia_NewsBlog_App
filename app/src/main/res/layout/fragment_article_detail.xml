@@ -77,7 +77,7 @@
             tools:text="Sample Article Title" />
 
         <ImageButton
-            android:id="@+id/bookmarkButton"
+            android:id="@+id/bookmarkButton2"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -97,17 +97,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/articleTitle">
 
-            <ImageView
-                android:id="@+id/authorImage"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:contentDescription="@string/author_image"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_profile_placeholder"
+            <FrameLayout
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:focusable="true"
-                app:tint="?attr/colorOnSurface" />
+                android:focusable="true">
+                <ImageView
+                    android:id="@+id/authorImage"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/author_image"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile_placeholder"
+                    app:tint="?attr/colorOnSurface" />
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -155,6 +160,161 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider"
             tools:text="This is a sample article content. It will be replaced with the actual article content when loaded." />
+
+        <!-- Social Interaction Buttons -->
+        <LinearLayout
+            android:id="@+id/socialActionsContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/articleContent">
+
+            <!-- Like Button -->
+            <ImageButton
+                android:id="@+id/likeButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/like_article"
+                android:padding="12dp"
+                android:src="@drawable/ic_thumb_up_outline"
+                android:scaleType="centerInside"
+                app:tint="?attr/colorOnSurface" />
+
+            <!-- Share Button -->
+            <ImageButton
+                android:id="@+id/shareButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/share_article"
+                android:padding="12dp"
+                android:src="@drawable/ic_share_outline"
+                android:scaleType="centerInside"
+                app:tint="?attr/colorOnSurface" />
+
+            <!-- Bookmark Button -->
+            <ImageButton
+                android:id="@+id/bookmarkButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/bookmark_article"
+                android:padding="12dp"
+                android:src="@drawable/ic_star_outline"
+                android:scaleType="centerInside"
+                app:tint="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <!-- Reaction Counters -->
+        <LinearLayout
+            android:id="@+id/reactionCountersContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/socialActionsContainer" />
+
+            <!-- Like Counter -->
+            <TextView
+                android:id="@+id/likeCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/shareCounter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="0" />
+
+            <!-- Share Counter -->
+            <TextView
+                android:id="@+id/shareCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/viewCounter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="0" />
+
+            <!-- View Counter -->
+            <TextView
+                android:id="@+id/viewCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="0 views" />
+
+            <!-- Comments Section -->
+            <LinearLayout
+                android:id="@+id/commentsSection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                android:background="?attr/colorSurfaceVariant"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/reactionCountersContainer">
+
+                <TextView
+                    android:id="@+id/commentsHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/comments_section"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/commentsCount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    tools:text="No comments yet" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:minWidth="88dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingHorizontal="12dp">
+                    <TextView
+                        android:id="@+id/viewAllComments"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/view_all_comments"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorPrimary"
+                        android:textStyle="bold" />
+                </FrameLayout>
+            </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

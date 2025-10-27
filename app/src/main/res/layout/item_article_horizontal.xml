@@ -76,6 +76,59 @@
             app:layout_constraintTop_toBottomOf="@id/categoryContainer"
             tools:text="Sample article title that might be a bit longer than one line" />
 
+        <!-- Social Stats Row -->
+        <LinearLayout
+            android:id="@+id/socialStatsContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/articleTitle">
+
+            <!-- Like Count -->
+            <TextView
+                android:id="@+id/likeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_thumb_up_outline"
+                android:drawableTint="?android:attr/textColorSecondary"
+                android:drawablePadding="4dp"
+                tools:text="24" />
+
+            <!-- Share Count -->
+            <TextView
+                android:id="@+id/shareCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_share_outline"
+                android:drawableTint="?android:attr/textColorSecondary"
+                android:drawablePadding="4dp"
+                tools:text="12" />
+
+            <!-- View Count -->
+            <TextView
+                android:id="@+id/viewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_eye_outline"
+                android:drawableTint="?android:attr/textColorSecondary"
+                android:drawablePadding="4dp"
+                tools:text="156" />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -84,7 +137,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/articleTitle">
+            app:layout_constraintTop_toBottomOf="@id/socialStatsContainer">
 
             <TextView
                 android:id="@+id/articleAuthor"

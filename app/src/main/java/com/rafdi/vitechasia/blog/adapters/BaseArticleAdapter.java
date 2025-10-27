@@ -42,6 +42,19 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
+     * Updates the list of articles and notifies the adapter of the change
+     * @param articles New list of articles to display
+     */
+    public void setArticles(List<Article> articles) {
+        if (articles == null) {
+            this.articles = new ArrayList<>();
+        } else {
+            this.articles = new ArrayList<>(articles);
+        }
+        notifyDataSetChanged();
+    }
+
+    /**
      * Common method to bind article data to view holder.
      * Subclasses should call this and then add their specific binding logic.
      */
@@ -59,6 +72,9 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
         
         // Set category and subcategory with proper formatting
         bindCategories(holder, article);
+        
+        // Bind social stats
+        bindSocialStats(holder, article);
     }
     
     /**
@@ -104,13 +120,38 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(imageView);
         } else {
-            imageView.setImageResource(DEFAULT_IMAGE_PLACEHOLDER);
+            Glide.with(imageView.getContext())
+                    .load(DEFAULT_IMAGE_PLACEHOLDER)
+                    .into(imageView);
         }
     }
 
     /**
-     * Format and set category and subcategory text.
+     * Bind social statistics views
      */
+    private void bindSocialStats(ArticleViewHolder holder, Article article) {
+        if (article == null || holder == null) {
+            return;
+        }
+        // Bind like count
+        if (holder.likeCount != null) {
+            int likes = article.getLikeCount();
+            holder.likeCount.setText(String.valueOf(likes));
+        }
+
+        // Bind share count
+        if (holder.shareCount != null) {
+            int shares = article.getShareCount();
+            holder.shareCount.setText(String.valueOf(shares));
+        }
+
+        // Bind view count
+        if (holder.viewCount != null) {
+            int views = article.getViewCount();
+            holder.viewCount.setText(String.valueOf(views));
+        }
+    }
+
     /**
      * Set category and subcategory text with null safety
      */
@@ -118,10 +159,10 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
         if (article == null || holder == null) {
             return;
         }
-        
+
         String category = "";
         String subcategory = "";
-        
+
         try {
             if (article.getCategoryId() != null) {
                 category = ArticleFormatter.formatCategory(article.getCategoryId());
@@ -132,34 +173,13 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
         } catch (Exception e) {
             Log.e(TAG, "Error formatting categories", e);
         }
-        
+
         if (holder.articleCategory != null) {
             holder.articleCategory.setText(category);
         }
         if (holder.articleSubcategory != null) {
             holder.articleSubcategory.setText(subcategory);
-        }
-    }
-
-    /**
-     * Set articles and notify adapter of data change.
-     */
-    public void setArticles(List<Article> articles) {
-        this.articles.clear();
-        if (articles != null) {
-            this.articles.addAll(articles);
-        }
-        notifyDataSetChanged();
-    }
-
-    /**
-     * Add articles to the existing list and notify adapter.
-     */
-    public void addArticles(List<Article> articles) {
-        if (articles != null && !articles.isEmpty()) {
-            int startPosition = this.articles.size();
-            this.articles.addAll(articles);
-            notifyItemRangeInserted(startPosition, articles.size());
+            holder.articleSubcategory.setVisibility(subcategory.isEmpty() ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -230,6 +250,10 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
         @Nullable public final TextView articleDate;
         @Nullable public final TextView articleCategory;
         @Nullable public final TextView articleSubcategory;
+        // Social stats views
+        @Nullable public final TextView likeCount;
+        @Nullable public final TextView shareCount;
+        @Nullable public final TextView viewCount;
 
         public ArticleViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -240,6 +264,11 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
             articleDate = safeFindView(itemView, R.id.articleDate, TextView.class);
             articleCategory = safeFindView(itemView, R.id.articleCategory, TextView.class);
             articleSubcategory = safeFindView(itemView, R.id.articleSubcategory, TextView.class);
+
+            // Initialize social stats views
+            likeCount = safeFindView(itemView, R.id.likeCount, TextView.class);
+            shareCount = safeFindView(itemView, R.id.shareCount, TextView.class);
+            viewCount = safeFindView(itemView, R.id.viewCount, TextView.class);
         }
         
         /**

@@ -26,7 +26,11 @@ public class Article implements Parcelable {
     private Date publishDate;
     private int viewCount;
     private int likeCount;
+    private int shareCount;
+    private int commentCount;
     private boolean isBookmarked;
+    private boolean isLikedByUser;
+    private boolean isSharedByUser;
 
     // Reading progress fields
     private int readingProgress; // 0-100 percentage
@@ -37,7 +41,7 @@ public class Article implements Parcelable {
     }
 
     public Article(String id, String title, String content, String imageUrl,
-                  String categoryId, String subcategoryId, String authorId, String authorName, 
+                  String categoryId, String subcategoryId, String authorId, String authorName,
                   String authorImageUrl, Date publishDate, int viewCount, int likeCount) {
         this.id = id;
         this.title = title;
@@ -51,6 +55,11 @@ public class Article implements Parcelable {
         this.publishDate = publishDate;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
+        this.shareCount = 0;
+        this.commentCount = 0;
+        this.isBookmarked = false;
+        this.isLikedByUser = false;
+        this.isSharedByUser = false;
         this.readingProgress = 0;
         this.lastReadTime = 0;
         this.isInProgress = false;
@@ -103,7 +112,11 @@ public class Article implements Parcelable {
         authorImageUrl = in.readString();
         viewCount = in.readInt();
         likeCount = in.readInt();
+        shareCount = in.readInt();
+        commentCount = in.readInt();
         isBookmarked = in.readByte() != 0;
+        isLikedByUser = in.readByte() != 0;
+        isSharedByUser = in.readByte() != 0;
         readingProgress = in.readInt();
         lastReadTime = in.readLong();
         isInProgress = in.readByte() != 0;
@@ -230,6 +243,38 @@ public class Article implements Parcelable {
         this.likeCount = likeCount;
     }
 
+    public int getShareCount() {
+        return shareCount;
+    }
+
+    public void setShareCount(int shareCount) {
+        this.shareCount = shareCount;
+    }
+
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public boolean isLikedByUser() {
+        return isLikedByUser;
+    }
+
+    public void setLikedByUser(boolean likedByUser) {
+        isLikedByUser = likedByUser;
+    }
+
+    public boolean isSharedByUser() {
+        return isSharedByUser;
+    }
+
+    public void setSharedByUser(boolean sharedByUser) {
+        isSharedByUser = sharedByUser;
+    }
+
     public String getFormattedDate() {
         if (publishDate == null) return "";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
@@ -254,7 +299,11 @@ public class Article implements Parcelable {
         dest.writeString(authorImageUrl);
         dest.writeInt(viewCount);
         dest.writeInt(likeCount);
+        dest.writeInt(shareCount);
+        dest.writeInt(commentCount);
         dest.writeByte((byte) (isBookmarked ? 1 : 0));
+        dest.writeByte((byte) (isLikedByUser ? 1 : 0));
+        dest.writeByte((byte) (isSharedByUser ? 1 : 0));
         dest.writeInt(readingProgress);
         dest.writeLong(lastReadTime);
         dest.writeByte((byte) (isInProgress ? 1 : 0));

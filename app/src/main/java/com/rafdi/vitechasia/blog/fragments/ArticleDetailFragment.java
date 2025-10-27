@@ -21,6 +21,8 @@ import com.rafdi.vitechasia.blog.utils.BookmarkManager;
 import android.widget.ScrollView;
 
 import com.rafdi.vitechasia.blog.utils.ReadingProgressManager;
+import com.rafdi.vitechasia.blog.utils.SocialInteractionManager;
+import com.rafdi.vitechasia.blog.utils.ShareUtils;
 
 /**
  * Fragment for displaying detailed view of a single article.
@@ -39,6 +41,12 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     private TextView articleDate;
     private TextView articleContent;
     private ImageButton bookmarkButton;
+    private ImageButton likeButton;
+    private ImageButton shareButton;
+    private TextView likeCounter;
+    private TextView shareCounter;
+    private TextView viewCounter;
+    private TextView commentsCount;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ScrollView scrollView;
 
@@ -47,6 +55,7 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
     private String subcategoryId;
     private BookmarkManager bookmarkManager;
     private ReadingProgressManager readingProgressManager;
+    private SocialInteractionManager socialInteractionManager;
     
     public static ArticleDetailFragment newInstance(Article article) {
         ArticleDetailFragment fragment = new ArticleDetailFragment();
@@ -63,6 +72,7 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
         // Initialize ReadingProgressManager
         if (getContext() != null) {
             ReadingProgressManager.initialize(getContext());
+            SocialInteractionManager.initialize(getContext());
         }
     }
     
@@ -84,6 +94,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             // Initialize ReadingProgressManager
             readingProgressManager = ReadingProgressManager.getInstance();
 
+            // Initialize SocialInteractionManager
+            socialInteractionManager = SocialInteractionManager.getInstance();
+
             // Initialize views
             articleImage = view.findViewById(R.id.articleImage);
             articleCategory = view.findViewById(R.id.articleCategory);
@@ -94,6 +107,12 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             articleDate = view.findViewById(R.id.articleDate);
             articleContent = view.findViewById(R.id.articleContent);
             bookmarkButton = view.findViewById(R.id.bookmarkButton);
+            likeButton = view.findViewById(R.id.likeButton);
+            shareButton = view.findViewById(R.id.shareButton);
+            likeCounter = view.findViewById(R.id.likeCounter);
+            shareCounter = view.findViewById(R.id.shareCounter);
+            viewCounter = view.findViewById(R.id.viewCounter);
+            commentsCount = view.findViewById(R.id.commentsCount);
             scrollView = (ScrollView) view; // The root view is the ScrollView
 
             // Set up swipe to refresh
@@ -111,6 +130,12 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             
             // Set bookmark button click listener
             bookmarkButton.setOnClickListener(v -> toggleBookmark());
+
+            // Set like button click listener
+            likeButton.setOnClickListener(v -> toggleLike());
+
+            // Set share button click listener
+            shareButton.setOnClickListener(v -> shareArticle());
             
             // Get article from arguments
             if (getArguments() != null) {
@@ -121,6 +146,10 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
                     subcategoryId = article.getSubcategoryId();
                     // Sync bookmark status
                     bookmarkManager.syncArticleBookmarkStatus(article);
+
+                    // Initialize social interaction state
+                    socialInteractionManager.initializeArticleSocialState(article);
+
                     updateUI();
                 }
             }
@@ -213,6 +242,9 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             
             // Update bookmark button icon
             updateBookmarkButton();
+
+            // Update social interaction UI
+            updateSocialInteractionUI();
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -237,6 +269,85 @@ public class ArticleDetailFragment extends Fragment implements SwipeRefreshLayou
             bookmarkButton.setImageResource(R.drawable.ic_star_filled);
         } else {
             bookmarkButton.setImageResource(R.drawable.ic_star_outline);
+        }
+    }
+
+    private void toggleLike() {
+        if (article == null || socialInteractionManager == null) return;
+
+        boolean isLikedNow = socialInteractionManager.toggleLike(article);
+        updateSocialInteractionUI();
+
+        // Show animation and feedback
+        if (likeButton != null) {
+            likeButton.animate()
+                .scaleX(1.2f)
+                .scaleY(1.2f)
+                .setDuration(150)
+                .withEndAction(() -> {
+                    likeButton.animate()
+                        .scaleX(1.0f)
+                        .scaleY(1.0f)
+                        .setDuration(150)
+                        .start();
+                })
+                .start();
+        }
+
+        // Optional: Show toast message
+        String message = isLikedNow ? "Liked!" : "Like removed";
+        android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_SHORT).show();
+    }
+
+    private void shareArticle() {
+        if (article == null) return;
+
+        // Record the share action
+        socialInteractionManager.recordShare(article);
+
+        // Show share options
+        ShareUtils.shareArticle(requireContext(), article);
+
+        // Update UI after sharing
+        updateSocialInteractionUI();
+    }
+
+    private void updateSocialInteractionUI() {
+        if (article == null) return;
+
+        // Update like button
+        if (likeButton != null) {
+            if (article.isLikedByUser()) {
+                likeButton.setImageResource(R.drawable.ic_thumb_up_filled);
+                likeButton.setColorFilter(getResources().getColor(R.color.primary, null));
+            } else {
+                likeButton.setImageResource(R.drawable.ic_thumb_up_outline);
+                likeButton.clearColorFilter();
+            }
+        }
+
+        // Update bookmark button
+        updateBookmarkButton();
+
+        // Update counters
+        if (likeCounter != null) {
+            likeCounter.setText(String.valueOf(article.getLikeCount()));
+        }
+
+        if (shareCounter != null) {
+            shareCounter.setText(String.valueOf(article.getShareCount()));
+        }
+
+        if (viewCounter != null) {
+            String viewsText = getString(R.string.views_count, article.getViewCount());
+            viewCounter.setText(viewsText);
+        }
+
+        if (commentsCount != null) {
+            String commentsText = article.getCommentCount() > 0
+                ? getString(R.string.likes_count, article.getCommentCount())
+                : getString(R.string.no_comments);
+            commentsCount.setText(commentsText);
         }
     }
     

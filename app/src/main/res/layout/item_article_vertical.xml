@@ -80,6 +80,7 @@
             tools:text="Lamp construction: Plant for any anything that" />
 
         <LinearLayout
+            android:id="@+id/authorDateContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -90,6 +91,8 @@
                 android:id="@+id/articleAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
                 tools:text="Riski hia" />
@@ -108,6 +111,42 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
                 tools:text="Sep 12, 2025" />
+        </LinearLayout>
+
+        <!-- Social Stats Row -->
+        <LinearLayout
+            android:id="@+id/socialStatsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/authorDateContainer">
+
+            <!-- Like Count -->
+            <TextView
+                android:id="@+id/likeCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_thumb_up_outline"
+                android:drawableTint="?android:attr/textColorSecondary"
+                android:drawablePadding="4dp"
+                tools:text="24" />
+
+<!-- View Count -->
+            <TextView
+                android:id="@+id/viewCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_eye_outline"
+                android:drawableTint="?android:attr/textColorSecondary"
+                android:drawablePadding="4dp"
+                tools:text="156" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

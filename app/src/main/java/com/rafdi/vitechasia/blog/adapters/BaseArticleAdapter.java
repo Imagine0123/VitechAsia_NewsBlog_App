@@ -139,13 +139,7 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
             holder.likeCount.setText(String.valueOf(likes));
         }
 
-        // Bind share count
-        if (holder.shareCount != null) {
-            int shares = article.getShareCount();
-            holder.shareCount.setText(String.valueOf(shares));
-        }
-
-        // Bind view count
+// Bind view count
         if (holder.viewCount != null) {
             int views = article.getViewCount();
             holder.viewCount.setText(String.valueOf(views));
@@ -252,7 +246,6 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
         @Nullable public final TextView articleSubcategory;
         // Social stats views
         @Nullable public final TextView likeCount;
-        @Nullable public final TextView shareCount;
         @Nullable public final TextView viewCount;
 
         public ArticleViewHolder(@NonNull View itemView) {
@@ -267,7 +260,6 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
 
             // Initialize social stats views
             likeCount = safeFindView(itemView, R.id.likeCount, TextView.class);
-            shareCount = safeFindView(itemView, R.id.shareCount, TextView.class);
             viewCount = safeFindView(itemView, R.id.viewCount, TextView.class);
         }
         

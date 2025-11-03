@@ -18,6 +18,9 @@ import com.rafdi.vitechasia.blog.models.Article;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * Base adapter class for article adapters that provides common functionality.
@@ -42,16 +45,24 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * Updates the list of articles and notifies the adapter of the change
-     * @param articles New list of articles to display
+     * Updates the list of articles and calculates the minimal set of changes to update the UI
+     * @param newArticles New list of articles to display
      */
-    public void setArticles(List<Article> articles) {
-        if (articles == null) {
-            this.articles = new ArrayList<>();
-        } else {
-            this.articles = new ArrayList<>(articles);
+    public void setArticles(List<Article> newArticles) {
+        if (newArticles == null) {
+            newArticles = new ArrayList<>();
         }
-        notifyDataSetChanged();
+        
+        // Use DiffUtil to calculate the differences
+        ArticleDiffCallback diffCallback = new ArticleDiffCallback(this.articles, newArticles);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        
+        // Update the data
+        this.articles.clear();
+        this.articles.addAll(newArticles);
+        
+        // Dispatch the updates
+        diffResult.dispatchUpdatesTo(this);
     }
 
     /**
@@ -189,14 +200,40 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * Update a specific article in the list.
+     * Update a specific article in the list with optimized updates.
+     * @param updatedArticle The updated article with new data
      */
     public void updateArticle(Article updatedArticle) {
         for (int i = 0; i < articles.size(); i++) {
             Article article = articles.get(i);
             if (article.getId().equals(updatedArticle.getId())) {
+                // Create a list of changes
+                List<Object> payloads = new ArrayList<>();
+                
+                // Check which fields changed
+                if (article.getLikeCount() != updatedArticle.getLikeCount()) {
+                    payloads.add("like_count");
+                }
+                if (article.getViewCount() != updatedArticle.getViewCount()) {
+                    payloads.add("view_count");
+                }
+                if (!Objects.equals(article.getTitle(), updatedArticle.getTitle())) {
+                    payloads.add("title");
+                }
+                if (!Objects.equals(article.getImageUrl(), updatedArticle.getImageUrl())) {
+                    payloads.add("image");
+                }
+                
+                // Update the article
                 articles.set(i, updatedArticle);
-                notifyItemChanged(i);
+                
+                if (payloads.isEmpty()) {
+                    // If no specific payloads, do a full update
+                    notifyItemChanged(i);
+                } else {
+                    // Otherwise, do a partial update
+                    notifyItemChanged(i, payloads);
+                }
                 break;
             }
         }
@@ -207,8 +244,10 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
      */
     public void clearArticles() {
         int size = articles.size();
-        articles.clear();
-        notifyItemRangeRemoved(0, size);
+        if (size > 0) {
+            articles.clear();
+            notifyItemRangeRemoved(0, size);
+        }
     }
 
     /**
@@ -231,6 +270,116 @@ public abstract class BaseArticleAdapter<VH extends RecyclerView.ViewHolder>
     @Override
     public int getItemCount() {
         return articles.size();
+    }
+    
+    @Override
+    public void onBindViewHolder(@NonNull VH holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            // Full update
+            onBindViewHolder(holder, position);
+        } else if (holder instanceof ArticleViewHolder) {
+            // Partial update
+            Article article = articles.get(position);
+            ArticleViewHolder viewHolder = (ArticleViewHolder) holder;
+            
+            for (Object payload : payloads) {
+                if (payload instanceof String) {
+                    String change = (String) payload;
+                    switch (change) {
+                        case "like_count":
+                            if (viewHolder.likeCount != null) {
+                                viewHolder.likeCount.setText(String.valueOf(article.getLikeCount()));
+                            }
+                            break;
+                        case "view_count":
+                            if (viewHolder.viewCount != null) {
+                                viewHolder.viewCount.setText(String.valueOf(article.getViewCount()));
+                            }
+                            break;
+                        case "title":
+                            if (viewHolder.articleTitle != null) {
+                                viewHolder.articleTitle.setText(article.getTitle() != null ? article.getTitle() : "");
+                            }
+                            break;
+                        case "image":
+                            if (viewHolder.articleImage != null) {
+                                loadArticleImage(viewHolder.articleImage, article.getImageUrl());
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Callback for calculating the diff between two non-null items in a list.
+     */
+    private static class ArticleDiffCallback extends DiffUtil.Callback {
+        private final List<Article> oldArticles;
+        private final List<Article> newArticles;
+
+        public ArticleDiffCallback(List<Article> oldArticles, List<Article> newArticles) {
+            this.oldArticles = oldArticles != null ? oldArticles : new ArrayList<>();
+            this.newArticles = newArticles != null ? newArticles : new ArrayList<>();
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldArticles.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newArticles.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            Article oldArticle = oldArticles.get(oldItemPosition);
+            Article newArticle = newArticles.get(newItemPosition);
+            return oldArticle.getId().equals(newArticle.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            Article oldArticle = oldArticles.get(oldItemPosition);
+            Article newArticle = newArticles.get(newItemPosition);
+            
+            // Compare the fields that affect the UI
+            return Objects.equals(oldArticle.getTitle(), newArticle.getTitle()) &&
+                   oldArticle.getLikeCount() == newArticle.getLikeCount() &&
+                   oldArticle.getViewCount() == newArticle.getViewCount() &&
+                   Objects.equals(oldArticle.getImageUrl(), newArticle.getImageUrl()) &&
+                   Objects.equals(oldArticle.getAuthorName(), newArticle.getAuthorName()) &&
+                   Objects.equals(oldArticle.getPublishDate(), newArticle.getPublishDate()) &&
+                   Objects.equals(oldArticle.getCategoryId(), newArticle.getCategoryId()) &&
+                   Objects.equals(oldArticle.getSubcategoryId(), newArticle.getSubcategoryId());
+        }
+
+        @Nullable
+        @Override
+        public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+            Article oldArticle = oldArticles.get(oldItemPosition);
+            Article newArticle = newArticles.get(newItemPosition);
+            
+            List<String> changes = new ArrayList<>();
+            
+            if (!Objects.equals(oldArticle.getTitle(), newArticle.getTitle())) {
+                changes.add("title");
+            }
+            if (!Objects.equals(oldArticle.getImageUrl(), newArticle.getImageUrl())) {
+                changes.add("image");
+            }
+            if (oldArticle.getLikeCount() != newArticle.getLikeCount()) {
+                changes.add("like_count");
+            }
+            if (oldArticle.getViewCount() != newArticle.getViewCount()) {
+                changes.add("view_count");
+            }
+            
+            return changes.isEmpty() ? null : changes;
+        }
     }
 
     /**

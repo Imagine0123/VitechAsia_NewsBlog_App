@@ -1,6 +1,7 @@
 package com.rafdi.vitechasia.blog.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,27 +153,40 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     }
 
     private void performSearch() {
+        Log.d("SearchResultsFragment", "performSearch called with query: " + searchQuery);
+        
         if (searchQuery == null || searchQuery.trim().isEmpty()) {
+            Log.d("SearchResultsFragment", "Empty search query, showing search history");
             displaySearchHistory();
             return;
         }
 
-        // Use new DataHandler approach that tries API first, falls back to dummy data
-        DataHandler.getInstance().getArticlesByCategory(null, new DataHandler.DataLoadListener() {
+        Log.d("SearchResultsFragment", "Fetching all articles to filter by query: " + searchQuery);
+        
+        // Use getAllArticles to get all articles regardless of category
+        DataHandler.getInstance().getAllArticles(new DataHandler.DataLoadListener() {
             @Override
             public void onDataLoaded(List<Article> articles) {
+                Log.d("SearchResultsFragment", "Received " + (articles != null ? articles.size() : 0) + " articles from DataHandler");
                 requireActivity().runOnUiThread(() -> {
                     try {
                         // Filter articles based on search query
                         allSearchResults = new ArrayList<>();
-                        for (Article article : articles) {
-                            if (matchesSearchQuery(article, searchQuery)) {
-                                allSearchResults.add(article);
+                        int matchCount = 0;
+                        
+                        if (articles != null) {
+                            for (Article article : articles) {
+                                if (matchesSearchQuery(article, searchQuery)) {
+                                    allSearchResults.add(article);
+                                    matchCount++;
+                                }
                             }
                         }
+                        
+                        Log.d("SearchResultsFragment", "Found " + matchCount + " articles matching query");
                         applyFilters();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e("SearchResultsFragment", "Error processing search results", e);
                         showNoResults();
                     }
                 });
@@ -188,12 +202,24 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     }
 
     private boolean matchesSearchQuery(Article article, String query) {
-        if (article == null || query == null) return false;
+        if (article == null || query == null) {
+            Log.d("SearchResultsFragment", "matchesSearchQuery: article or query is null");
+            return false;
+        }
 
         String lowerQuery = query.toLowerCase();
-        return (article.getTitle() != null && article.getTitle().toLowerCase().contains(lowerQuery)) ||
+        boolean matches = (article.getTitle() != null && article.getTitle().toLowerCase().contains(lowerQuery)) ||
                (article.getContent() != null && article.getContent().toLowerCase().contains(lowerQuery)) ||
                (article.getAuthorName() != null && article.getAuthorName().toLowerCase().contains(lowerQuery));
+        
+        if (matches) {
+            Log.d("SearchResultsFragment", "Match found in article: " + article.getTitle());
+            Log.d("SearchResultsFragment", "  Title: " + article.getTitle());
+            Log.d("SearchResultsFragment", "  Content: " + (article.getContent() != null ? "[content available]" : "null"));
+            Log.d("SearchResultsFragment", "  Author: " + article.getAuthorName());
+        }
+        
+        return matches;
     }
 
     private void applyFilters() {
@@ -377,22 +403,54 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     }
 
     private void showResults(List<Article> results) {
+        Log.d("SearchResultsFragment", "showResults called with " + (results != null ? results.size() : 0) + " results");
+        
+        if (resultsRecyclerView == null) {
+            Log.e("SearchResultsFragment", "resultsRecyclerView is null!");
+        }
+        if (noResultsText == null) {
+            Log.e("SearchResultsFragment", "noResultsText is null!");
+        }
+        if (verticalAdapter == null) {
+            Log.e("SearchResultsFragment", "verticalAdapter is null!");
+        }
+
         if (resultsRecyclerView != null && noResultsText != null) {
             resultsRecyclerView.setVisibility(View.VISIBLE);
             noResultsText.setVisibility(View.GONE);
 
             if (verticalAdapter != null) {
+                Log.d("SearchResultsFragment", "Setting " + results.size() + " articles to adapter");
                 verticalAdapter.setArticles(results);
+                Log.d("SearchResultsFragment", "Adapter item count: " + verticalAdapter.getItemCount());
+            } else {
+                Log.e("SearchResultsFragment", "Cannot show results: verticalAdapter is null");
             }
         }
     }
 
     private void showNoResults() {
+        Log.d("SearchResultsFragment", "showNoResults called");
+        
+        if (noResultsText == null) {
+            Log.e("SearchResultsFragment", "Cannot show no results: noResultsText is null");
+            return;
+        }
+        if (resultsRecyclerView == null) {
+            Log.e("SearchResultsFragment", "resultsRecyclerView is null in showNoResults");
+        }
+        
         noResultsText.setVisibility(View.VISIBLE);
-        resultsRecyclerView.setVisibility(View.GONE);
+        if (resultsRecyclerView != null) {
+            resultsRecyclerView.setVisibility(View.GONE);
+        }
+        
         if (searchQuery != null) {
-            noResultsText.setText(getString(R.string.no_results_found, searchQuery));
+            String message = getString(R.string.no_results_found, searchQuery);
+            Log.d("SearchResultsFragment", message);
+            noResultsText.setText(message);
         } else {
+            Log.d("SearchResultsFragment", "No search query provided");
             noResultsText.setText("No results found");
         }
     }

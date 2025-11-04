@@ -16,6 +16,10 @@ import com.rafdi.vitechasia.blog.models.Article;
 import com.rafdi.vitechasia.blog.utils.DataHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
 
 /**
  * RecyclerView adapter for displaying subcategories with nested article lists.
@@ -23,7 +27,7 @@ import java.util.List;
  */
 public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.SubcategoryViewHolder> {
 
-    private final List<String> subcategoryNames;
+    private final List<String> subcategoryNames = new ArrayList<>();
     private final String categoryId;
     private final OnViewAllClickListener viewAllListener;
     private final OnArticleClickListener articleClickListener;
@@ -39,17 +43,68 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
     public SubcategoryAdapter(String categoryId, OnViewAllClickListener viewAllListener, 
                             OnArticleClickListener articleClickListener) {
         this.categoryId = categoryId;
-        this.subcategoryNames = new ArrayList<>();
         this.viewAllListener = viewAllListener;
         this.articleClickListener = articleClickListener;
     }
 
+    /**
+     * Updates the list of subcategories with efficient diffing
+     * @param subcategories New list of subcategory names
+     */
     public void setSubcategories(List<String> subcategories) {
-        this.subcategoryNames.clear();
-        if (subcategories != null) {
-            this.subcategoryNames.addAll(subcategories);
+        if (subcategories == null) {
+            subcategories = new ArrayList<>();
         }
-        notifyDataSetChanged();
+        
+        SubcategoryDiffCallback diffCallback = new SubcategoryDiffCallback(this.subcategoryNames, subcategories);
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffCallback);
+        
+        this.subcategoryNames.clear();
+        this.subcategoryNames.addAll(subcategories);
+        
+        diffResult.dispatchUpdatesTo(this);
+    }
+    
+    /**
+     * Callback for calculating the diff between old and new subcategory lists
+     */
+    private static class SubcategoryDiffCallback extends DiffUtil.Callback {
+        private final List<String> oldList;
+        private final List<String> newList;
+        
+        public SubcategoryDiffCallback(List<String> oldList, List<String> newList) {
+            this.oldList = oldList != null ? oldList : new ArrayList<>();
+            this.newList = newList != null ? newList : new ArrayList<>();
+        }
+        
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+        
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+        
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            // For subcategories, we consider items the same if they have the same name
+            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+        }
+        
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            // For subcategories, the content is the same if the names are equal
+            return oldList.get(oldItemPosition).equals(newList.get(newItemPosition));
+        }
+        
+        @Nullable
+        @Override
+        public Object getChangePayload(int oldItemPosition, int newItemPosition) {
+            // No payload needed for subcategory items
+            return super.getChangePayload(oldItemPosition, newItemPosition);
+        }
     }
 
     @NonNull

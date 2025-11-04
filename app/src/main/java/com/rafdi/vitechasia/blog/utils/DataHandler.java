@@ -313,8 +313,13 @@ public class DataHandler {
      */
     public static List<Article> getDummyArticlesByCategory(String categoryId) {
         List<Article> filtered = new ArrayList<>();
+        if (categoryId == null) {
+            return filtered; // Return empty list if categoryId is null
+        }
+        
         for (Article article : getDummyArticles()) {
-            if (categoryId.equalsIgnoreCase(article.getCategoryId())) {
+            String articleCategoryId = article.getCategoryId();
+            if (articleCategoryId != null && categoryId.equalsIgnoreCase(articleCategoryId)) {
                 filtered.add(article);
             }
         }
@@ -803,13 +808,12 @@ public class DataHandler {
             }
         });
     }
-
     /**
      * Gets all articles, trying the API first and falling back to dummy data
      *
      * @param callback Callback to receive the results asynchronously
      */
-    private void getAllArticles(DataLoadListener callback) {
+    public void getAllArticles(DataLoadListener callback) {
         if (!isViewModelInitialized) {
             // Fall back to dummy data if ViewModel isn't initialized
             List<Article> dummyArticles = getDummyAllArticles();

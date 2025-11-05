@@ -104,7 +104,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
         
         if (category == null) {
             noArticlesText.setVisibility(View.VISIBLE);
-            noArticlesText.setText(getString(R.string.error_loading_subcategory));
+            noArticlesText.setText(getString(R.string.error_loading));
             return;
         }
         
@@ -122,7 +122,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
                     if (subcategoryArticles == null || subcategoryArticles.isEmpty()) {
                         noArticlesText.setVisibility(View.VISIBLE);
                         articlesRecyclerView.setVisibility(View.GONE);
-                        noArticlesText.setText(getString(R.string.no_subcategory_articles));
+                        noArticlesText.setText(getString(R.string.no_articles_found));
                     } else {
                         noArticlesText.setVisibility(View.GONE);
                         articlesRecyclerView.setVisibility(View.VISIBLE);
@@ -138,7 +138,7 @@ public class SubcategoryFragment extends Fragment implements ArticleVerticalAdap
                 getActivity().runOnUiThread(() -> {
                     noArticlesText.setVisibility(View.VISIBLE);
                     articlesRecyclerView.setVisibility(View.GONE);
-                    noArticlesText.setText(getString(R.string.error_loading_subcategory));
+                    noArticlesText.setText(getString(R.string.error_loading));
                     Log.e("SubcategoryFragment", "Error loading articles: " + message);
                 });
             }

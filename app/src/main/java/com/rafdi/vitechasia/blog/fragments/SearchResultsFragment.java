@@ -445,13 +445,13 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             resultsRecyclerView.setVisibility(View.GONE);
         }
         
-        if (searchQuery != null) {
-            String message = getString(R.string.no_results_found, searchQuery);
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            String message = getString(R.string.no_search_results, searchQuery);
             Log.d("SearchResultsFragment", message);
             noResultsText.setText(message);
         } else {
             Log.d("SearchResultsFragment", "No search query provided");
-            noResultsText.setText("No results found");
+            noResultsText.setText(R.string.no_articles_found);
         }
     }
 }

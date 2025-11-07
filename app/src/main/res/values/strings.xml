@@ -229,6 +229,15 @@
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
 
+    <!-- Theme Settings -->
+    <string name="appearance">Appearance</string>
+    <string name="dark_theme">Dark theme</string>
+    <string name="follow_system_theme">Use system default theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_set_to">Theme set to %s</string>
+    
     <!-- Messages -->
     <string name="no_articles">No articles found</string>
     <string name="no_bookmarks">No bookmarks yet</string>

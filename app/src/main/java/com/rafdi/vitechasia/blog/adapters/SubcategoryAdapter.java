@@ -204,7 +204,7 @@ public class SubcategoryAdapter extends RecyclerView.Adapter<SubcategoryAdapter.
                 case "news":
                     return R.color.news_category_color;
                 default:
-                    return R.color.tech_category_color;
+                    return R.color.colorAccent;
             }
         }
     }

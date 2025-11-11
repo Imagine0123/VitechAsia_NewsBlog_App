@@ -1,15 +1,11 @@
 package com.rafdi.vitechasia.blog.adapters;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.databinding.ItemCategoryFilterBinding;
 
 import java.util.ArrayList;

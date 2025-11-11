@@ -239,19 +239,28 @@
     <string name="theme_set_to">Theme set to %s</string>
     
     <!-- Search Filters -->
+    <string name="filters">Filters</string>
     <string name="sort_by">Sort By</string>
     <string name="sort_relevance">Relevance</string>
     <string name="sort_date_newest">Newest First</string>
     <string name="sort_date_oldest">Oldest First</string>
     <string name="sort_popularity">Most Popular</string>
     <string name="date_range">Date Range</string>
+    <string name="select_date_range">Select date range</string>
     <string name="date_range_all_time">All Time</string>
     <string name="date_range_24_hours">Last 24 Hours</string>
     <string name="date_range_week">Last Week</string>
     <string name="date_range_month">Last Month</string>
     <string name="date_range_year">Last Year</string>
+    
+    <string-array name="date_ranges">
+        <item>@string/date_range_all_time</item>
+        <item>@string/date_range_24_hours</item>
+        <item>@string/date_range_week</item>
+        <item>@string/date_range_month</item>
+        <item>@string/date_range_year</item>
+    </string-array>
     <string name="clear_all">Clear All</string>
-    <string name="filters">Filters</string>
     
     <!-- Messages -->
     <string name="no_articles">No articles found</string>

@@ -5,18 +5,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputLayout;
 import com.rafdi.vitechasia.blog.R;
 import com.rafdi.vitechasia.blog.activities.HomePage;
 import com.rafdi.vitechasia.blog.adapters.ArticleVerticalAdapter;
@@ -39,6 +45,23 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private String searchQuery;
     private String selectedCategory = null;
     private String selectedSubcategory = null;
+    private SortBy currentSortBy = SortBy.RELEVANCE;
+    private DateRange currentDateRange = DateRange.ALL_TIME;
+    
+    private enum SortBy {
+        RELEVANCE,
+        DATE_NEWEST,
+        DATE_OLDEST,
+        POPULARITY
+    }
+    
+    private enum DateRange {
+        ALL_TIME,
+        LAST_24_HOURS,
+        LAST_WEEK,
+        LAST_MONTH,
+        LAST_YEAR
+    }
     private RecyclerView resultsRecyclerView;
     private ArticleVerticalAdapter verticalAdapter;
     private TextView noResultsText;
@@ -48,6 +71,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private List<Article> allSearchResults = new ArrayList<>();
     private SearchHistoryManager searchHistoryManager;
     private CategoryManager categoryManager;
+    private TextInputLayout dateRangeLayout;
 
     public static SearchResultsFragment newInstance(String query) {
         SearchResultsFragment fragment = new SearchResultsFragment();
@@ -229,17 +253,43 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         }
 
         List<Article> filteredResults = new ArrayList<>();
+        long currentTime = System.currentTimeMillis();
+        long timeRange = getTimeRangeInMillis(currentDateRange);
+        
+        // Apply category and subcategory filters
         for (Article article : allSearchResults) {
             boolean matchesCategory = selectedCategory == null ||
                 (article.getCategoryId() != null && article.getCategoryId().equalsIgnoreCase(selectedCategory));
 
             boolean matchesSubcategory = selectedSubcategory == null ||
                 (article.getSubcategoryId() != null && article.getSubcategoryId().equalsIgnoreCase(selectedSubcategory));
+                
+            boolean matchesDateRange = currentDateRange == DateRange.ALL_TIME || 
+                (article.getPublishDate() != null && 
+                 (currentTime - article.getPublishDate().getTime()) <= timeRange);
 
-            if (matchesCategory && matchesSubcategory) {
+            if (matchesCategory && matchesSubcategory && matchesDateRange) {
                 filteredResults.add(article);
             }
         }
+        
+        // Apply sorting
+        if (currentSortBy == SortBy.DATE_NEWEST) {
+            filteredResults.sort((a1, a2) -> {
+                if (a1.getPublishDate() == null || a2.getPublishDate() == null) return 0;
+                return a2.getPublishDate().compareTo(a1.getPublishDate());
+            });
+        } else if (currentSortBy == SortBy.DATE_OLDEST) {
+            filteredResults.sort((a1, a2) -> {
+                if (a1.getPublishDate() == null || a2.getPublishDate() == null) return 0;
+                return a1.getPublishDate().compareTo(a2.getPublishDate());
+            });
+        } else if (currentSortBy == SortBy.POPULARITY) {
+            filteredResults.sort((a1, a2) -> Integer.compare(a2.getViewCount(), a1.getViewCount()));
+        }
+        
+        // Update filter chips
+        updateFilterChips();
 
         // Update UI
         requireActivity().runOnUiThread(() -> {
@@ -253,66 +303,171 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     }
 
     private void showFilterDialog() {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filter, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_search_filters, null);
+        
+        // Initialize views
+        RadioGroup sortByGroup = dialogView.findViewById(R.id.sortByGroup);
+        AutoCompleteTextView dateRangeSpinner = dialogView.findViewById(R.id.dateRangeSpinner);
+        Button btnApply = dialogView.findViewById(R.id.btnApply);
+        Button btnReset = dialogView.findViewById(R.id.btnReset);
         ChipGroup categoryChipGroup = dialogView.findViewById(R.id.category_chip_group);
         ChipGroup subcategoryChipGroup = dialogView.findViewById(R.id.subcategory_chip_group);
         View subcategoriesLabel = dialogView.findViewById(R.id.subcategories_label);
-        com.google.android.material.button.MaterialButton btnApply = dialogView.findViewById(R.id.btn_apply);
-        com.google.android.material.button.MaterialButton btnReset = dialogView.findViewById(R.id.btn_reset);
+        dateRangeLayout = dialogView.findViewById(R.id.dateRangeLayout);
 
-        // Get categories with their IDs
+        // Set up sort by radio group
+        switch (currentSortBy) {
+            case DATE_NEWEST:
+                sortByGroup.check(R.id.sortByDateNewest);
+                break;
+            case DATE_OLDEST:
+                sortByGroup.check(R.id.sortByDateOldest);
+                break;
+            case POPULARITY:
+                sortByGroup.check(R.id.sortByPopularity);
+                break;
+            default:
+                sortByGroup.check(R.id.sortByRelevance);
+        }
+        
+        // Set up categories
         List<Category> categories = DataHandler.getAllCategories();
-
+        categoryChipGroup.removeAllViews();
+        
+        // Add "All Categories" option
+        Chip allChip = new Chip(requireContext());
+        allChip.setText("All Categories");
+        allChip.setCheckable(true);
+        allChip.setChecked(selectedCategory == null);
+        allChip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                selectedCategory = null;
+                selectedSubcategory = null;
+                subcategoryChipGroup.setVisibility(View.GONE);
+                subcategoriesLabel.setVisibility(View.GONE);
+                
+                // Uncheck other chips
+                for (int i = 0; i < categoryChipGroup.getChildCount(); i++) {
+                    Chip chip = (Chip) categoryChipGroup.getChildAt(i);
+                    if (chip != buttonView) {
+                        chip.setChecked(false);
+                    }
+                }
+            }
+        });
+        categoryChipGroup.addView(allChip);
+        
         // Add category chips
         for (Category category : categories) {
+            if (category == null) continue;
+            
             Chip chip = new Chip(requireContext());
             chip.setText(category.getName());
             chip.setCheckable(true);
             chip.setChecked(category.getId().equals(selectedCategory));
-
+            
             chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
-                    // Clear previous selection
+                    // Uncheck "All Categories" and other chips
                     for (int i = 0; i < categoryChipGroup.getChildCount(); i++) {
-                        View child = categoryChipGroup.getChildAt(i);
-                        if (child instanceof Chip && child != buttonView) {
-                            ((Chip) child).setChecked(false);
+                        Chip c = (Chip) categoryChipGroup.getChildAt(i);
+                        if (c != buttonView) {
+                            c.setChecked(false);
                         }
                     }
+                    
                     selectedCategory = category.getId();
+                    selectedSubcategory = null; // Reset subcategory when category changes
+                    updateSubcategoryChips(subcategoryChipGroup, subcategoriesLabel, category.getId());
+                } else if (selectedCategory != null && selectedCategory.equals(category.getId())) {
+                    // If the currently selected category is unchecked, select "All Categories"
+                    allChip.setChecked(true);
+                    selectedCategory = null;
                     selectedSubcategory = null;
-                    updateSubcategoryChips(subcategoryChipGroup, subcategoriesLabel, selectedCategory);
+                    subcategoryChipGroup.setVisibility(View.GONE);
+                    subcategoriesLabel.setVisibility(View.GONE);
                 }
             });
+            
             categoryChipGroup.addView(chip);
         }
-
-        // Initialize subcategories if a category is already selected
+        
+        // Set up subcategories if a category is already selected
         if (selectedCategory != null) {
             updateSubcategoryChips(subcategoryChipGroup, subcategoriesLabel, selectedCategory);
         }
-
+        
+        // Set up date range spinner
+        String[] dateRanges = getResources().getStringArray(R.array.date_ranges);
+        ArrayAdapter<String> dateAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                dateRanges
+        );
+        dateRangeSpinner.setAdapter(dateAdapter);
+        dateRangeSpinner.setText(dateRanges[currentDateRange.ordinal()], false);
+        
+        // Handle date range selection
+        dateRangeSpinner.setOnItemClickListener((parent, view, position, id) -> {
+            currentDateRange = DateRange.values()[position];
+            dateRangeSpinner.dismissDropDown();
+        });
+        
         // Set up dialog
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
                 .setView(dialogView)
                 .create();
-
+        
+        // Make the date range input clickable
+        dateRangeSpinner.setFocusable(false);
+        dateRangeSpinner.setClickable(true);
+        dateRangeSpinner.setOnClickListener(v -> dateRangeSpinner.showDropDown());
+        
+        // Also make the entire TextInputLayout clickable
+        dateRangeLayout.setEndIconOnClickListener(v -> dateRangeSpinner.showDropDown());
+        dateRangeLayout.setBoxBackgroundMode(TextInputLayout.BOX_BACKGROUND_OUTLINE);
+        
         btnApply.setOnClickListener(v -> {
+            // Update sort by
+            int selectedSortId = sortByGroup.getCheckedRadioButtonId();
+            if (selectedSortId == R.id.sortByDateNewest) {
+                currentSortBy = SortBy.DATE_NEWEST;
+            } else if (selectedSortId == R.id.sortByDateOldest) {
+                currentSortBy = SortBy.DATE_OLDEST;
+            } else if (selectedSortId == R.id.sortByPopularity) {
+                currentSortBy = SortBy.POPULARITY;
+            } else {
+                currentSortBy = SortBy.RELEVANCE;
+            }
+            
             applyFilters();
             dialog.dismiss();
         });
-
+        
         btnReset.setOnClickListener(v -> {
+            // Reset all filters
+            currentSortBy = SortBy.RELEVANCE;
+            currentDateRange = DateRange.ALL_TIME;
             selectedCategory = null;
             selectedSubcategory = null;
-            categoryChipGroup.clearCheck();
-            subcategoryChipGroup.clearCheck();
+            
+            // Reset UI
+            sortByGroup.check(R.id.sortByRelevance);
+            dateRangeSpinner.setText(dateRanges[0], false);
+            
+            // Reset chips
+            for (int i = 0; i < categoryChipGroup.getChildCount(); i++) {
+                Chip chip = (Chip) categoryChipGroup.getChildAt(i);
+                chip.setChecked(i == 0); // Only check "All Categories"
+            }
+            
             subcategoryChipGroup.setVisibility(View.GONE);
             subcategoriesLabel.setVisibility(View.GONE);
+            
             applyFilters();
             dialog.dismiss();
         });
-
+        
         dialog.show();
     }
 
@@ -350,20 +505,75 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         }
     }
 
+    private long getTimeRangeInMillis(DateRange dateRange) {
+        switch (dateRange) {
+            case LAST_24_HOURS:
+                return 24 * 60 * 60 * 1000L;
+            case LAST_WEEK:
+                return 7 * 24 * 60 * 60 * 1000L;
+            case LAST_MONTH:
+                return 30L * 24 * 60 * 60 * 1000L;
+            case LAST_YEAR:
+                return 365L * 24 * 60 * 60 * 1000L;
+            case ALL_TIME:
+            default:
+                return Long.MAX_VALUE;
+        }
+    }
+    
+    private String getSortByText(SortBy sortBy) {
+        switch (sortBy) {
+            case DATE_NEWEST:
+                return getString(R.string.sort_date_newest);
+            case DATE_OLDEST:
+                return getString(R.string.sort_date_oldest);
+            case POPULARITY:
+                return getString(R.string.sort_popularity);
+            case RELEVANCE:
+            default:
+                return getString(R.string.sort_relevance);
+        }
+    }
+    
+    private String getDateRangeText(DateRange dateRange) {
+        String[] dateRanges = getResources().getStringArray(R.array.date_ranges);
+        return dateRanges[dateRange.ordinal()];
+    }
+
     private void updateFilterChips() {
         if (chipGroupFilters == null) return;
 
         chipGroupFilters.removeAllViews();
 
-        if (selectedCategory != null) {
-            String displayName = getDisplayNameForCategory(selectedCategory);
-            addFilterChip(displayName, v -> {
-                selectedCategory = null;
-                selectedSubcategory = null;
+        // Add sort filter chip if not default
+        if (currentSortBy != SortBy.RELEVANCE) {
+            addFilterChip(getSortByText(currentSortBy), v -> {
+                currentSortBy = SortBy.RELEVANCE;
+                applyFilters();
+            });
+        }
+        
+        // Add date range filter chip if not default
+        if (currentDateRange != DateRange.ALL_TIME) {
+            addFilterChip(getDateRangeText(currentDateRange), v -> {
+                currentDateRange = DateRange.ALL_TIME;
                 applyFilters();
             });
         }
 
+        // Add category filter chip
+        if (selectedCategory != null) {
+            String displayName = getDisplayNameForCategory(selectedCategory);
+            if (displayName != null) {
+                addFilterChip(displayName, v -> {
+                    selectedCategory = null;
+                    selectedSubcategory = null;
+                    applyFilters();
+                });
+            }
+        }
+
+        // Add subcategory filter chip
         if (selectedSubcategory != null) {
             addFilterChip(selectedSubcategory, v -> {
                 selectedSubcategory = null;

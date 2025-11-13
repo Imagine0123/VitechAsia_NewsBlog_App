@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -31,6 +32,7 @@ import com.rafdi.vitechasia.blog.models.Category;
 import com.rafdi.vitechasia.blog.utils.DataHandler;
 import com.rafdi.vitechasia.blog.utils.SearchHistoryManager;
 import com.rafdi.vitechasia.blog.utils.CategoryManager;
+import com.rafdi.vitechasia.blog.utils.PaginationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,10 +70,15 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
     private TextView searchQueryText;
     private ChipGroup chipGroupFilters;
     private LinearLayout searchHistoryLayout;
+    private static final int ITEMS_PER_PAGE = 10;
+    
     private List<Article> allSearchResults = new ArrayList<>();
     private SearchHistoryManager searchHistoryManager;
     private CategoryManager categoryManager;
     private TextInputLayout dateRangeLayout;
+    private Button btnLoadMore;
+    private ProgressBar progressBar;
+    private PaginationUtils<Article> paginationUtils;
 
     public static SearchResultsFragment newInstance(String query) {
         SearchResultsFragment fragment = new SearchResultsFragment();
@@ -113,6 +120,11 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         searchQueryText = view.findViewById(R.id.searchQueryText);
         chipGroupFilters = view.findViewById(R.id.chip_group_filters);
         searchHistoryLayout = view.findViewById(R.id.searchHistoryLayout);
+        btnLoadMore = view.findViewById(R.id.btn_load_more);
+        progressBar = view.findViewById(R.id.progress_bar);
+        
+        // Set up load more button
+        btnLoadMore.setOnClickListener(v -> loadNextPage());
 
         // Set search query text
         if (searchQueryText != null && searchQuery != null) {
@@ -154,6 +166,7 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             noResultsText.setVisibility(View.VISIBLE);
             noResultsText.setText("No search history available");
             resultsRecyclerView.setVisibility(View.GONE);
+            btnLoadMore.setVisibility(View.GONE);
             return;
         }
 
@@ -251,6 +264,13 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
             showNoResults();
             return;
         }
+        
+        // Initialize or update pagination
+        if (paginationUtils == null) {
+            paginationUtils = new PaginationUtils<>(allSearchResults, ITEMS_PER_PAGE);
+        } else {
+            paginationUtils.updateData(allSearchResults);
+        }
 
         List<Article> filteredResults = new ArrayList<>();
         long currentTime = System.currentTimeMillis();
@@ -295,8 +315,10 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         requireActivity().runOnUiThread(() -> {
             if (filteredResults.isEmpty()) {
                 showNoResults();
+                btnLoadMore.setVisibility(View.GONE);
             } else {
-                showResults(filteredResults);
+                updateArticleList();
+                updateLoadMoreButton();
             }
             updateFilterChips();
         });
@@ -612,31 +634,39 @@ public class SearchResultsFragment extends Fragment implements ArticleVerticalAd
         chipGroupFilters.addView(chip);
     }
 
-    private void showResults(List<Article> results) {
-        Log.d("SearchResultsFragment", "showResults called with " + (results != null ? results.size() : 0) + " results");
-        
-        if (resultsRecyclerView == null) {
-            Log.e("SearchResultsFragment", "resultsRecyclerView is null!");
-        }
-        if (noResultsText == null) {
-            Log.e("SearchResultsFragment", "noResultsText is null!");
-        }
-        if (verticalAdapter == null) {
-            Log.e("SearchResultsFragment", "verticalAdapter is null!");
-        }
-
-        if (resultsRecyclerView != null && noResultsText != null) {
+    private void updateArticleList() {
+        if (paginationUtils != null) {
+            List<Article> currentPage = paginationUtils.getCurrentPageItems();
+            if (verticalAdapter == null) {
+                verticalAdapter = new ArticleVerticalAdapter(currentPage, this);
+                resultsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                resultsRecyclerView.setAdapter(verticalAdapter);
+            } else {
+                verticalAdapter.setArticles(currentPage);
+            }
             resultsRecyclerView.setVisibility(View.VISIBLE);
             noResultsText.setVisibility(View.GONE);
-
-            if (verticalAdapter != null) {
-                Log.d("SearchResultsFragment", "Setting " + results.size() + " articles to adapter");
-                verticalAdapter.setArticles(results);
-                Log.d("SearchResultsFragment", "Adapter item count: " + verticalAdapter.getItemCount());
-            } else {
-                Log.e("SearchResultsFragment", "Cannot show results: verticalAdapter is null");
-            }
         }
+    }
+    
+    private void updateLoadMoreButton() {
+        if (paginationUtils != null) {
+            btnLoadMore.setVisibility(paginationUtils.hasNextPage() ? View.VISIBLE : View.GONE);
+        } else {
+            btnLoadMore.setVisibility(View.GONE);
+        }
+    }
+    
+    private void loadNextPage() {
+        if (paginationUtils != null && paginationUtils.hasNextPage()) {
+            paginationUtils.loadNextPage();
+            updateArticleList();
+            updateLoadMoreButton();
+        }
+    }
+    
+    private void showResults(List<Article> results) {
+        updateArticleList();
     }
 
     private void showNoResults() {
